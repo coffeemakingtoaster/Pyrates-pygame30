@@ -57,7 +57,11 @@ def main():
     dot_map_x = 0
     dot_map_y = 0
     hitradius = 50
+    currentangle = 0
+    island_demo_x = 1250
+    island_demo_y = 300
 
+    pygame.draw.ellipse(screen, (237, 226, 197), pygame.Rect(island_demo_x, island_demo_y, 70, 70))
     while running:
         for event in pygame.event.get():
             #Quit
@@ -73,7 +77,15 @@ def main():
                 dot_map_y = 900-mouse_y+ship_map_y-200
                 angle = (180 / math.pi) * -math.atan2((mouse_y - 700 ),(mouse_x - 1350))
                 pygame.draw.rect(screen, (10, 169, 255), ship_movement_UI)
-                screen.blit(rotate_image(ship,angle-90), (1250, 600))
+
+                if currentangle < angle-90:
+                    currentangle += 0.01
+                if currentangle > angle-90:
+                    currentangle -= 0.01
+                screen.blit(rotate_image(ship, -currentangle), (1250, 600))
+
+
+                #screen.blit(rotate_image(ship,angle-90), (1250, 600))
                 screen.blit(overlay, (0, 0))
                 pygame.draw.ellipse(screen, (255,0,0), pygame.Rect(mouse_x,mouse_y,10,10))
                 dotexists = True
@@ -84,14 +96,29 @@ def main():
 
 
 
+
+
+
         if dotexists and (ship_map_x-dot_map_x < -hitradius or ship_map_x-dot_map_x > hitradius or ship_map_y-dot_map_y > hitradius or ship_map_y-dot_map_y < -hitradius):
-            initx -= x_speed*0.5
-            inity += y_speed*0.5
+            initx -= x_speed*0.3
+            inity += y_speed*0.3
             pygame.draw.rect(screen, (10, 169, 255), ship_movement_UI)
             pygame.draw.ellipse(screen, (255, 0, 0), pygame.Rect(initx, inity, 10, 10))
-            screen.blit(rotate_image(ship, angle - 90), (1250, 600))
-            ship_map_x += x_speed*0.5
-            ship_map_y += y_speed*0.5
+
+            island_demo_x -= x_speed*0.3
+            island_demo_y += y_speed*0.3
+            pygame.draw.ellipse(screen, (237, 226, 197), pygame.Rect(island_demo_x, island_demo_y, 70, 70))
+
+            ship_map_x += x_speed * 0.3
+            ship_map_y += y_speed * 0.3
+            if currentangle < angle - 90:
+                currentangle += 0.1
+            if currentangle > angle - 90:
+                currentangle -= 0.1
+            screen.blit(rotate_image(ship, +currentangle), (1250, 600))
+
+
+
 
 
 
