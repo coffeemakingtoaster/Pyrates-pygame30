@@ -1,4 +1,5 @@
 import pygame
+import os
 
 
 def main():
@@ -6,7 +7,9 @@ def main():
     width, height = (1600, 900)
     background_color = (0, 0, 0)
 
-    overlay = pygame.image.load("data/img/overlay.png")
+    asset_path = os.path.join("data","img")
+
+    overlay = pygame.image.load(os.path.join(os.getcwd(),asset_path,"overlay.png"))
     screen = pygame.display.set_mode((width, height))
     managment_UI = pygame.Rect(0, 0, width / 3, height)
     ship_visual = pygame.Rect(width / 3, 0, width / 3, height/2)
