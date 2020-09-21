@@ -5,18 +5,10 @@ import os
 
 
 save_path = os.path.join(os.getcwd(),"data","savegame")
+f = open(os.path.join(os.getcwd(),"data","balancing.json"))
+settings = json.load(f)
+f.close()
 
-
-island_count = 50
-map_width = 150
-map_length = 600
-max_map_size = 4
-map_types = 4
-
-crew_count = 8
-attribute_types = 8
-max_starting_level = 3
-name_count = 8
 
 roledic = {
     0:"Helmsman",                      #Speed (basespeed*level*x)
@@ -51,15 +43,15 @@ shop_items = {
 #
 
 def mapgen():
-    x_coordinates = random.sample(range(1, map_width), island_count)
-    y_coordinates = random.sample(range(1, map_length), island_count)
+    x_coordinates = random.sample(range(1, settings["map_width"]), settings["island_count"])
+    y_coordinates = random.sample(range(1, settings["map_length"]), settings["island_count"])
     map_list = []
-    for i in range(island_count):
+    for i in range(settings["island_count"]):
         island = {
             "x": x_coordinates[i],
             "y": y_coordinates[i],
-            "size": random.randint(1, max_map_size),
-            "type": random.randint(1, map_types),
+            "size": random.randint(1, settings["max_map_size"]),
+            "type": random.randint(1, settings["map_types"]),
             "visited": False
         }
         map_list.append(island)
@@ -74,12 +66,12 @@ def crewgen():
     with open('data/other/names.json') as json_file:
         name_list = json.load(json_file)
     crew = []
-    for i in range(crew_count):
+    for i in range(settings["crew_count"]):
         crew_member = {
-         "name" : name_list[random.randint(0,name_count-1)],
-         "attribute" : random.randint(1,attribute_types),
+         "name" : name_list[random.randint(0,settings["name_count"]-1)],
+         "attribute" : random.randint(1,settings["attribute_types"]),
          "injured" : False,
-         "level" : random.randint(1,max_starting_level),
+         "level" : random.randint(1,settings["max_starting_level"]),
          "role" : roledic.get(i)
          }
         crew.append(crew_member)
@@ -92,17 +84,17 @@ def crewgen():
 def island_eventgen(type,size):
     # if the island is a shop
     f = open(os.path.join(save_path,"crew.json"))
-    crew_data = json.loads(f)
+    crew_data = json.load(f)
     f.close()
     if type == 1:
-        supply_price = random.randint(1,3)
-        supply_amount = random.randint(1,10)
-        ammunition_price = random.randint(1,3)
-        ammunition_amount = random.randint(1,10)
+        supply_price = random.randint(settings["supply_min_price"],settings["supply_max_price"])
+        supply_amount = random.randint(settings["supply_min_amount"],settings["supply_max_amount"])
+        ammunition_price = random.randint(settings["ammunition_min_price"],settings["ammunition_max_price"])
+        ammunition_amount = random.randint(settings["ammunition_min_amount"],settings["ammunition_max_amount"])
         x = random.randint(1,4)
         bonus_item = shop_items[x]
-        bonus_price = random.randint(5,15)+x
-        bonus_amount = random.randint(1,2)*(size/2)
+        bonus_price = random.randint(settings["bonus_min_price"],settings["bonus_max_price"])+x
+        bonus_amount = random.randint(settings["bonus_min_amount"],settings["bonus_max_amount"])*(size/2)
         return {"supplies":
                     {"price":supply_price,
                      "amount":supply_amount},
@@ -115,7 +107,7 @@ def island_eventgen(type,size):
                 }
     elif type == 2:
         possible_loot = ["supplies","ammunition","gold"]
-        victory_chances = random.randint(10,75)
+        victory_chances = random.randint(settings["fortress_min_win_chance"],settings["fortress_max_win_chance"])
         for member in crew_data:
             if member["role"] == "Brute":
                 victory_chances+=member["level"]
@@ -123,19 +115,20 @@ def island_eventgen(type,size):
                     break
         defeat_chances = 100-victory_chances
         island_loot = random.choice(possible_loot)
-        amount = random.randint(5,15)
+        amount = random.randint(settings["fortress_min_loot"],settings["fortress_max_loot"])
         loot = {str(island_loot): int(amount)}
         if size>2:
             if island_loot == "gold":
-                loot["gold"]+=5
+                loot["gold"]+=settings["fortress_min_loot"]
             else:
-                loot["gold"]=5
+                loot["gold"]=settings["fortress_min_loot"]
         return {"victory":int(victory_chances),"defeat":int(defeat_chances),"loot":loot}
+    #TODO
     elif type==3:
         has_bonus_item = False
-        if random.randint(1,5) == 2:
+        if random.randint(0,100)<=settings["treasure_bonus_percentage"]:
             has_bonus_item = True
-        loot = random.randint(3,8)+size
+        loot = random.randint(settings["treasure_min_gold"],settings["treasure_max_gold"])+size
         if not has_bonus_item:
             return {"gold":int(loot)}
         return {"gold":int(loot),"bonus":{"type":shop_items[random.randint(1,4)]}}
@@ -146,11 +139,11 @@ def island_eventgen(type,size):
             with open('data/other/names.json') as json_file:
                 name_list = json.load(json_file)
             castaway = {
-                "name" : name_list[random.randint(0,name_count-1)],
-                "attribute" : random.randint(1,attribute_types),
+                "name" : name_list[random.randint(0,settings["name_count"]-1)],
+                "attribute" : random.randint(1,settings["attribute_types"]),
                 "injured" : False,
-                "level" : random.randint(1,max_starting_level),
-                "role" : roledic.get(i)
+                "level" : random.randint(1,settings["max_starting_level"]),
+                "role" : roledic.get(random.randint(0,7))
                 }
             return {"castaway":castaway}
         #found supplies
@@ -160,7 +153,7 @@ def island_eventgen(type,size):
                 item = "supplies"
             else:
                 item = "ammunition"
-            amount = random.randint(3,5)
+            amount = random.randint(settings["island_min_loot"],settings["island_max_loot"])
             return {"loot":{"type":str(item),"amount":int(amount)}}
         #lost resources
         elif event == 3:
@@ -177,9 +170,9 @@ def island_eventgen(type,size):
 
     def ship_encounter(ship_HP):
         f = open(os.path.join(save_path, "crew.json"))
-        crew_data = json.loads(f)
+        crew_data = json.load(f)
         f.close()
-        victory_chances = random.randint(10,75)-((5-ship_HP)*3)
+        victory_chances = random.randint(settings["ship_battle_min_win"],settings["ship_battle_max_win"])-((settings["ship_max_HP"]-ship_HP)*3)
         for member in crew_data:
             if member["role"] == "Brute":
                 victory_chances+=member["level"]
