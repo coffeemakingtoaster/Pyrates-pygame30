@@ -1,0 +1,25 @@
+Index: src/game_ui.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import pygame\r\n\r\n\r\ndef main():\r\n    pygame.init()\r\n    width, height = (1600, 900)\r\n    background_color = (0, 0, 0)\r\n\r\n    overlay = pygame.image.load(\"data/img/overlay.png\")\r\n    screen = pygame.display.set_mode((width, height))\r\n    managment_UI = pygame.Rect(0, 0, width / 3, height)\r\n    ship_visual = pygame.Rect(width / 3, 0, width / 3, height/2)\r\n    ressource_visual = pygame.Rect(width / 3, height/2, width / 3, height/2)\r\n    ship_movement_UI = pygame.Rect((width / 3) * 2, 0, width / 3, height)\r\n\r\n    pygame.display.set_caption(\"Pirate game\")\r\n    screen.fill(background_color)\r\n\r\n\r\n    pygame.draw.rect(screen,(127,4,50),managment_UI)\r\n    pygame.draw.rect(screen, (0,0,0), ship_visual)\r\n    pygame.draw.rect(screen, (161, 83, 27),ressource_visual)\r\n    pygame.draw.rect(screen, (10,169, 255), ship_movement_UI)\r\n    screen.blit(overlay, (0, 0))\r\n\r\n    pygame.display.flip()\r\n\r\n    running = True\r\n    while running:\r\n        for event in pygame.event.get():\r\n            print(event)\r\n            if event.type == pygame.QUIT:\r\n                running = False\r\n        pygame.display.flip()\r\n\r\n\r\nif __name__ == \"__main__\":\r\n    main()\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/game_ui.py	(revision 89425f18459c46ed1e70daf8b8fe6ebd909cdc64)
++++ src/game_ui.py	(date 1600698006732)
+@@ -1,12 +1,14 @@
+ import pygame
++import os
+ 
+ 
+ def main():
+     pygame.init()
+     width, height = (1600, 900)
+     background_color = (0, 0, 0)
++    asset_path = os.path.join("data","img")
+ 
+-    overlay = pygame.image.load("data/img/overlay.png")
++    overlay = pygame.image.load(os.path.join(asset_path,"overlay.png"))
+     screen = pygame.display.set_mode((width, height))
+     managment_UI = pygame.Rect(0, 0, width / 3, height)
+     ship_visual = pygame.Rect(width / 3, 0, width / 3, height/2)
