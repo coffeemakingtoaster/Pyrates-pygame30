@@ -1,6 +1,7 @@
 import pygame
 import os
 import math
+import time
 
 
 #given an image and an angle this returns the rotated image
@@ -47,6 +48,16 @@ def main():
 
     #gameloop
     running = True
+    angle = 0
+    ship_map_x = 750
+    ship_map_y = 100
+    dotexists = False
+    initx = 0
+    inity = 0
+    dot_map_x = 0
+    dot_map_y = 0
+    hitradius = 50
+
     while running:
         for event in pygame.event.get():
             #Quit
@@ -55,15 +66,43 @@ def main():
             #at mouseclick:
             #- checks if click was in ship movement window and if so rotates the ship image
             #TODO: add support for more parts of the screen
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN and ship_movement_UI.collidepoint(pygame.mouse.get_pos()):
                 mouse_x,mouse_y = pygame.mouse.get_pos()
-                if ship_movement_UI.collidepoint(pygame.mouse.get_pos()):
-                    angle = (180 / math.pi) * -math.atan2((mouse_y - 700 ),(mouse_x - 1350))
-                    pygame.draw.rect(screen, (10, 169, 255), ship_movement_UI)
-                    screen.blit(rotate_image(ship,angle-90), (1250, 600))
-                    screen.blit(overlay, (0, 0))
-                    pygame.draw.ellipse(screen, (255,0,0), pygame.Rect(mouse_x,mouse_y,10,10))
+                initx,inity = pygame.mouse.get_pos()
+                dot_map_x = ship_map_x-266+mouse_x-1066
+                dot_map_y = 900-mouse_y+ship_map_y-200
+                angle = (180 / math.pi) * -math.atan2((mouse_y - 700 ),(mouse_x - 1350))
+                pygame.draw.rect(screen, (10, 169, 255), ship_movement_UI)
+                screen.blit(rotate_image(ship,angle-90), (1250, 600))
+                screen.blit(overlay, (0, 0))
+                pygame.draw.ellipse(screen, (255,0,0), pygame.Rect(mouse_x,mouse_y,10,10))
+                dotexists = True
         pygame.display.flip()
+
+        y_speed = math.sin(math.radians(angle))
+        x_speed = math.cos(math.radians(angle))
+
+
+
+        if dotexists and (ship_map_x-dot_map_x < -hitradius or ship_map_x-dot_map_x > hitradius or ship_map_y-dot_map_y > hitradius or ship_map_y-dot_map_y < -hitradius):
+            initx -= x_speed*0.5
+            inity += y_speed*0.5
+            pygame.draw.rect(screen, (10, 169, 255), ship_movement_UI)
+            pygame.draw.ellipse(screen, (255, 0, 0), pygame.Rect(initx, inity, 10, 10))
+            screen.blit(rotate_image(ship, angle - 90), (1250, 600))
+            ship_map_x += x_speed*0.5
+            ship_map_y += y_speed*0.5
+
+
+
+
+
+
+
+
+
+
+
 
 
 if __name__ == "__main__":
