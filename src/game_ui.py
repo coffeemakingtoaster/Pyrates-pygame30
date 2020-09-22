@@ -2,6 +2,8 @@ import pygame
 import os
 import math
 import time
+import ui_helper
+import game_logic
 
 
 # given an image and an angle this returns the rotated image
@@ -17,6 +19,7 @@ def rotate_image(image, angle):
 
 def main():
     pygame.init()
+    current_game = game_logic.game()
     # init size of the window. The background color is never visible
     width, height = (1600, 900)
     background_color = (0, 0, 0)
@@ -124,7 +127,7 @@ def main():
             screen.blit(rotate_image(ship, +currentangle), (1250, 600))
             # ------------------------------------------------------------
 
-        screen.blit(ui_helper.draw_resources)
+        screen.blit(ui_helper.draw_resources(current_game),(533,450))
 
 if __name__ == "__main__":
     main()
