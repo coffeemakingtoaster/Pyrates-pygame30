@@ -50,8 +50,8 @@ def mapgen():
         island = {
             "x": x_coordinates[i],
             "y": y_coordinates[i],
-            "size": random.randint(1, settings["max_map_size"]),
-            "type": random.randint(1, settings["map_types"]),
+            "size": random.randint(0, settings["max_map_size"]),
+            "type": random.randint(0, settings["map_types"]),
             "visited": False
         }
         map_list.append(island)

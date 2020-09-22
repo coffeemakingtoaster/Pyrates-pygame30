@@ -16,6 +16,12 @@ img_grid = [
     ["small4.png","mid4.png","large4.png"]
 ]
 
+size_dic = {
+    0: 100,
+    1: 175,
+    2: 250
+}
+island_hitbox = pygame.Rect(0,0,0,0)
 def mapdraw(ship_pos_x,ship_pos_y,screen):
 
     with open('data/savegame/map.json') as json_file:
@@ -25,21 +31,10 @@ def mapdraw(ship_pos_x,ship_pos_y,screen):
         if ship_pos_x-500 < island.get("x") < ship_pos_x+500 and  ship_pos_y-600 < island.get("y") < ship_pos_y+600:
             if(island.get("type")==1):
                 current_island = pygame.image.load(os.path.join(asset_path, img_grid[island.get("type")-1][island.get("size")-1]))
-                screen.blit(current_island, (1350 + (island.get("x") - ship_pos_x),
-                                                                   (450 - (island.get("y") - ship_pos_y))))
-            elif (island.get("type") == 2):
-                pygame.draw.ellipse(screen, (255, 255, 255), pygame.Rect(1350 + (island.get("x") - ship_pos_x),
-                                                                   (450 - (island.get("y") - ship_pos_y)), 150,
-                                                                   150))
-            elif (island.get("type") == 3):
-                pygame.draw.ellipse(screen, (255, 255, 0), pygame.Rect(1350 + (island.get("x") - ship_pos_x),
-                                                                   (450 - (island.get("y") - ship_pos_y)), 150,
-                                                                   150))
-            elif (island.get("type") == 4):
-                pygame.draw.ellipse(screen, (205, 133, 63), pygame.Rect(1350 + (island.get("x") - ship_pos_x),
-                                                                   (450 - (island.get("y") - ship_pos_y)), 150,
-                                                                   150))
-
+                screen.blit(current_island, (1350 + (island.get("x") - ship_pos_x),(450 - (island.get("y") - ship_pos_y))))
+                island_hitbox = pygame.Rect(1350 + (island.get("x") - ship_pos_x),(450 - (island.get("y") - ship_pos_y)), size_dic.get(island.get("size")), size_dic.get(island.get("size")))
+                if island_hitbox.colliderect(1340, 440, 20, 20):
+                    print("Collision")
 
 
 
