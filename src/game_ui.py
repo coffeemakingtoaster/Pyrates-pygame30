@@ -43,7 +43,7 @@ def main():
     pygame.draw.rect(screen, (0, 0, 0), ship_visual)
     pygame.draw.rect(screen, (161, 83, 27), ressource_visual)
     pygame.draw.rect(screen, (10, 169, 255), ship_movement_UI)
-    screen.blit(ship, (1250, 600))
+    screen.blit(ship, (1250, 350))
     screen.blit(overlay, (0, 0))
 
     # flip displayes everything for the user to see
@@ -53,18 +53,20 @@ def main():
     running = True
     angle = 0
     ship_map_x = 750
-    ship_map_y = 100
+    ship_map_y = 350
     dotexists = False
     initx = 0
     inity = 0
     dot_map_x = 0
     dot_map_y = 0
-    hitradius = 20
+    hitradius = 30
     currentangle = 0
     island_demo_x = 1250
     island_demo_y = 300
-    speed = 0.7
-    rotation_speed = 0.3
+    speed = 2
+    rotation_speed = 1
+    ship_hit_box = pygame.Rect(1340, 440, 20, 20)
+    clock = pygame.time.Clock()
 
     pygame.draw.ellipse(screen, (237, 226, 197), pygame.Rect(island_demo_x, island_demo_y, 70, 70))
     while running:
@@ -80,18 +82,19 @@ def main():
                 initx, inity = pygame.mouse.get_pos()
                 dot_map_x = ship_map_x - 266 + mouse_x - 1066
                 dot_map_y = 900 - mouse_y + ship_map_y - 200
-                angle = (180 / math.pi) * -math.atan2((mouse_y - 700), (mouse_x - 1350))
+                # angle = (180 / math.pi) * -math.atan2((mouse_y - 450), (mouse_x - 1350))
                 pygame.draw.rect(screen, (10, 169, 255), ship_movement_UI)
                 screen.blit(overlay, (0, 0))
                 pygame.draw.ellipse(screen, (255, 0, 0), pygame.Rect(mouse_x, mouse_y, 10, 10))
                 dotexists = True
         pygame.display.flip()
 
-        y_speed = math.sin(math.radians(currentangle+90))
-        x_speed = math.cos(math.radians(currentangle+90))
+        point_hit_box = pygame.Rect(initx, inity, 10, 10)
 
-        if dotexists and (
-                ship_map_x - dot_map_x < -hitradius or ship_map_x - dot_map_x > hitradius or ship_map_y - dot_map_y > hitradius or ship_map_y - dot_map_y < -hitradius):
+        y_speed = math.sin(math.radians(currentangle + 90))
+        x_speed = math.cos(math.radians(currentangle + 90))
+
+        if dotexists and not (ship_hit_box.colliderect(point_hit_box)):
             initx -= x_speed * speed
             inity += y_speed * speed
             pygame.draw.rect(screen, (10, 169, 255), ship_movement_UI)
@@ -104,11 +107,8 @@ def main():
             ship_map_x += x_speed * speed
             ship_map_y += y_speed * speed
 
+            angle = (180 / math.pi) * -math.atan2((inity - 450), (initx - 1350))
 
-            angle = (180 / math.pi) * -math.atan2((inity - 700), (initx - 1350))
-            print(initx)
-            print(inity)
-            print(angle-90)
             # Rotation
             # ----------------------------------------------------------
             if currentangle > -90 and ((angle - 90) - currentangle) < -180:
@@ -124,8 +124,9 @@ def main():
                 currentangle = 89.5
             elif currentangle > 89.5:
                 currentangle = -279.5
-            screen.blit(rotate_image(ship, +currentangle), (1250, 600))
+            screen.blit(rotate_image(ship, +currentangle), (1250, 350))
             # ------------------------------------------------------------
+        clock.tick(60)
 
         screen.blit(ui_helper.draw_resources(current_game),(533,450))
 
