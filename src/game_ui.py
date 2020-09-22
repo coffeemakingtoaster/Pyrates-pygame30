@@ -141,8 +141,12 @@ def main():
 
             if event.type == pygame.MOUSEBUTTONDOWN and UI_is_blocked:
                 popup.is_collide(pygame.mouse.get_pos(),screen,current_game)
+                pop_surf = popup.get_surf()
+                if pop_surf:
+                    screen.blit(pop_surf, pop_surf.get_rect(center=(800, 450)))
                 if not popup.is_active():
                     UI_is_blocked = False
+                    del popup
 
         pygame.display.flip()
 

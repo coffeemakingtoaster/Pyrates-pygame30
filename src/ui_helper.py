@@ -126,6 +126,8 @@ class popup_window():
                  if button["button_text"]=="OK":
                      print("OK")
                      self.delete_popup(screen,game)
+                     self.surf = None
+                     self.state = False
                  elif button["button_text"]=="Battle":
                     outcome,details = game.battle(self.event_values)
                     self.delete_popup(screen,game)
