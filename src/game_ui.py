@@ -2,7 +2,8 @@ import pygame
 import os
 import math
 import time
-
+import game_logic
+import random
 
 #given an image and an angle this returns the rotated image
 #can directly be drawn to screen
@@ -15,8 +16,14 @@ def rotate_image(image,angle):
     return rot_image
 
 
+
+
+
+
+
 def main():
     pygame.init()
+    pygame.font.init()
     #init size of the window. The background color is never visible
     width, height = (1600, 900)
     background_color = (0, 0, 0)
