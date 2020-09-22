@@ -267,10 +267,14 @@ def draw_crew_overview():
             member["level"]) + "XP) Role:" + member["role"]
         display_text_render = text.render(display_text, False, (0, 0, 0))
         if "status" in member.keys():
+            print(member["injured"])
             if member["status"] != None:
                 if member["status"] == "hungry":
                     icon = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "status_hungry.png"))
                 crew_overview_surface.blit(pygame.transform.scale(icon, (100, 33)), (400, 130 + (index * 100)))
+        if member["injured"]:
+            icon = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "status_injured.png"))
+            crew_overview_surface.blit(pygame.transform.scale(icon, (100, 33)), (200, 130 + (index * 100)))
         crew_overview_surface.blit(display_text_render, (50, 100 + (index * 100)))
         index += 1
     return crew_overview_surface

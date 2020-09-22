@@ -6,6 +6,7 @@ import ui_helper
 import game_logic
 import map
 import random
+import generator
 
 # given an image and an angle this returns the rotated image
 # can directly be drawn to screen
@@ -26,11 +27,20 @@ def reset_screen(screen,current_game):
     ship_visual = pygame.Rect(width / 3, 0, width / 3, height / 2)
     pygame.draw.rect(screen, (0, 0, 0), ship_visual)
 
+def display_night(screen,night):
+    if night is True:
+        night_display = pygame.Surface((533, 900))
+        night_display.set_alpha(128)
+        night_display.fill((0, 0, 0))
+        screen.blit(night_display, ((533 * 2), 0))
+
 def main():
     pygame.init()
     # init size of the window. The background color is never visible
     width, height = (1600, 900)
     background_color = (0, 0, 0)
+
+    generator.crewgen()
 
     # path to resources (images in this case)
     asset_path = os.path.join(os.getcwd(), "data", "img")
@@ -62,6 +72,9 @@ def main():
     running = True
     in_shop = False
     UI_is_blocked = False
+    is_paused = False
+    pause_timestamp = None
+    is_night = False
     angle = 0
     ship_map_x = 750
     ship_map_y = 350
@@ -80,7 +93,8 @@ def main():
     clock = pygame.time.Clock()
     shop = ui_helper.shop(None)
     last_island = {}
-
+    paused_time = 0
+    start_time = time.time()
     while running:
         island = map.mapdraw(ship_map_x,ship_map_y,screen)
 
@@ -97,6 +111,11 @@ def main():
                 if event.key == pygame.K_ESCAPE and UI_is_blocked:
                     popup.delete_popup(screen, current_game)
                     UI_is_blocked = False
+                if event.key == pygame.K_0:
+                    if is_night is True:
+                        is_night = False
+                    else:
+                        is_night = True
             #######################################################################
             if island and island!=last_island:
                 last_island = island
@@ -188,12 +207,24 @@ def main():
             elif currentangle > 89.5:
                 currentangle = -279.5
             screen.blit(rotate_image(ship, +currentangle), (1250, 350))
+            display_night(screen,is_night)
             # ------------------------------------------------------------
 
+        if is_paused is False and pause_timestamp is not None:
+            paused_time+= time.time()-pause_timestamp
+            pause_timestamp = None
 
+        if UI_is_blocked or in_shop:
+            is_paused = True
+            pause_timestamp = time.time()
+
+        if (time.time()-start_time-paused_time)>=60:
+            is_night = True
+
+        if (time.time()-start_time-paused_time)>=120:
+            is_night = False
 
         clock.tick(60)
-
         if not in_shop and not UI_is_blocked:
             screen.blit(ui_helper.draw_resources(current_game),(533,450))
         if not in_shop and not UI_is_blocked:

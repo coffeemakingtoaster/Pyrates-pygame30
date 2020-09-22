@@ -11,6 +11,7 @@ class game():
         self.read_savegame()
         self.screen = screen
 
+
     def read_balance(self):
         f = open(os.path.join(self.path,"balancing.json"))
         settings = json.load(f)
@@ -53,9 +54,9 @@ class game():
     def island_event(self,type,size):
         event_values = generator.island_eventgen(type,size)
         if type==1:
-            shop = ui_helper.shop(event_values,self.gold)
-            self.screen.blit(shop.get_surface(),(0,0))
-            return shop
+            shop_popup = ui_helper.shop(event_values,self.gold)
+            self.screen.blit(shop_popup.get_surface(),(0,0))
+            return shop_popup
         elif type==2:
             battle_window = ui_helper.popup_window(type=2,event_values=event_values)
             self.screen.blit(battle_window.get_surf(), battle_window.get_surf().get_rect(center=(800, 450)))
@@ -117,17 +118,20 @@ class game():
                     message += " "+str(values["loot"]["gold"])+" gold"
                 if "supplies" in values["loot"].keys():
                     self.supplies += values["loot"]["supplies"]
+                    if self.supplies>self.max_supply:
+                        self.supplies = 150
                     if found_gold:
                         message += "and "+str(values["loot"]["supplies"])+" supplies"
                     else:
                         message += " "+str(values["loot"]["supplies"])+" supplies"
                 elif "ammunition" in values["loot"].keys():
                     self.ammunition += values["loot"]["ammunition"]
+                    if self.ammunition>self.max_ammunition:
+                        self.ammunition = 150
                     if found_gold:
                         message += "and "+str(values["loot"]["ammunition"])+" ammunition"
                     else:
                         message += " "+str(values["loot"]["ammunition"])+" ammunition"
-
                 message += "!"
             else:
                 if values["damage"] != 0:
@@ -147,6 +151,13 @@ class game():
             else:
                 crew_member["injured"] = True
                 message += " "+str(crew_member_name)+" was wounded on the battlefield and needs to be healed."
+                self.crew[index] = crew_member
+            if values["damage"] != 0:
+                message += "And your ship hast lost " + str(values["damage"]) + "HP"
+            else:
+                message += "Luckily your ship is not damaged"
+            message += "!"
+        self.level_up_crew()
         return outcome,message
 
     def make_purchase(self,item,price):
@@ -160,5 +171,19 @@ class game():
             self.ammunition+=1
         self.gold -=price
 
+    def write_crew(self):
+        f = open(os.path.join(os.getcwd(), "data", "savegame", "crew.json"),"w")
+        f.write(json.dumps(self.crew))
+        f.close()
 
+    def level_up_crew(self):
+        for member in self.crew:
+            if "xp" in member.keys():
+                member["xp"] += 1
+                if member["xp"] >= member["level"]:
+                    member["xp"] = 0
+                    member["level"] += 1
+            else:
+                member["xp"]=1
+        self.write_crew()
 

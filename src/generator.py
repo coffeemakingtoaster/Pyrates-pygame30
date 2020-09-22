@@ -126,7 +126,8 @@ def island_eventgen(type,size):
                 loot["gold"]+=settings["fortress_min_loot"]
             else:
                 loot["gold"]=settings["fortress_min_loot"]
-        return {"victory":int(victory_chances),"defeat":int(defeat_chances),"loot":loot}
+        hp_lost = random.randint(0, 1)
+        return {"victory":int(victory_chances),"defeat":int(defeat_chances),"loot":loot,"damage":hp_lost}
     #TODO
     elif type==3:
         has_bonus_item = False
