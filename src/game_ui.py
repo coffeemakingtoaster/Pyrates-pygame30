@@ -56,10 +56,12 @@ def main():
     inity = 0
     dot_map_x = 0
     dot_map_y = 0
-    hitradius = 50
+    hitradius = 20
     currentangle = 0
     island_demo_x = 1250
     island_demo_y = 300
+    speed = 0.7
+    rotation_speed = 0.3
 
     pygame.draw.ellipse(screen, (237, 226, 197), pygame.Rect(island_demo_x, island_demo_y, 70, 70))
     while running:
@@ -77,8 +79,6 @@ def main():
                 dot_map_y = 900 - mouse_y + ship_map_y - 200
                 angle = (180 / math.pi) * -math.atan2((mouse_y - 700), (mouse_x - 1350))
                 pygame.draw.rect(screen, (10, 169, 255), ship_movement_UI)
-
-                # screen.blit(rotate_image(ship,angle-90), (1250, 600))
                 screen.blit(overlay, (0, 0))
                 pygame.draw.ellipse(screen, (255, 0, 0), pygame.Rect(mouse_x, mouse_y, 10, 10))
                 dotexists = True
@@ -89,17 +89,17 @@ def main():
 
         if dotexists and (
                 ship_map_x - dot_map_x < -hitradius or ship_map_x - dot_map_x > hitradius or ship_map_y - dot_map_y > hitradius or ship_map_y - dot_map_y < -hitradius):
-            initx -= x_speed * 0.3
-            inity += y_speed * 0.3
+            initx -= x_speed * speed
+            inity += y_speed * speed
             pygame.draw.rect(screen, (10, 169, 255), ship_movement_UI)
             pygame.draw.ellipse(screen, (255, 0, 0), pygame.Rect(initx, inity, 10, 10))
 
-            island_demo_x -= x_speed * 0.3
-            island_demo_y += y_speed * 0.3
+            island_demo_x -= x_speed * speed
+            island_demo_y += y_speed * speed
             pygame.draw.ellipse(screen, (237, 226, 197), pygame.Rect(island_demo_x, island_demo_y, 70, 70))
 
-            ship_map_x += x_speed * 0.3
-            ship_map_y += y_speed * 0.3
+            ship_map_x += x_speed * speed
+            ship_map_y += y_speed * speed
 
 
             angle = (180 / math.pi) * -math.atan2((inity - 700), (initx - 1350))
@@ -109,14 +109,14 @@ def main():
             # Rotation
             # ----------------------------------------------------------
             if currentangle > -90 and ((angle - 90) - currentangle) < -180:
-                currentangle += 0.1
+                currentangle += rotation_speed
             elif currentangle < -90 and ((angle - 90) - currentangle) > 180:
-                currentangle -= 0.1
+                currentangle -= rotation_speed
             else:
                 if currentangle < angle - 90:
-                    currentangle += 0.1
+                    currentangle += rotation_speed
                 elif currentangle > angle - 90:
-                    currentangle -= 0.1
+                    currentangle -= rotation_speed
             if currentangle < -279.5:
                 currentangle = 89.5
             elif currentangle > 89.5:
