@@ -45,7 +45,7 @@ def main():
     pygame.draw.rect(screen, (127, 4, 50), managment_UI)
     pygame.draw.rect(screen, (0, 0, 0), ship_visual)
     pygame.draw.rect(screen, (161, 83, 27), ressource_visual)
-    pygame.draw.rect(screen, (10, 169, 255), ship_movement_UI)
+    pygame.draw.rect(screen, (43, 132, 216), ship_movement_UI)
     screen.blit(ship, (1250, 350))
     screen.blit(overlay, (0, 0))
 
@@ -71,8 +71,9 @@ def main():
     ship_hit_box = pygame.Rect(1340, 440, 20, 20)
     clock = pygame.time.Clock()
 
-    pygame.draw.ellipse(screen, (237, 226, 197), pygame.Rect(island_demo_x, island_demo_y, 70, 70))
+
     while running:
+        map.mapdraw(ship_map_x,ship_map_y,screen)  
         for event in pygame.event.get():
             # Quit
             if event.type == pygame.QUIT:
@@ -86,7 +87,7 @@ def main():
                 dot_map_x = ship_map_x - 266 + mouse_x - 1066
                 dot_map_y = 900 - mouse_y + ship_map_y - 200
                 # angle = (180 / math.pi) * -math.atan2((mouse_y - 450), (mouse_x - 1350))
-                pygame.draw.rect(screen, (10, 169, 255), ship_movement_UI)
+                pygame.draw.rect(screen, (43, 132, 216), ship_movement_UI)
                 screen.blit(overlay, (0, 0))
                 pygame.draw.ellipse(screen, (255, 0, 0), pygame.Rect(mouse_x, mouse_y, 10, 10))
                 dotexists = True
@@ -102,7 +103,7 @@ def main():
         if dotexists and not (ship_hit_box.colliderect(point_hit_box)):
             initx -= x_speed * speed
             inity += y_speed * speed
-            pygame.draw.rect(screen, (10, 169, 255), ship_movement_UI)
+            pygame.draw.rect(screen, (43, 132, 216), ship_movement_UI)
             pygame.draw.ellipse(screen, (255, 0, 0), pygame.Rect(initx, inity, 10, 10))
 
             island_demo_x -= x_speed * speed
@@ -133,9 +134,9 @@ def main():
             # ------------------------------------------------------------
 
 
-            map.mapdraw(ship_map_x,ship_map_y,screen) 
+
         clock.tick(60)
-        print(ship_map_y)
+
 
         screen.blit(ui_helper.draw_resources(current_game),(533,450))
 

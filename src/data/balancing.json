@@ -1,6 +1,6 @@
 {
-    "island_count": 100,
-    "island_distancing": 20,
+    "island_count": 130,
+    "island_distancing": 10,
     "map_width": 750,
     "map_length" : 3000,
     "max_map_size" : 4,
