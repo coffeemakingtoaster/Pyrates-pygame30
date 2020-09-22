@@ -4,16 +4,16 @@ import game_logic
 
 
 def draw_resources(current_savegame):
-    ammunition_values = current_savegame.get_ammunition()
-    supplies_values = current_savegame.get_supplies()
-    ship_HP = current_savegame.get_ship_HP()
+    ammunition_values,max_ammunition = current_savegame.get_ammunition()
+    supplies_values,max_supply = current_savegame.get_supplies()
+    ship_HP,max_ship_HP = current_savegame.get_ship_HP()
     gold = current_savegame.get_gold_value()
     supplies_bar_basis = pygame.Rect(50,50,250,30)
-    supplies_bar_filled = pygame.Rect(50, 50, random.randint(0,250), 30)##
+    supplies_bar_filled = pygame.Rect(50, 50, (supplies_values/max_supply)*250, 30)##
     ammunition_bar_basis = pygame.Rect(50, 100, 250, 30)
-    ammunition_bar_filled = pygame.Rect(50, 100, random.randint(0,250), 30)##
+    ammunition_bar_filled = pygame.Rect(50, 100, (ammunition_values/max_ammunition)*250, 30)##
     ship_HP_bar_basis = pygame.Rect(50, 150, 250, 30)
-    ship_HP_bar_filled = pygame.Rect(50, 150, random.randint(0,250), 30)##
+    ship_HP_bar_filled = pygame.Rect(50, 150, (ship_HP/max_ship_HP)*250, 30)##
     values_text = pygame.font.Font(os.path.join(os.getcwd(), "data", "other", "Carlito-Regular.ttf"), 20)
     values_surf = pygame.Surface((533,450))
     values_surf.fill((82, 62, 16))

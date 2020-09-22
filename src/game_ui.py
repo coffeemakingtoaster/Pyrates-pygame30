@@ -124,6 +124,7 @@ def main():
             screen.blit(rotate_image(ship, +currentangle), (1250, 600))
             # ------------------------------------------------------------
 
+        screen.blit(ui_helper.draw_resources)
 
 if __name__ == "__main__":
     main()
