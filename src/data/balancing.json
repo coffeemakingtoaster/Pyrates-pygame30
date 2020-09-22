@@ -1,8 +1,8 @@
 {
     "island_count": 100,
-    "island_distancing": 4,
-    "map_width": 750,
-    "map_length" : 3000,
+    "island_distancing": 1,
+    "map_width": 5000,
+    "map_length" : 20000,
     "max_map_size" : 2,
     "map_types" : 3,
     "crew_count" : 8,

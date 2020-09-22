@@ -52,6 +52,7 @@ def main():
     pygame.draw.rect(screen, (0, 0, 0), ship_visual)
     pygame.draw.rect(screen, (161, 83, 27), ressource_visual)
     pygame.draw.rect(screen, (43, 132, 216), ship_movement_UI)
+
     screen.blit(ship, (1250, 350))
     screen.blit(overlay, (0, 0))
 
@@ -82,8 +83,8 @@ def main():
     last_island = {}
 
     while running:
-        island = map.mapdraw(ship_map_x,ship_map_y,screen)
 
+        island = map.collisioncheck(ship_map_x, ship_map_y,)
         for event in pygame.event.get():
 
             #########################################################################
@@ -153,7 +154,6 @@ def main():
         point_hit_box = pygame.Rect(initx, inity, 10, 10)
 
 
-
         y_speed = math.sin(math.radians(currentangle + 90))
         x_speed = math.cos(math.radians(currentangle + 90))
 
@@ -161,11 +161,10 @@ def main():
             initx -= x_speed * speed
             inity += y_speed * speed
             pygame.draw.rect(screen, (43, 132, 216), ship_movement_UI)
+            map.mapdraw(ship_map_x,ship_map_y,screen)
+
             pygame.draw.ellipse(screen, (255, 0, 0), pygame.Rect(initx, inity, 10, 10))
 
-            island_demo_x -= x_speed * speed
-            island_demo_y += y_speed * speed
-            pygame.draw.ellipse(screen, (237, 226, 197), pygame.Rect(island_demo_x, island_demo_y, 70, 70))
 
             ship_map_x += x_speed * speed
             ship_map_y += y_speed * speed
