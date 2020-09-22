@@ -60,8 +60,8 @@ def main():
     currentangle = 0
     island_demo_x = 1250
     island_demo_y = 300
-    speed = 0.7
-    rotation_speed = 0.3
+    speed = 2
+    rotation_speed = 1
     ship_hit_box = pygame.Rect(1340, 440, 20, 20)
     clock = pygame.time.Clock()
 
