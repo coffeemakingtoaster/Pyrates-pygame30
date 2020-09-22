@@ -57,12 +57,20 @@ class game():
             self.screen.blit(shop.get_surface(),(0,0))
             return shop
         elif type==2:
-            ui_helper.popup_window(type=2,event_values=event_values)
+            battle_window = ui_helper.popup_window(type=2,event_values=event_values)
+            self.screen.blit(battle_window.get_surf(), battle_window.get_surf().get_rect(center=(800, 450)))
+            battle_window.set_offset(800, 450)
+            return battle_window
         elif type==3:
             pass
         elif type==4:
             print(event_values)
-            if "castaway" in event_values.keys():
+            if event_values is None:
+                update_window = ui_helper.popup_window(type=1, caption="ZZZ", text="nothing happened")
+                self.screen.blit(update_window.get_surf(), update_window.get_surf().get_rect(center=(800, 450)))
+                update_window.set_offset(800, 450)
+                return update_window
+            elif "castaway" in event_values.keys():
                 print("castaway")
                 return None
                 #ui_helper.popup_window(type=4,event_values=event_values)
@@ -76,6 +84,7 @@ class game():
                     message = "Your men shot at monkeys! You lose "+str(event_values["loss"]["amount"])+" ammunition!"
                 update_window = ui_helper.popup_window(type=1,caption=title,text=message)
                 self.screen.blit(update_window.get_surf(),update_window.get_surf().get_rect(center=(800,450)))
+                update_window.set_offset(800,450)
                 print(message)
                 return update_window
             elif "loot" in event_values.keys():
@@ -88,8 +97,10 @@ class game():
                     message = "Your men were useful for once! You found "+str(event_values["loot"]["amount"])+" ammunition!"
                 update_window = ui_helper.popup_window(type=1,caption=title,text=message)
                 self.screen.blit(update_window.get_surf(), update_window.get_surf().get_rect(center=(800, 450)))
+                update_window.set_offset(800, 450)
                 print(message)
                 return update_window
+
 
     def battle(self,values):
         outcome = random.randint(0,100)
@@ -98,19 +109,19 @@ class game():
             outcome = "Victory"
             message = ""
             found_gold = False
-            if "loot" in values.keys:
+            if "loot" in values.keys():
                 message += "You found"
-                if "gold" in values["loot"].keys:
+                if "gold" in values["loot"].keys():
                     found_gold = True
                     self.gold += values["loot"]["gold"]
                     message += " "+str(values["loot"]["gold"])+" gold"
-                if "supplies" in values["loot"].keys:
+                if "supplies" in values["loot"].keys():
                     self.supplies += values["loot"]["supplies"]
                     if found_gold:
                         message += "and "+str(values["loot"]["supplies"])+" supplies"
                     else:
                         message += " "+str(values["loot"]["supplies"])+" supplies"
-                elif "ammunition" in values["loot"].keys:
+                elif "ammunition" in values["loot"].keys():
                     self.ammunition += values["loot"]["ammunition"]
                     if found_gold:
                         message += "and "+str(values["loot"]["ammunition"])+" ammunition"
@@ -127,7 +138,7 @@ class game():
         else:
             outcome = "Defeat"
             message = ""
-            index = random.randint(0,len(self.crew))
+            index = random.randint(0,len(self.crew)-1)
             crew_member = self.crew[index]
             crew_member_name = crew_member["name"]
             if crew_member["injured"] == True:

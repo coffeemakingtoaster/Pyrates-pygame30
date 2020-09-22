@@ -42,42 +42,68 @@ class popup_window():
     # Types:
     # 1 - Status Update (just OK button)
     #
-     def __init__(self, type,caption,text,event_values = None):
+     def __init__(self, type,caption=None,text=None,event_values = None):
         self.state = False
         pygame.font.init()
         self.caption_size = 70
-        self.text_size = 40
+        self.text_size = 25
         self.popup_background = (82, 62, 16)
         self.caption_color = (196, 33, 0)
         self.text_color = (207, 187, 39)
         self.window_size = (400, 300)
         self.Caption = pygame.font.Font(os.path.join(os.getcwd(), "data", "other", "Avara.ttf"), self.caption_size)
         self.message_text = pygame.font.Font(os.path.join(os.getcwd(), "data", "other", "Carlito-Regular.ttf"),self.text_size)
+        self.offset_x = 0
+        self.offset_y = 0
         if event_values:
             self.event_values = event_values
         if type==1:
             self.init_status_update(caption,text)
         elif type==2:
-            pass
+            self.init_battle_screen(event_values)
+
+
+     def init_battle_screen(self,event_values):
+         self.state = True
+         surf = pygame.Surface(self.window_size)
+         surf.fill(self.popup_background)
+         caption_render = self.Caption.render("BATTLE", False, self.caption_color)
+         caption_rec = caption_render.get_rect(center=(self.window_size[0] / 2, 65))
+         fight_button_render = self.message_text.render("Fight! ("+str(event_values["victory"])+"%)", False, self.text_color)
+         fight_button_rect = fight_button_render.get_rect(center=(self.window_size[0] / 3, 265))
+         flee_button_render = self.message_text.render("Flee", False,self.text_color)
+         flee_button_rect = flee_button_render.get_rect(center=((self.window_size[0] / 3)*2, 265))
+         surf.blit(caption_render, caption_rec)
+         pygame.draw.rect(surf, (0, 0, 0), fight_button_rect)
+         surf.blit(fight_button_render, fight_button_rect)
+         pygame.draw.rect(surf, (0, 0, 0), flee_button_rect)
+         surf.blit(flee_button_render, flee_button_rect)
+         self.buttons = [{"button_text": "Flee", "hitbox": flee_button_rect},{"button_text":"Battle","hitbox":fight_button_rect}]
+         self.surf = surf
 
      def init_status_update(self,title,text):
          self.state = True
-         i = 20
-         '''
-         while i < len(text):
-             text = text[i] + "\n" + text[i + 1]
-             i + 20
-         '''
          surf = pygame.Surface(self.window_size)
          surf.fill(self.popup_background)
          caption_render = self.Caption.render(title, False, self.caption_color)
          caption_rec = caption_render.get_rect(center=(self.window_size[0] / 2, 65))
-         text_render = self.message_text.render(text, False, (0,0,0))
-         text_rect = caption_render.get_rect(center=(125, (self.window_size[1] / 2)))
+         i = 0
+         while i < len(text):
+             print(i)
+             if (i+25)>len(text):
+                text_to_print = text[i:len(text)]
+             else:
+                 text_to_print = text[i:i+25]
+             print(text_to_print)
+             text_render = self.message_text.render(text_to_print, False, (0, 0, 0))
+             text_rect = caption_render.get_rect(center=(200, (self.window_size[1] / 2)+(50*(i/20))))
+             surf.blit(text_render, text_rect)
+             i += 25
          button_render = self.message_text.render("OK", False, self.text_color)
-         button_rect = button_render.get_rect(center=(self.window_size[0] / 2, 245))
+         button_rect = button_render.get_rect(center=(self.window_size[0] / 2, 265))
          surf.blit(caption_render, caption_rec)
          surf.blit(text_render, text_rect)
+         pygame.draw.rect(surf,(0,0,0),button_rect)
          surf.blit(button_render, button_rect)
          self.buttons = [{"button_text":"OK","hitbox":button_rect}]
          self.surf = surf
@@ -85,19 +111,27 @@ class popup_window():
      def get_surf(self):
          return self.surf
 
+     def set_offset(self,x,y):
+         self.offset_x = x-(self.window_size[0]/2)
+         self.offset_y = y-(self.window_size[1]/2)
 
      def is_collide(self,mouse_pos,screen,game):
+         print("checking")
+         mouse_x, mouse_y = mouse_pos
+         mouse_pos = (mouse_x-self.offset_x,mouse_y-self.offset_y)
          for button in self.buttons:
+             print(mouse_pos)
+             print(button["hitbox"].center)
              if button["hitbox"].collidepoint(mouse_pos):
                  if button["button_text"]=="OK":
+                     print("OK")
                      self.delete_popup(screen,game)
                  elif button["button_text"]=="Battle":
                     outcome,details = game.battle(self.event_values)
-                    self.delete_popup()
+                    self.delete_popup(screen,game)
                     self.init_status_update(outcome,details)
-                 elif button["buttton_text"]=="Flee":
-                    self.delete_popup()
-
+                 elif button["button_text"]=="Flee":
+                    self.delete_popup(screen,game)
                  return True
          return False
 

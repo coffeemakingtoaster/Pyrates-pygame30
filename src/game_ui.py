@@ -5,6 +5,7 @@ import time
 import ui_helper
 import game_logic
 import map
+import random
 
 # given an image and an angle this returns the rotated image
 # can directly be drawn to screen
@@ -78,11 +79,40 @@ def main():
     ship_hit_box = pygame.Rect(1340, 440, 20, 20)
     clock = pygame.time.Clock()
     shop = ui_helper.shop(None)
-
+    last_island = {}
 
     while running:
-        map.mapdraw(ship_map_x,ship_map_y,screen)  
+        island = map.mapdraw(ship_map_x,ship_map_y,screen)
+
         for event in pygame.event.get():
+
+            #########################################################################
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_s:
+                    island = {"island_id":random.randint(0,100),"island_values":{"x": 2375, "y": 437, "size": 0, "type": 1, "visited": False}}
+                if event.key == pygame.K_a:
+                    island = {"island_id": random.randint(0,100), "island_values": {"x": 2375, "y": 437, "size": 0, "type": 4, "visited": False}}
+                if event.key == pygame.K_b:
+                    island = {"island_id": random.randint(0, 100),"island_values": {"x": 2375, "y": 437, "size": 0, "type": 2, "visited": False}}
+                if event.key == pygame.K_ESCAPE and UI_is_blocked:
+                    popup.delete_popup(screen, current_game)
+                    UI_is_blocked = False
+            #######################################################################
+            if island and island!=last_island:
+                last_island = island
+                if island["island_values"]["type"] == 1:
+                    shop = current_game.island_event(type=island["island_values"]["type"], size=island["island_values"]["size"])
+                    in_shop = True
+                elif island["island_values"]["type"] == 2:
+                    popup = current_game.island_event(type=island["island_values"]["type"],size=island["island_values"]["size"])
+                    UI_is_blocked = True
+                elif island["island_values"]["type"] == 3:
+                    pass
+                elif island["island_values"]["type"] == 4:
+                    popup = current_game.island_event(type=4, size=2)
+                    if popup:
+                        UI_is_blocked = True
+
             # Quit
             if event.type == pygame.QUIT:
                 running = False
@@ -113,19 +143,7 @@ def main():
                 popup.is_collide(pygame.mouse.get_pos(),screen,current_game)
                 if not popup.is_active():
                     UI_is_blocked = False
-#########################################################################
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_s:
-                    shop = current_game.island_event(type=1,size=2)
-                    in_shop = True
-                if event.key == pygame.K_a:
-                    popup = current_game.island_event(type = 4,size = 2)
-                    if popup:
-                        UI_is_blocked = True
-                if event.key == pygame.K_ESCAPE and UI_is_blocked:
-                    popup.delete_popup(screen,current_game)
-                    UI_is_blocked = False
-#######################################################################
+
         pygame.display.flip()
 
         point_hit_box = pygame.Rect(initx, inity, 10, 10)
@@ -172,9 +190,9 @@ def main():
 
         clock.tick(60)
 
-
-        screen.blit(ui_helper.draw_resources(current_game),(533,450))
-        if not in_shop:
+        if not in_shop and not UI_is_blocked:
+            screen.blit(ui_helper.draw_resources(current_game),(533,450))
+        if not in_shop and not UI_is_blocked:
             screen.blit(ui_helper.draw_crew_overview(),(0,0))
 
 if __name__ == "__main__":
