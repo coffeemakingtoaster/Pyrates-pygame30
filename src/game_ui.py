@@ -4,10 +4,13 @@ import math
 import time
 import ui_helper
 import game_logic
-
+import map
 
 # given an image and an angle this returns the rotated image
 # can directly be drawn to screen
+
+
+
 def rotate_image(image, angle):
     orig_rect = image.get_rect()
     rot_image = pygame.transform.rotate(image, angle)
@@ -91,6 +94,8 @@ def main():
 
         point_hit_box = pygame.Rect(initx, inity, 10, 10)
 
+
+
         y_speed = math.sin(math.radians(currentangle + 90))
         x_speed = math.cos(math.radians(currentangle + 90))
 
@@ -126,7 +131,11 @@ def main():
                 currentangle = -279.5
             screen.blit(rotate_image(ship, +currentangle), (1250, 350))
             # ------------------------------------------------------------
+
+
+            map.mapdraw(ship_map_x,ship_map_y,screen) 
         clock.tick(60)
+        print(ship_map_y)
 
         screen.blit(ui_helper.draw_resources(current_game),(533,450))
 

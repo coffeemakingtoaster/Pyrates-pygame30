@@ -43,7 +43,7 @@ shop_items = {
 #
 
 def mapgen():
-    x_coordinates = random.sample(range(1, settings["map_width"]), settings["island_count"])
+    x_coordinates = random.sample(range(1, settings["island_distancing"]*settings["map_width"]), settings["island_count"])
     y_coordinates = random.sample(range(1, settings["map_length"]), settings["island_count"])
     map_list = []
     for i in range(settings["island_count"]):
@@ -60,6 +60,9 @@ def mapgen():
     mapfile = open("data/savegame/map.json", "w")
     mapfile.write(json.dumps(map_list))
     mapfile.close()
+mapgen()
+
+
 
 def crewgen():
 
