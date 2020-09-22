@@ -26,7 +26,7 @@ def mapdraw(ship_pos_x,ship_pos_y,screen):
 
     with open('data/savegame/map.json') as json_file:
         map = json.load(json_file)
-
+    i = 0
     for island in map:
         if ship_pos_x-500 < island.get("x") < ship_pos_x+500 and  ship_pos_y-600 < island.get("y") < ship_pos_y+600:
             if(island.get("type")==1):
@@ -34,9 +34,9 @@ def mapdraw(ship_pos_x,ship_pos_y,screen):
                 screen.blit(current_island, (1350 + (island.get("x") - ship_pos_x),(450 - (island.get("y") - ship_pos_y))))
                 island_hitbox = pygame.Rect(1350 + (island.get("x") - ship_pos_x),(450 - (island.get("y") - ship_pos_y)), size_dic.get(island.get("size")), size_dic.get(island.get("size")))
                 if island_hitbox.colliderect(1340, 440, 20, 20):
-                    print("Collision")
-
-
+                    return {"island_id":i,"island_values":island}
+        i+=1
+    return None
 
 
 
