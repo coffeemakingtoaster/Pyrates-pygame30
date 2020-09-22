@@ -63,6 +63,7 @@ def main():
     speed = 0.7
     rotation_speed = 0.3
     ship_hit_box = pygame.Rect(1340, 440, 20, 20)
+    clock = pygame.time.Clock()
 
     pygame.draw.ellipse(screen, (237, 226, 197), pygame.Rect(island_demo_x, island_demo_y, 70, 70))
     while running:
@@ -122,6 +123,7 @@ def main():
                 currentangle = -279.5
             screen.blit(rotate_image(ship, +currentangle), (1250, 350))
             # ------------------------------------------------------------
+        clock.tick(60)
 
 
 if __name__ == "__main__":
