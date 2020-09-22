@@ -17,18 +17,24 @@ def draw_resources(current_savegame):
     ammunition_bar_filled = pygame.Rect(50, 200, (ammunition_values / max_ammunition) * 250, 30)  ##
     ship_HP_bar_basis = pygame.Rect(50, 300, 250, 30)
     ship_HP_bar_filled = pygame.Rect(50, 300, (ship_HP / max_ship_HP) * 250, 30)  ##
+    supplies_title_render = values_text.render("Supplies:",False,text_color)
     supplies_text_render = values_text.render(str(supplies_values) + "/" + str(max_supply), False, text_color)
+    ammunition_title_render = values_text.render("Ammunition:", False, text_color)
     ammunition_text_render = values_text.render(str(ammunition_values) + "/" + str(max_ammunition), False, text_color)
+    ship_HP_title_render = values_text.render("Ship HP:", False, text_color)
     HP_text_render = values_text.render(str(ship_HP) + "/" + str(max_ship_HP), False, text_color)
     gold_render = values_text.render(str(gold), False, text_color)
     values_surf = pygame.Surface((533, 450))
     values_surf.fill((82, 62, 16))
+    values_surf.blit(supplies_title_render,(50,115-50))
     pygame.draw.rect(values_surf, (107, 86, 28), supplies_bar_basis)
-    pygame.draw.rect(values_surf, (255, 0, 25), supplies_bar_filled)
+    pygame.draw.rect(values_surf, (58, 235, 52), supplies_bar_filled)
     values_surf.blit(supplies_text_render, supplies_text_render.get_rect(center=(400, 115)))
+    values_surf.blit(ammunition_title_render, (50, 215 - 50))
     pygame.draw.rect(values_surf, (107, 86, 28), ammunition_bar_basis)
-    pygame.draw.rect(values_surf, (255, 0, 25), ammunition_bar_filled)
+    pygame.draw.rect(values_surf, (52, 101, 235), ammunition_bar_filled)
     values_surf.blit(ammunition_text_render, ammunition_text_render.get_rect(center=(400, 215)))
+    values_surf.blit(ship_HP_title_render, (50, 315 - 50))
     pygame.draw.rect(values_surf, (107, 86, 28), ship_HP_bar_basis)
     pygame.draw.rect(values_surf, (255, 0, 25), ship_HP_bar_filled)
     values_surf.blit(HP_text_render, HP_text_render.get_rect(center=(400, 315)))
@@ -177,10 +183,13 @@ class shop():
                 color = inactive_color
             amount_rect = pygame.Rect(50,100+(index*150),400,100)
             pygame.draw.rect(self.shop_surface,color,amount_rect)
-            amount_render = text.render(str(values["supplies"]["amount"]),False,(0,0,0))
+            amount_render = text.render(str(values["supplies"]["amount"])+"x",False,(0,0,0))
             price_render = text.render(str(values["supplies"]["price"]),False,(0,0,0))
-            self.shop_surface.blit(amount_render,amount_render.get_rect(center=amount_rect.center))
-            self.shop_surface.blit(price_render,(325,amount_rect.centery-20))
+            supply_icon = pygame.image.load(os.path.join(asset_path, "supplies.png"))
+            amount_pos_x,amount_pos_y = amount_rect.center
+            self.shop_surface.blit(amount_render,(amount_pos_x-50,amount_pos_y-10))
+            self.shop_surface.blit(price_render,(amount_pos_x+50,amount_pos_y-10))
+            self.shop_surface.blit(pygame.transform.scale(supply_icon, (50, 50)), (100, (amount_rect.centery - 25)))
             self.shop_surface.blit(pygame.transform.scale(gold_icon, (50, 50)),(370,(amount_rect.centery-25)))
             self.items.append({"item":"supplies","hitbox":amount_rect})
             index+=1
@@ -189,11 +198,14 @@ class shop():
             if values["ammunition"]["price"] > self.player_gold:
                 color = inactive_color
             amount_rect = pygame.Rect(50,100+(index*150),400,100)
+            amount_pos_x, amount_pos_y = amount_rect.center
             pygame.draw.rect(self.shop_surface,color,amount_rect)
-            amount_render = text.render(str(values["ammunition"]["amount"]),False,(0,0,0))
+            amount_render = text.render(str(values["ammunition"]["amount"])+"x",False,(0,0,0))
             price_render = text.render(str(values["ammunition"]["price"]),False,(0,0,0))
-            self.shop_surface.blit(amount_render,amount_render.get_rect(center=amount_rect.center))
-            self.shop_surface.blit(price_render,(325,amount_rect.centery-20))
+            ammunition_icon = pygame.image.load(os.path.join(asset_path, "ammunition.png"))
+            self.shop_surface.blit(amount_render,(amount_pos_x-50,amount_pos_y-10))
+            self.shop_surface.blit(price_render,(amount_pos_x+50,amount_pos_y-10))
+            self.shop_surface.blit(pygame.transform.scale(ammunition_icon, (50, 50)), (100, (amount_rect.centery - 25)))
             self.shop_surface.blit(pygame.transform.scale(gold_icon, (50, 50)),(370,(amount_rect.centery-25)))
             self.items.append({"item": "ammunition", "hitbox": amount_rect})
             index += 1
@@ -202,11 +214,12 @@ class shop():
             if values["bonus"]["price"] > self.player_gold:
                 color = inactive_color
             amount_rect = pygame.Rect(50,100+(index*150),400,100)
+            amount_pos_x, amount_pos_y = amount_rect.center
             pygame.draw.rect(self.shop_surface,color,amount_rect)
-            amount_render = text.render(str(values["bonus"]["amount"]),False,(0,0,0))
+            amount_render = text.render(str(values["bonus"]["amount"])+"x",False,(0,0,0))
             price_render = text.render(str(values["bonus"]["price"]),False,(0,0,0))
-            self.shop_surface.blit(amount_render,amount_render.get_rect(center=amount_rect.center))
-            self.shop_surface.blit(price_render,(325,amount_rect.centery-20))
+            self.shop_surface.blit(amount_render,(amount_pos_x-50,amount_pos_y-10))
+            self.shop_surface.blit(price_render,(amount_pos_x+50,amount_pos_y-10))
             self.shop_surface.blit(pygame.transform.scale(gold_icon, (50, 50)),(370,(amount_rect.centery-25)))
             self.items.append({"item": values["bonus"]["name"], "hitbox": amount_rect})
             index += 1

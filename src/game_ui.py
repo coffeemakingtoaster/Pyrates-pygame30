@@ -64,7 +64,7 @@ def main():
     pygame.draw.rect(screen, (43, 132, 216), ship_movement_UI)
 
     screen.blit(ship, (1250, 350))
-    screen.blit(overlay, (0, 0))
+    #screen.blit(overlay, (0, 0))
 
     # flip displayes everything for the user to see
     pygame.display.flip()
@@ -147,7 +147,7 @@ def main():
                 dot_map_y = 900 - mouse_y + ship_map_y - 200
                 # angle = (180 / math.pi) * -math.atan2((mouse_y - 450), (mouse_x - 1350))
                 pygame.draw.rect(screen, (43, 132, 216), ship_movement_UI)
-                screen.blit(overlay, (0, 0))
+                #screen.blit(overlay, (0, 0))
                 pygame.draw.ellipse(screen, (255, 0, 0), pygame.Rect(mouse_x, mouse_y, 10, 10))
                 dotexists = True
 
