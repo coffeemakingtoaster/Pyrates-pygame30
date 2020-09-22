@@ -96,6 +96,7 @@ def main():
     last_island = {}
     paused_time = 0
     start_time = time.time()
+    game_tick = 0
     while running:
 
         island = map.collisioncheck(ship_map_x, ship_map_y,)
@@ -221,6 +222,7 @@ def main():
             is_night = True
 
         if (time.time()-start_time-paused_time)>=120:
+            game_tick+=1
             is_night = False
 
         clock.tick(60)
