@@ -19,10 +19,14 @@ def rotate_image(image, angle):
     rot_image = rot_image.subsurface(rot_rect).copy()
     return rot_image
 
+def reset_screen(screen,current_game):
+    screen.blit(ui_helper.draw_resources(current_game), (533, 450))
+    screen.blit(ui_helper.draw_crew_overview(),(0, 0))
+    ship_visual = pygame.Rect(width / 3, 0, width / 3, height / 2)
+    pygame.draw.rect(screen, (0, 0, 0), ship_visual)
 
 def main():
     pygame.init()
-    current_game = game_logic.game()
     # init size of the window. The background color is never visible
     width, height = (1600, 900)
     background_color = (0, 0, 0)
@@ -34,6 +38,7 @@ def main():
     overlay = pygame.image.load(os.path.join(asset_path, "overlay.png"))
     ship = pygame.image.load(os.path.join(asset_path, "ship.png"))
     screen = pygame.display.set_mode((width, height))
+    current_game = game_logic.game(screen)
     managment_UI = pygame.Rect(0, 0, width / 3, height)
     ship_visual = pygame.Rect(width / 3, 0, width / 3, height / 2)
     ressource_visual = pygame.Rect(width / 3, height / 2, width / 3, height / 2)
@@ -54,6 +59,8 @@ def main():
 
     # gameloop
     running = True
+    in_shop = False
+    UI_is_blocked = False
     angle = 0
     ship_map_x = 750
     ship_map_y = 350
@@ -70,6 +77,7 @@ def main():
     rotation_speed = 1
     ship_hit_box = pygame.Rect(1340, 440, 20, 20)
     clock = pygame.time.Clock()
+    shop = ui_helper.shop(None)
 
 
     while running:
@@ -81,7 +89,7 @@ def main():
             # at mouseclick:
             # - checks if click was in ship movement window and if so rotates the ship image
             # TODO: add support for more parts of the screen
-            if event.type == pygame.MOUSEBUTTONDOWN and ship_movement_UI.collidepoint(pygame.mouse.get_pos()):
+            if event.type == pygame.MOUSEBUTTONDOWN and ship_movement_UI.collidepoint(pygame.mouse.get_pos()) and not in_shop and not UI_is_blocked:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 initx, inity = pygame.mouse.get_pos()
                 dot_map_x = ship_map_x - 266 + mouse_x - 1066
@@ -91,6 +99,33 @@ def main():
                 screen.blit(overlay, (0, 0))
                 pygame.draw.ellipse(screen, (255, 0, 0), pygame.Rect(mouse_x, mouse_y, 10, 10))
                 dotexists = True
+
+            if event.type == pygame.MOUSEBUTTONDOWN and in_shop and not UI_is_blocked:
+                if managment_UI.collidepoint(pygame.mouse.get_pos()):
+                    item,price = shop.interact(pygame.mouse.get_pos())
+                    if shop.is_active():
+                        current_game.make_purchase(item, price)
+                        screen.blit(shop.get_surface(),(0,0))
+                    else:
+                        in_shop = False
+
+            if event.type == pygame.MOUSEBUTTONDOWN and UI_is_blocked:
+                popup.is_collide(pygame.mouse.get_pos(),screen,current_game)
+                if not popup.is_active():
+                    UI_is_blocked = False
+#########################################################################
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_s:
+                    shop = current_game.island_event(type=1,size=2)
+                    in_shop = True
+                if event.key == pygame.K_a:
+                    popup = current_game.island_event(type = 4,size = 2)
+                    if popup:
+                        UI_is_blocked = True
+                if event.key == pygame.K_ESCAPE and UI_is_blocked:
+                    popup.delete_popup(screen,current_game)
+                    UI_is_blocked = False
+#######################################################################
         pygame.display.flip()
 
         point_hit_box = pygame.Rect(initx, inity, 10, 10)
@@ -139,6 +174,8 @@ def main():
 
 
         screen.blit(ui_helper.draw_resources(current_game),(533,450))
+        if not in_shop:
+            screen.blit(ui_helper.draw_crew_overview(),(0,0))
 
 if __name__ == "__main__":
     main()
