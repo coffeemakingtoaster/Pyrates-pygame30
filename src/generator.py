@@ -101,8 +101,9 @@ def island_eventgen(type,size):
                 "ammunition":
                     {"price":ammunition_price,
                      "amount":ammunition_amount},
-                str(bonus_item):
-                    {"price":bonus_price,
+                "bonus":
+                    {"name":str(bonus_item),
+                     "price":bonus_price,
                      "amount":bonus_amount}
                 }
     elif type == 2:

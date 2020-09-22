@@ -13,7 +13,7 @@
     "supply_min_amount" : 1,
     "supply_max_amount" : 10,
     "ammunition_min_price": 1,
-    "ammunition_price": 3,
+    "ammunition_max_price": 3,
     "ammunition_min_amount" : 1,
     "ammunition_max_amount" : 10,
     "bonus_min_price": 5,
