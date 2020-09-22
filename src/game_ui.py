@@ -78,13 +78,6 @@ def main():
                 angle = (180 / math.pi) * -math.atan2((mouse_y - 700 ),(mouse_x - 1350))
                 pygame.draw.rect(screen, (10, 169, 255), ship_movement_UI)
 
-                if currentangle < angle-90:
-                    currentangle += 0.01
-                if currentangle > angle-90:
-                    currentangle -= 0.01
-                screen.blit(rotate_image(ship, -currentangle), (1250, 600))
-
-
                 #screen.blit(rotate_image(ship,angle-90), (1250, 600))
                 screen.blit(overlay, (0, 0))
                 pygame.draw.ellipse(screen, (255,0,0), pygame.Rect(mouse_x,mouse_y,10,10))
@@ -115,7 +108,13 @@ def main():
                 currentangle += 0.1
             if currentangle > angle - 90:
                 currentangle -= 0.1
-            screen.blit(rotate_image(ship, +currentangle), (1250, 600))
+
+            if angle>0:
+                screen.blit(rotate_image(ship, +currentangle), (1250, 600))
+            else:
+                screen.blit(rotate_image(ship, -currentangle), (1250, 600))
+
+            print(angle)
 
 
 
