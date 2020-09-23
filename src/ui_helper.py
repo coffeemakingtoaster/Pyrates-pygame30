@@ -2,7 +2,7 @@ import pygame
 import os
 import json
 
-
+#returns surface with bars for all resources and a gold icon
 def draw_resources(current_savegame):
     asset_path = os.path.join(os.getcwd(), "data", "img")
     text_color = (0, 0, 0)
@@ -10,6 +10,7 @@ def draw_resources(current_savegame):
     supplies_values, max_supply = current_savegame.get_supplies()
     ship_HP, max_ship_HP = current_savegame.get_ship_HP()
     gold = current_savegame.get_gold_value()
+    #create the bars and load font
     values_text = pygame.font.Font(os.path.join(os.getcwd(), "data", "other", "Carlito-Regular.ttf"), 30)
     supplies_bar_basis = pygame.Rect(50, 100, 250, 30)
     supplies_bar_filled = pygame.Rect(50, 100, (supplies_values / max_supply) * 250, 30)  ##
@@ -17,18 +18,26 @@ def draw_resources(current_savegame):
     ammunition_bar_filled = pygame.Rect(50, 200, (ammunition_values / max_ammunition) * 250, 30)  ##
     ship_HP_bar_basis = pygame.Rect(50, 300, 250, 30)
     ship_HP_bar_filled = pygame.Rect(50, 300, (ship_HP / max_ship_HP) * 250, 30)  ##
+    #render Text
+    supplies_title_render = values_text.render("Supplies:",False,text_color)
     supplies_text_render = values_text.render(str(supplies_values) + "/" + str(max_supply), False, text_color)
+    ammunition_title_render = values_text.render("Ammunition:", False, text_color)
     ammunition_text_render = values_text.render(str(ammunition_values) + "/" + str(max_ammunition), False, text_color)
+    ship_HP_title_render = values_text.render("Ship HP:", False, text_color)
     HP_text_render = values_text.render(str(ship_HP) + "/" + str(max_ship_HP), False, text_color)
     gold_render = values_text.render(str(gold), False, text_color)
+    #draw bars and text onto surface
     values_surf = pygame.Surface((533, 450))
     values_surf.fill((82, 62, 16))
+    values_surf.blit(supplies_title_render,(50,115-50))
     pygame.draw.rect(values_surf, (107, 86, 28), supplies_bar_basis)
-    pygame.draw.rect(values_surf, (255, 0, 25), supplies_bar_filled)
+    pygame.draw.rect(values_surf, (58, 235, 52), supplies_bar_filled)
     values_surf.blit(supplies_text_render, supplies_text_render.get_rect(center=(400, 115)))
+    values_surf.blit(ammunition_title_render, (50, 215 - 50))
     pygame.draw.rect(values_surf, (107, 86, 28), ammunition_bar_basis)
-    pygame.draw.rect(values_surf, (255, 0, 25), ammunition_bar_filled)
+    pygame.draw.rect(values_surf, (52, 101, 235), ammunition_bar_filled)
     values_surf.blit(ammunition_text_render, ammunition_text_render.get_rect(center=(400, 215)))
+    values_surf.blit(ship_HP_title_render, (50, 315 - 50))
     pygame.draw.rect(values_surf, (107, 86, 28), ship_HP_bar_basis)
     pygame.draw.rect(values_surf, (255, 0, 25), ship_HP_bar_filled)
     values_surf.blit(HP_text_render, HP_text_render.get_rect(center=(400, 315)))
@@ -38,11 +47,19 @@ def draw_resources(current_savegame):
     values_surf.blit(pygame.transform.scale(gold_icon, (50, 50)), ((533 / 2) + (gold_rect.width / 2) + 20, 375))
     return values_surf
 
+
+#class used for creating popup window
+#takes type as parameter (and event values depending on type)
+#apart from displaying said window this also provides collisioncheck with the buttons and handles their functionality
+
 class popup_window():
+
     # Types:
     # 1 - Status Update (just OK button)
-    #
-     def __init__(self, type,caption=None,text=None,event_values = None):
+    # 2 - Battlescreen (Fight and Flee button)
+    # 3 - Recruitscreen (Recruit and Leave here)
+    # 4 - Abandonscreen (yes and no)
+    def __init__(self, type,caption=None,text=None,event_values = None):
         self.state = False
         pygame.font.init()
         self.caption_size = 70
@@ -61,9 +78,42 @@ class popup_window():
             self.init_status_update(caption,text)
         elif type==2:
             self.init_battle_screen(event_values)
+        elif type==3:
+            self.init_recruit_screen(event_values)
+        elif type==4:
+            pass
 
+    # a recruitment screen that shows stats of found crewmember and gives you the option of recruiting or ignoring
+    def init_recruit_screen(self,event_values):
+        self.state = True
+        surf = pygame.Surface(self.window_size)
+        self.Caption = pygame.font.Font(os.path.join(os.getcwd(), "data", "other", "Avara.ttf"), 40)
+        surf.fill(self.popup_background)
+        caption_render = self.Caption.render("Castaway found", False, self.caption_color)
+        caption_rec = caption_render.get_rect(center=(self.window_size[0] / 2, 65))
 
-     def init_battle_screen(self,event_values):
+        castaway_name_render = self.message_text.render(event_values["castaway"]["name"],False,self.text_color)
+        castaway_level_render = self.message_text.render("Lvl: "+str(event_values["castaway"]["level"]),False,self.text_color)
+        castaway_role_render =  self.message_text.render("Role: "+str(event_values["castaway"]["role"]),False,self.text_color)
+
+        surf.blit(castaway_name_render,castaway_name_render.get_rect(center=(self.window_size[0] / 2, 100)))
+        surf.blit(castaway_level_render,castaway_level_render.get_rect(center=(self.window_size[0] / 2, 150)))
+        surf.blit(castaway_role_render, castaway_role_render.get_rect(center=(self.window_size[0] / 2, 200)))
+
+        recruit_button_render = self.message_text.render("Recruit", False,self.text_color)
+        recruit_button_rect = recruit_button_render.get_rect(center=(self.window_size[0] / 3, 265))
+        leave_button_render = self.message_text.render("Leave", False, self.text_color)
+        leave_button_rect = leave_button_render.get_rect(center=((self.window_size[0] / 3) * 2, 265))
+        surf.blit(caption_render, caption_rec)
+        pygame.draw.rect(surf, (0, 0, 0), recruit_button_rect)
+        surf.blit(recruit_button_render, recruit_button_rect)
+        pygame.draw.rect(surf, (0, 0, 0), leave_button_rect)
+        surf.blit(leave_button_render, leave_button_rect)
+        self.buttons = [{"button_text": "Recruit!", "hitbox": recruit_button_rect},{"button_text": "Abandon", "hitbox": leave_button_rect}]
+        self.surf = surf
+
+    #battle screen features a fight and a flee button and on the fight button the win percentage is displayed
+    def init_battle_screen(self,event_values):
          self.state = True
          surf = pygame.Surface(self.window_size)
          surf.fill(self.popup_background)
@@ -81,72 +131,80 @@ class popup_window():
          self.buttons = [{"button_text": "Flee", "hitbox": flee_button_rect},{"button_text":"Battle","hitbox":fight_button_rect}]
          self.surf = surf
 
-     def init_status_update(self,title,text):
-         self.state = True
-         surf = pygame.Surface(self.window_size)
-         surf.fill(self.popup_background)
-         caption_render = self.Caption.render(title, False, self.caption_color)
-         caption_rec = caption_render.get_rect(center=(self.window_size[0] / 2, 65))
-         i = 0
-         while i < len(text):
-             print(i)
-             if (i+25)>len(text):
+    #status update displays changes of stats and therefore only features okay button
+    def init_status_update(self,title,text):
+        self.state = True
+        surf = pygame.Surface(self.window_size)
+        surf.fill(self.popup_background)
+        caption_render = self.Caption.render(title, False, self.caption_color)
+        caption_rec = caption_render.get_rect(center=(self.window_size[0] / 2, 65))
+        i = 0
+        while i < len(text):
+            print(i)
+            if (i+25)>len(text):
                 text_to_print = text[i:len(text)]
-             else:
-                 text_to_print = text[i:i+25]
-             print(text_to_print)
-             text_render = self.message_text.render(text_to_print, False, (0, 0, 0))
-             text_rect = caption_render.get_rect(center=(200, (self.window_size[1] / 2)+(50*(i/20))))
-             surf.blit(text_render, text_rect)
-             i += 25
-         button_render = self.message_text.render("OK", False, self.text_color)
-         button_rect = button_render.get_rect(center=(self.window_size[0] / 2, 265))
-         surf.blit(caption_render, caption_rec)
-         surf.blit(text_render, text_rect)
-         pygame.draw.rect(surf,(0,0,0),button_rect)
-         surf.blit(button_render, button_rect)
-         self.buttons = [{"button_text":"OK","hitbox":button_rect}]
-         self.surf = surf
+            else:
+                text_to_print = text[i:i+25]
+            print(text_to_print)
+            text_render = self.message_text.render(text_to_print, False, (0, 0, 0))
+            text_rect = caption_render.get_rect(center=(200, (self.window_size[1] / 2)+(50*(i/20))))
+            surf.blit(text_render, text_rect)
+            i += 25
+        button_render = self.message_text.render("OK", False, self.text_color)
+        button_rect = button_render.get_rect(center=(self.window_size[0] / 2, 265))
+        surf.blit(caption_render, caption_rec)
+        surf.blit(text_render, text_rect)
+        pygame.draw.rect(surf,(0,0,0),button_rect)
+        surf.blit(button_render, button_rect)
+        self.buttons = [{"button_text":"OK","hitbox":button_rect}]
+        self.surf = surf
 
-     def get_surf(self):
-         return self.surf
+    #get object surface
+    def get_surf(self):
+        return self.surf
 
-     def set_offset(self,x,y):
-         self.offset_x = x-(self.window_size[0]/2)
-         self.offset_y = y-(self.window_size[1]/2)
+    #set offset for calculting button hitboxes
+    def set_offset(self,x,y):
+        self.offset_x = x-(self.window_size[0]/2)
+        self.offset_y = y-(self.window_size[1]/2)
 
-     def is_collide(self,mouse_pos,screen,game):
-         print("checking")
-         mouse_x, mouse_y = mouse_pos
-         mouse_pos = (mouse_x-self.offset_x,mouse_y-self.offset_y)
-         for button in self.buttons:
-             print(mouse_pos)
-             print(button["hitbox"].center)
-             if button["hitbox"].collidepoint(mouse_pos):
-                 if button["button_text"]=="OK":
-                     print("OK")
-                     self.delete_popup(screen,game)
-                 elif button["button_text"]=="Battle":
+    #given a mouse pos - here is calculated if mouse collides with button and if so functionality is given
+    def is_collide(self,mouse_pos,screen,game):
+        print("checking")
+        mouse_x, mouse_y = mouse_pos
+        mouse_pos = (mouse_x-self.offset_x,mouse_y-self.offset_y)
+        for button in self.buttons:
+            print(mouse_pos)
+            print(button["hitbox"].center)
+            if button["hitbox"].collidepoint(mouse_pos):
+                if button["button_text"]=="OK":
+                    print("OK")
+                    self.delete_popup(screen,game)
+                    self.surf = None
+                    self.state = False
+                elif button["button_text"]=="Battle":
                     outcome,details = game.battle(self.event_values)
                     self.delete_popup(screen,game)
                     self.init_status_update(outcome,details)
-                 elif button["button_text"]=="Flee":
+                elif button["button_text"]=="Flee":
                     self.delete_popup(screen,game)
-                 return True
-         return False
+                return True
+        return False
 
-     def is_active(self):
-         return self.state
+    #get alive state of object
+    def is_active(self):
+        return self.state
 
-     def delete_popup(self,screen,game):
-         width,height = pygame.display.get_surface().get_size()
-         screen.blit(draw_resources(game), (533, 450))
-         screen.blit(draw_crew_overview(), (0, 0))
-         ship_visual = pygame.Rect(width / 3, 0, width / 3, height / 2)
-         pygame.draw.rect(screen, (0, 0, 0), ship_visual)
-         self.state = False
+    #hides popup
+    def delete_popup(self,screen,game):
+        width,height = pygame.display.get_surface().get_size()
+        screen.blit(draw_resources(game), (533, 450))
+        screen.blit(draw_crew_overview(), (0, 0))
+        ship_visual = pygame.Rect(width / 3, 0, width / 3, height / 2)
+        pygame.draw.rect(screen, (0, 0, 0), ship_visual)
+        self.state = False
 
-
+#generates shop interface based on values that are generated in generator.py
 class shop():
     def __init__(self,values = None,player_gold=None):
         if values and player_gold:
@@ -155,6 +213,7 @@ class shop():
             self.player_gold = player_gold
             self.draw_shop(values)
 
+    #draws the shop onto surface
     def draw_shop(self,values):
         active_color = (199, 104, 2)
         inactive_color = (125, 88, 47)
@@ -175,10 +234,13 @@ class shop():
                 color = inactive_color
             amount_rect = pygame.Rect(50,100+(index*150),400,100)
             pygame.draw.rect(self.shop_surface,color,amount_rect)
-            amount_render = text.render(str(values["supplies"]["amount"]),False,(0,0,0))
+            amount_render = text.render(str(values["supplies"]["amount"])+"x",False,(0,0,0))
             price_render = text.render(str(values["supplies"]["price"]),False,(0,0,0))
-            self.shop_surface.blit(amount_render,amount_render.get_rect(center=amount_rect.center))
-            self.shop_surface.blit(price_render,(325,amount_rect.centery-20))
+            supply_icon = pygame.image.load(os.path.join(asset_path, "supplies.png"))
+            amount_pos_x,amount_pos_y = amount_rect.center
+            self.shop_surface.blit(amount_render,(amount_pos_x-50,amount_pos_y-10))
+            self.shop_surface.blit(price_render,(amount_pos_x+50,amount_pos_y-10))
+            self.shop_surface.blit(pygame.transform.scale(supply_icon, (50, 50)), (100, (amount_rect.centery - 25)))
             self.shop_surface.blit(pygame.transform.scale(gold_icon, (50, 50)),(370,(amount_rect.centery-25)))
             self.items.append({"item":"supplies","hitbox":amount_rect})
             index+=1
@@ -187,11 +249,14 @@ class shop():
             if values["ammunition"]["price"] > self.player_gold:
                 color = inactive_color
             amount_rect = pygame.Rect(50,100+(index*150),400,100)
+            amount_pos_x, amount_pos_y = amount_rect.center
             pygame.draw.rect(self.shop_surface,color,amount_rect)
-            amount_render = text.render(str(values["ammunition"]["amount"]),False,(0,0,0))
+            amount_render = text.render(str(values["ammunition"]["amount"])+"x",False,(0,0,0))
             price_render = text.render(str(values["ammunition"]["price"]),False,(0,0,0))
-            self.shop_surface.blit(amount_render,amount_render.get_rect(center=amount_rect.center))
-            self.shop_surface.blit(price_render,(325,amount_rect.centery-20))
+            ammunition_icon = pygame.image.load(os.path.join(asset_path, "ammunition.png"))
+            self.shop_surface.blit(amount_render,(amount_pos_x-50,amount_pos_y-10))
+            self.shop_surface.blit(price_render,(amount_pos_x+50,amount_pos_y-10))
+            self.shop_surface.blit(pygame.transform.scale(ammunition_icon, (50, 50)), (100, (amount_rect.centery - 25)))
             self.shop_surface.blit(pygame.transform.scale(gold_icon, (50, 50)),(370,(amount_rect.centery-25)))
             self.items.append({"item": "ammunition", "hitbox": amount_rect})
             index += 1
@@ -200,20 +265,25 @@ class shop():
             if values["bonus"]["price"] > self.player_gold:
                 color = inactive_color
             amount_rect = pygame.Rect(50,100+(index*150),400,100)
+            amount_pos_x, amount_pos_y = amount_rect.center
             pygame.draw.rect(self.shop_surface,color,amount_rect)
-            amount_render = text.render(str(values["bonus"]["amount"]),False,(0,0,0))
+            amount_render = text.render(str(values["bonus"]["amount"])+"x",False,(0,0,0))
             price_render = text.render(str(values["bonus"]["price"]),False,(0,0,0))
-            self.shop_surface.blit(amount_render,amount_render.get_rect(center=amount_rect.center))
-            self.shop_surface.blit(price_render,(325,amount_rect.centery-20))
+            self.shop_surface.blit(amount_render,(amount_pos_x-50,amount_pos_y-10))
+            self.shop_surface.blit(price_render,(amount_pos_x+50,amount_pos_y-10))
             self.shop_surface.blit(pygame.transform.scale(gold_icon, (50, 50)),(370,(amount_rect.centery-25)))
             self.items.append({"item": values["bonus"]["name"], "hitbox": amount_rect})
             index += 1
-        self.leave_rect = pygame.Rect(400,800,50,50)
-        pygame.draw.rect(self.shop_surface,(255,0,0),self.leave_rect)
+        exit_icon = pygame.image.load(os.path.join(asset_path,"x_button.png"))
+        self.leave_rect = pygame.Rect(400, 800, 50, 50)
+        #pygame.draw.rect(self.shop_surface, (255, 0, 0), self.leave_rect)
+        self.shop_surface.blit(pygame.transform.scale(exit_icon, (50, 50)), (400,800))
 
+    #returns obj surface
     def get_surface(self):
         return self.shop_surface
 
+    #equivalent to popup collide
     def interact(self,mouse_pos):
         if self.leave_rect.collidepoint(mouse_pos):
             self.state = False
@@ -241,11 +311,13 @@ class shop():
 
         return None,None
 
+    #get alive state of shop
     def is_active(self):
         return self.state
 
 
-
+# draw crew including status
+# returns surface
 def draw_crew_overview():
     f = open(os.path.join(os.getcwd(), "data", "savegame", "crew.json"))
     crew = json.load(f)
@@ -265,10 +337,22 @@ def draw_crew_overview():
             member["level"]) + "XP) Role:" + member["role"]
         display_text_render = text.render(display_text, False, (0, 0, 0))
         if "status" in member.keys():
+            print(member["injured"])
             if member["status"] != None:
                 if member["status"] == "hungry":
                     icon = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "status_hungry.png"))
                 crew_overview_surface.blit(pygame.transform.scale(icon, (100, 33)), (400, 130 + (index * 100)))
+        if member["injured"]:
+            icon = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "status_injured.png"))
+            crew_overview_surface.blit(pygame.transform.scale(icon, (100, 33)), (225, 130 + (index * 100)))
+        if member["role"] == "Doctor" or member["role"] == "Carpenter":
+            if "is_in_action" in member.keys():
+                ability_icon = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "status_work.png"))
+                if member["is_in_action"] == True:
+                    ability_icon = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "status_busy.png"))
+        else:
+            ability_icon = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "status_boosting.png"))
+        crew_overview_surface.blit(pygame.transform.scale(ability_icon, (100, 33)), (50, 130 + (index * 100)))
         crew_overview_surface.blit(display_text_render, (50, 100 + (index * 100)))
         index += 1
     return crew_overview_surface

@@ -10,10 +10,12 @@ import game_ui
 asset_path = os.path.join(os.getcwd(), "data", "img")
 
 img_grid = [
-    ["small1.png","mid1.png","large1.jpg"],
+    ["small1.png","mid1.jpg","large1.jpg"],
     ["small2.jpg","mid2.jpg","large2.jpg"],
     ["small3.jpg","mid3.jpg","large3.jpg"],
-    ["small4.jpg","mid4.jpg","large4.jpg"]
+    ["small4.jpg","mid4.jpg","large4.jpg"],
+    ["start.png"],
+    ["end.png"]
 ]
 
 size_dic = {
@@ -23,14 +25,14 @@ size_dic = {
 }
 island_hitbox = pygame.Rect(0,0,0,0)
 def mapdraw(ship_pos_x,ship_pos_y,screen):
-
     with open('data/savegame/map.json') as json_file:
         map = json.load(json_file)
     i = 0
     for island in map:
         if ship_pos_x-500 < island.get("x") < ship_pos_x+500 and  ship_pos_y-600 < island.get("y") < ship_pos_y+600:
-                current_island = pygame.image.load(os.path.join(asset_path, img_grid[island.get("type")-1][island.get("size")-1]))
+                current_island = pygame.image.load(os.path.join(asset_path, img_grid[island.get("type")][island.get("size")]))
                 screen.blit(current_island, (1350 + (island.get("x") - ship_pos_x),(450 - (island.get("y") - ship_pos_y))))
+                print(str(island.get("type")) + "/" + str(island.get("x")))
 
 
         i+=1
@@ -43,7 +45,7 @@ def collisioncheck(ship_pos_x,ship_pos_y):
         island_hitbox = pygame.Rect(1350 + (island.get("x") - ship_pos_x), (450 - (island.get("y") - ship_pos_y)),
                                     size_dic.get(island.get("size")), size_dic.get(island.get("size")))
         if island_hitbox.colliderect(1340,440,20,20):
-            print("Collision")
+            #print("Collision")
             return {"island_id":i,"island_values":island}
     i+=1
 

@@ -1,6 +1,7 @@
 import random
 import json
 import os
+import string
 
 
 
@@ -43,6 +44,7 @@ shop_items = {
 #
 
 def mapgen():
+
     x_coordinates = random.sample(range(1, settings["map_width"]), settings["island_count"])
     y_coordinates = random.sample(range(1, settings["map_length"]), settings["island_count"])
     map_list = []
@@ -55,6 +57,9 @@ def mapgen():
             "visited": False
         }
         map_list.append(island)
+    map_list.append({"x": 600, "y": 100, "size": 0, "type": 4, "visited": True})
+    map_list.append({"x": 600, "y": 20000, "size": 0, "type": 5, "visited": False})
+
 
     print(map_list)
     mapfile = open("data/savegame/map.json", "w")
@@ -75,7 +80,10 @@ def crewgen():
          "attribute" : random.randint(1,settings["attribute_types"]),
          "injured" : False,
          "level" : random.randint(1,settings["max_starting_level"]),
-         "role" : roledic.get(i)
+         "role" : roledic.get(i),
+         "is_in_action": False,
+         "xp":0,
+         "uID": ''.join(random.choice(string.ascii_letters) for i in range(8))
          }
         crew.append(crew_member)
 
@@ -97,7 +105,7 @@ def island_eventgen(type,size):
         x = random.randint(1,4)
         bonus_item = shop_items[x]
         bonus_price = random.randint(settings["bonus_min_price"],settings["bonus_max_price"])+x
-        bonus_amount = random.randint(settings["bonus_min_amount"],settings["bonus_max_amount"])*(size/2)
+        bonus_amount = int(random.randint(settings["bonus_min_amount"],settings["bonus_max_amount"])*(size/2))
         return {"supplies":
                     {"price":supply_price,
                      "amount":supply_amount},
@@ -126,7 +134,8 @@ def island_eventgen(type,size):
                 loot["gold"]+=settings["fortress_min_loot"]
             else:
                 loot["gold"]=settings["fortress_min_loot"]
-        return {"victory":int(victory_chances),"defeat":int(defeat_chances),"loot":loot}
+        hp_lost = random.randint(0, 1)
+        return {"victory":int(victory_chances),"defeat":int(defeat_chances),"loot":loot,"damage":hp_lost}
     #TODO
     elif type==3:
         has_bonus_item = False
@@ -143,11 +152,14 @@ def island_eventgen(type,size):
             with open('data/other/names.json') as json_file:
                 name_list = json.load(json_file)
             castaway = {
-                "name" : name_list[random.randint(0,settings["name_count"]-1)],
-                "attribute" : random.randint(1,settings["attribute_types"]),
-                "injured" : False,
-                "level" : random.randint(1,settings["max_starting_level"]),
-                "role" : roledic.get(random.randint(0,7))
+                "name": name_list[random.randint(0, settings["name_count"] - 1)],
+                "attribute": random.randint(1, settings["attribute_types"]),
+                "injured": False,
+                "level": random.randint(1, settings["max_starting_level"]),
+                "role": roledic.get(random.choice(roledic)),
+                "is_in_action": False,
+                "xp": 0,
+                "uID": ''.join(random.choice(string.ascii_letters) for i in range(8))
                 }
             return {"castaway":castaway}
         #found supplies
