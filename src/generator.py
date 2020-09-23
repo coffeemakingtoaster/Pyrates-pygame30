@@ -138,13 +138,14 @@ def island_eventgen(type,size):
         return {"victory":int(victory_chances),"defeat":int(defeat_chances),"loot":loot,"damage":hp_lost}
     #TODO
     elif type==3:
+        success_chance = random.randint(settings["treasure_min_chance"],settings["treasure_max_chance"])
         has_bonus_item = False
         if random.randint(0,100)<=settings["treasure_bonus_percentage"]:
             has_bonus_item = True
         loot = random.randint(settings["treasure_min_gold"],settings["treasure_max_gold"])+size
         if not has_bonus_item:
-            return {"gold":int(loot)}
-        return {"gold":int(loot),"bonus":{"type":shop_items[random.randint(1,4)]}}
+            return {"success":success_chance,"gold":int(loot)}
+        return {"success":success_chance,"gold":int(loot),"bonus":{"type":shop_items[random.randint(1,4)]}}
     elif type==4:
         event = random.randint(1,4)
         #found new crewmember
@@ -156,7 +157,7 @@ def island_eventgen(type,size):
                 "attribute": random.randint(1, settings["attribute_types"]),
                 "injured": False,
                 "level": random.randint(1, settings["max_starting_level"]),
-                "role": roledic.get(random.choice(roledic)),
+                "role": random.choice(roledic),
                 "is_in_action": False,
                 "xp": 0,
                 "uID": ''.join(random.choice(string.ascii_letters) for i in range(8))

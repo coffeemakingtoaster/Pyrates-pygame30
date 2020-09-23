@@ -46,7 +46,13 @@ def collisioncheck(ship_pos_x,ship_pos_y):
                                     size_dic.get(island.get("size")), size_dic.get(island.get("size")))
         if island_hitbox.colliderect(1340,440,20,20):
             #print("Collision")
+            island["visited"] = True
+            write_map(map)
             return {"island_id":i,"island_values":island}
     i+=1
 
 
+def write_map(map):
+    f = open(os.path.join(os.getcwd(),"data","savegame","map.json"),"w")
+    f.write(json.dumps(map))
+    f.close()

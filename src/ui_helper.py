@@ -1,6 +1,7 @@
 import pygame
 import os
 import json
+import sys
 
 #returns surface with bars for all resources and a gold icon
 def draw_resources(current_savegame):
@@ -59,7 +60,7 @@ class popup_window():
     # 2 - Battlescreen (Fight and Flee button)
     # 3 - Recruitscreen (Recruit and Leave here)
     # 4 - Abandonscreen (yes and no)
-    def __init__(self, type,caption=None,text=None,event_values = None):
+    def __init__(self, type,caption=None,text=None,event_values = None,crew = None):
         self.state = False
         pygame.font.init()
         self.caption_size = 70
@@ -79,12 +80,65 @@ class popup_window():
         elif type==2:
             self.init_battle_screen(event_values)
         elif type==3:
-            self.init_recruit_screen(event_values)
+            self.init_recruit_screen(event_values,crew)
         elif type==4:
-            pass
+            self.init_yes_no_screen()
+        elif type==5:
+            self.init_pause_screen()
+
+
+    def init_pause_screen(self):
+        self.window_size = (400,400)
+        self.state = True
+        surf = pygame.Surface(self.window_size)
+        surf.fill(self.popup_background)
+        caption_render = self.Caption.render("Pause", False, self.caption_color)
+        caption_rec = caption_render.get_rect(center=(self.window_size[0] / 2, 65))
+        resume_button = self.message_text.render("Resume",False,(0,0,0))
+        save_button = self.message_text.render("Save game",False,(0,0,0))
+        quit_button = self.message_text.render("Save and Quit",False,(0,0,0))
+        resume_button_rect = resume_button.get_rect(center=(self.window_size[0]/2,125))
+        save_button_rect = save_button.get_rect(center=(self.window_size[0]/2,225))
+        quit_button_rect = quit_button.get_rect(center=(self.window_size[0]/2,325))
+        pygame.draw.rect(surf, self.caption_color, resume_button_rect)
+        pygame.draw.rect(surf, self.caption_color, save_button_rect)
+        pygame.draw.rect(surf, self.caption_color, quit_button_rect)
+        surf.blit(caption_render,caption_rec)
+        surf.blit(resume_button,resume_button_rect)
+        surf.blit(save_button,save_button_rect)
+        surf.blit(quit_button,quit_button_rect)
+        self.buttons = [{"button_text": "Resume", "hitbox": resume_button_rect},{"button_text": "Save", "hitbox": save_button_rect},{"button_text":"Exit","hitbox":quit_button_rect}]
+        self.surf = surf
+
+    def init_yes_no_screen(self):
+        self.state = True
+        surf = pygame.Surface(self.window_size)
+        surf.fill(self.popup_background)
+        caption_render = self.Caption.render("Castaway", False, self.caption_color)
+        caption_rec = caption_render.get_rect(center=(self.window_size[0] / 2, 65))
+        text_render_1 = self.message_text.render("Are you sure you want", False, (0, 0, 0))
+        text_render_2 = self.message_text.render("to abandon:", False, (0, 0, 0))
+        name_render = self.message_text.render(self.event_values["name"]+"(Lvl:"+str(self.event_values["level"])+" "+str(self.event_values["role"])+")", False, (255, 0, 25))
+        text_render_1_rect = text_render_1.get_rect(center=(self.window_size[0] / 2, 100))
+        text_render_2_rect = text_render_2.get_rect(center=(self.window_size[0] / 2, 125))
+        name_render_rect = name_render.get_rect(center=(self.window_size[0] / 2,175))
+        castaway_button_render = self.message_text.render("Castaway", False, self.text_color)
+        keep_button_render = self.message_text.render("Keep", False, self.text_color)
+        castaway_button_rect = castaway_button_render.get_rect(center=(self.window_size[0] / 3, 265))
+        keep_button_rect = keep_button_render.get_rect(center=((self.window_size[0] / 3)*2, 265))
+        surf.blit(caption_render, caption_rec)
+        surf.blit(text_render_1, text_render_1_rect)
+        surf.blit(text_render_2, text_render_2_rect)
+        surf.blit(name_render, name_render_rect)
+        pygame.draw.rect(surf, (0, 0, 0), castaway_button_rect)
+        surf.blit(castaway_button_render, castaway_button_rect)
+        pygame.draw.rect(surf, (0, 0, 0), keep_button_rect)
+        surf.blit(keep_button_render, keep_button_rect)
+        self.buttons = [{"button_text": "Dispatch", "hitbox": castaway_button_rect},{"button_text":"Keep","hitbox":keep_button_rect}]
+        self.surf = surf
 
     # a recruitment screen that shows stats of found crewmember and gives you the option of recruiting or ignoring
-    def init_recruit_screen(self,event_values):
+    def init_recruit_screen(self,event_values,crew):
         self.state = True
         surf = pygame.Surface(self.window_size)
         self.Caption = pygame.font.Font(os.path.join(os.getcwd(), "data", "other", "Avara.ttf"), 40)
@@ -102,10 +156,13 @@ class popup_window():
 
         recruit_button_render = self.message_text.render("Recruit", False,self.text_color)
         recruit_button_rect = recruit_button_render.get_rect(center=(self.window_size[0] / 3, 265))
-        leave_button_render = self.message_text.render("Leave", False, self.text_color)
+        leave_button_render = self.message_text.render("Abandon", False, self.text_color)
         leave_button_rect = leave_button_render.get_rect(center=((self.window_size[0] / 3) * 2, 265))
         surf.blit(caption_render, caption_rec)
-        pygame.draw.rect(surf, (0, 0, 0), recruit_button_rect)
+        if (len(crew)>=8):
+            pygame.draw.rect(surf, (150, 150, 150), recruit_button_rect)
+        else:
+            pygame.draw.rect(surf, (0, 0, 0), recruit_button_rect)
         surf.blit(recruit_button_render, recruit_button_rect)
         pygame.draw.rect(surf, (0, 0, 0), leave_button_rect)
         surf.blit(leave_button_render, leave_button_rect)
@@ -186,8 +243,31 @@ class popup_window():
                     outcome,details = game.battle(self.event_values)
                     self.delete_popup(screen,game)
                     self.init_status_update(outcome,details)
-                elif button["button_text"]=="Flee":
+                    self.state = False
+                elif button["button_text"]=="Flee" or button["button_text"]=="Abandon" or button["button_text"]=="Keep" or button["button_text"]=="Resume":
+                    print("we out")
+                    self.delete_popup(screen, game)
+                    self.surf = None
+                    self.state = False
+                elif button["button_text"]=="Recruit!":
+                    print("recruting")
+                    game.recruit(self.event_values["castaway"])
                     self.delete_popup(screen,game)
+                    self.surf = None
+                    self.state = False
+                elif button["button_text"]=="Dispatch":
+                    game.dispatch(self.event_values)
+                    self.delete_popup(screen, game)
+                    self.surf = None
+                    self.state = False
+                elif button["button_text"]=="Save" or button["button_text"]=="Exit":
+                    game.write_savegame()
+                    if button["button_text"] == "Exit":
+                        sys.exit(0)
+                    self.delete_popup(screen, game)
+                    self.surf = None
+                    self.state = False
+
                 return True
         return False
 
@@ -333,8 +413,7 @@ def draw_crew_overview():
     for member in crew:
         if "xp" not in member.keys():
             member["xp"] = 0
-        display_text = member["name"] + " Lvl:" + str(member["level"]) + "(" + str(member["xp"]) + "/" + str(
-            member["level"]) + "XP) Role:" + member["role"]
+        display_text = member["name"] + " Lvl:" + str(member["level"]) + "(" + str(member["xp"]) + "/" + str(member["level"]) + "XP) Role:" + member["role"]
         display_text_render = text.render(display_text, False, (0, 0, 0))
         if "status" in member.keys():
             print(member["injured"])
@@ -353,6 +432,8 @@ def draw_crew_overview():
         else:
             ability_icon = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "status_boosting.png"))
         crew_overview_surface.blit(pygame.transform.scale(ability_icon, (100, 33)), (50, 130 + (index * 100)))
+        castaway_icon = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "x_button.png"))
+        crew_overview_surface.blit(pygame.transform.scale((castaway_icon),(40,40)),(475, 100 + (index * 100)))
         crew_overview_surface.blit(display_text_render, (50, 100 + (index * 100)))
         index += 1
     return crew_overview_surface
