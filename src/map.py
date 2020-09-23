@@ -13,7 +13,9 @@ img_grid = [
     ["small1.png","mid1.jpg","large1.jpg"],
     ["small2.jpg","mid2.jpg","large2.jpg"],
     ["small3.jpg","mid3.jpg","large3.jpg"],
-    ["small4.jpg","mid4.jpg","large4.jpg"]
+    ["small4.jpg","mid4.jpg","large4.jpg"],
+    ["start.png"],
+    ["end.png"]
 ]
 
 size_dic = {
@@ -29,8 +31,9 @@ def mapdraw(ship_pos_x,ship_pos_y,screen):
     i = 0
     for island in map:
         if ship_pos_x-500 < island.get("x") < ship_pos_x+500 and  ship_pos_y-600 < island.get("y") < ship_pos_y+600:
-                current_island = pygame.image.load(os.path.join(asset_path, img_grid[island.get("type")-1][island.get("size")-1]))
+                current_island = pygame.image.load(os.path.join(asset_path, img_grid[island.get("type")][island.get("size")]))
                 screen.blit(current_island, (1350 + (island.get("x") - ship_pos_x),(450 - (island.get("y") - ship_pos_y))))
+                print(str(island.get("type")) + "/" + str(island.get("x")))
 
 
         i+=1

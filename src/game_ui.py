@@ -7,6 +7,7 @@ import game_logic
 import map
 import random
 import generator
+from pygame import gfxdraw
 
 # given an image and an angle this returns the rotated image
 # can directly be drawn to screen
@@ -85,8 +86,8 @@ def main():
     dot_map_x = 0
     dot_map_y = 0
     currentangle = 0
-    speed = 8
-    rotation_speed = 4
+    speed = 2
+    rotation_speed = 1
     ship_hit_box = pygame.Rect(1340, 440, 20, 20)
     clock = pygame.time.Clock()
     shop = ui_helper.shop(None)
@@ -97,6 +98,11 @@ def main():
     while running:
 
         island = map.collisioncheck(ship_map_x, ship_map_y,)
+
+
+
+
+
         for event in pygame.event.get():
 
             #########################################################################
@@ -170,6 +176,9 @@ def main():
 
         point_hit_box = pygame.Rect(initx, inity, 10, 10)
 
+        # map
+
+
 
         print("Y: " + str(ship_map_y))
         print("X: " + str(ship_map_x))
@@ -179,6 +188,10 @@ def main():
         x_speed = math.cos(math.radians(currentangle + 90))
 
         if dotexists and not (ship_hit_box.colliderect(point_hit_box)):
+            if 0>dot_map_x and initx<1350:
+                initx=1350
+            if 1000<dot_map_x and initx>1350:
+                initx=1350
             initx -= x_speed * speed
             inity += y_speed * speed
             pygame.draw.rect(screen, (43, 132, 216), ship_movement_UI)
@@ -210,6 +223,12 @@ def main():
             screen.blit(rotate_image(ship, +currentangle), (1250, 350))
             display_night(screen,is_night)
             # ------------------------------------------------------------
+
+            #map
+            # ----------------------------------------------------------
+            gfxdraw.pixel(screen, int((ship_map_x/20))+533,int(450-(ship_map_y/20)),(255,255,255))
+
+
 
         if is_paused is False and pause_timestamp is not None:
             paused_time+= time.time()-pause_timestamp
