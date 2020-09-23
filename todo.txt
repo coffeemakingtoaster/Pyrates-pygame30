@@ -1,3 +1,17 @@
-+++mandatory+++
-- map generator 
-- split UI
+Wednesday:
+- playable
+    - day night cycle
+    - food consumption
+- Game Over
+- Main menu
+- save gamestate
+- flee button not working
+
+thursday:
+- save castaway position
+- implement castaway mechanic
+- balancing and maybe even first packaging
+
+nice to have:
+- find outcasts in new playthrough
+- visuals

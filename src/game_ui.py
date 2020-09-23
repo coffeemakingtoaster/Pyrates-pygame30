@@ -62,6 +62,7 @@ def main():
     pygame.draw.rect(screen, (0, 0, 0), ship_visual)
     pygame.draw.rect(screen, (161, 83, 27), ressource_visual)
     pygame.draw.rect(screen, (43, 132, 216), ship_movement_UI)
+    screen.blit(ui_helper.draw_resources(current_game), (533, 450))
 
     screen.blit(ship, (1250, 350))
     #screen.blit(overlay, (0, 0))
@@ -95,14 +96,13 @@ def main():
     start_time = time.time()
     game_tick = 0
     while running:
-
         island = map.collisioncheck(ship_map_x, ship_map_y,)
         for event in pygame.event.get():
 
             #########################################################################
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_s:
-                    island = {"island_id":random.randint(0,100),"island_values":{"x": 2375, "y": 437, "size": 0, "type": 1, "visited": False}}
+                    island = {"island_id":random.randint(0,100),"island_values":{"x": 2375, "y": 437, "size": 4, "type": 1, "visited": False}}
                 if event.key == pygame.K_a:
                     island = {"island_id": random.randint(0,100), "island_values": {"x": 2375, "y": 437, "size": 0, "type": 4, "visited": False}}
                 if event.key == pygame.K_b:
@@ -148,11 +148,23 @@ def main():
                 pygame.draw.ellipse(screen, (255, 0, 0), pygame.Rect(mouse_x, mouse_y, 10, 10))
                 dotexists = True
 
-            if event.type == pygame.MOUSEBUTTONDOWN and in_shop and not UI_is_blocked:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_x,mouse_y = pygame.mouse.get_pos()
+                if 50<mouse_x<150:
+                    i = 0
+                    while i<9:
+                        button_y = 130+i*100
+                        if button_y<mouse_y<(button_y+50):
+                            current_game.crew_ability(i)
+                            break
+                        i+=1
+
+            if event.type == pygame.MOUSEBUTTONDOWN and in_shop:
                 if managment_UI.collidepoint(pygame.mouse.get_pos()):
                     item,price = shop.interact(pygame.mouse.get_pos())
                     if shop.is_active():
                         current_game.make_purchase(item, price)
+                        screen.blit(ui_helper.draw_resources(current_game),(533,450))
                         screen.blit(shop.get_surface(),(0,0))
                     else:
                         in_shop = False
@@ -171,8 +183,8 @@ def main():
         point_hit_box = pygame.Rect(initx, inity, 10, 10)
 
 
-        print("Y: " + str(ship_map_y))
-        print("X: " + str(ship_map_x))
+        #print("Y: " + str(ship_map_y))
+        #print("X: " + str(ship_map_x))
 
 
         y_speed = math.sin(math.radians(currentangle + 90))
@@ -219,16 +231,21 @@ def main():
             is_paused = True
             pause_timestamp = time.time()
 
-        if (time.time()-start_time-paused_time)>=60:
+        if (time.time()-start_time-paused_time)>=10 and not is_night:
+            print("night has come")
             is_night = True
 
-        if (time.time()-start_time-paused_time)>=120:
-            game_tick+=1
+        if (time.time()-start_time-paused_time)>=20 and is_night:
+            current_game.advance_tick()
+            screen.blit(ui_helper.draw_resources(current_game), (533, 450))
             is_night = False
+            start_time = time.time()
 
         clock.tick(60)
+        '''
         if not in_shop and not UI_is_blocked:
             screen.blit(ui_helper.draw_resources(current_game),(533,450))
+        '''
         if not in_shop and not UI_is_blocked:
             screen.blit(ui_helper.draw_crew_overview(),(0,0))
 
