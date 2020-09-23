@@ -37,6 +37,8 @@
     "ship_battle_max_win": 75,
     "ship_max_HP": 5,
     "max_supply_amount": 150,
-    "max_ammunition_amount": 150
+    "max_ammunition_amount": 150,
+    "treasure_min_chance": 15,
+    "treasure_max_chance": 75
   }
 

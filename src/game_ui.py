@@ -86,6 +86,7 @@ def main():
     dotexists = False
     initx = 0
     inity = 0
+    popup = None
     dot_map_x = 0
     dot_map_y = 0
     currentangle = 0
@@ -151,8 +152,9 @@ def main():
                 pygame.draw.ellipse(frame, (255, 0, 0), pygame.Rect(mouse_x, mouse_y, 10, 10))
                 dotexists = True
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN and managment_UI.collidepoint(pygame.mouse.get_pos()) and not in_shop and not UI_is_blocked:
                 mouse_x,mouse_y = pygame.mouse.get_pos()
+                print("managing")
                 if 50<mouse_x<150:
                     i = 0
                     while i<9:
@@ -161,6 +163,16 @@ def main():
                             current_game.crew_ability(i)
                             break
                         i+=1
+                if 475<mouse_x<505:
+                    i = 0
+                    while i < 9:
+                        button_y = 100 + i * 100
+                        if button_y < mouse_y < (button_y + 40):
+                            print("dispatching")
+                            popup = current_game.attempt_dispatch(i)
+                            UI_is_blocked = True
+                            break
+                        i += 1
 
             if event.type == pygame.MOUSEBUTTONDOWN and in_shop:
                 if managment_UI.collidepoint(pygame.mouse.get_pos()):
@@ -241,6 +253,9 @@ def main():
         if (time.time()-start_time-paused_time)>=20 and is_night:
             current_game.advance_tick()
             frame.blit(ui_helper.draw_resources(current_game), (533, 450))
+            if UI_is_blocked:
+                if popup.is_active():
+                    frame.blit(popup.get_surf(), popup.get_surf().get_rect(center=(800, 450)))
             is_night = False
             start_time = time.time()
 

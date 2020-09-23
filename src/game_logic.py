@@ -77,9 +77,10 @@ class game():
                 return update_window
             elif "castaway" in event_values.keys():
                 print("castaway")
-                update_window = ui_helper.popup_window(type=3,event_values=event_values)
+                update_window = ui_helper.popup_window(type=3,event_values=event_values,crew = self.crew)
                 self.screen.blit(update_window.get_surf(), update_window.get_surf().get_rect(center=(800, 450)))
                 update_window.set_offset(800, 450)
+                return update_window
             elif "loss" in event_values.keys():
                 title = "Oh no!"
                 if event_values["loss"]["type"]=="supplies":
@@ -240,3 +241,28 @@ class game():
         self.supplies -= food_cons
         self.gold -= gold_cons
         self.write_crew()
+
+    def update_screen(self,screen):
+        self.screen = screen
+
+    def recruit(self,crewmember):
+        self.crew.append(crewmember)
+        self.write_crew()
+        self.screen.blit(ui_helper.draw_crew_overview(), (0, 0))
+
+    def attempt_dispatch(self,index):
+        member = self.crew[index]
+        dispatch_dialog = ui_helper.popup_window(type=4,event_values=member)
+        self.screen.blit(dispatch_dialog.get_surf(), dispatch_dialog.get_surf().get_rect(center=(800, 450)))
+        dispatch_dialog.set_offset(800, 450)
+        return dispatch_dialog
+
+    def dispatch(self,crew_member):
+        self.crew.remove(crew_member)
+        self.write_crew()
+        self.screen.blit(ui_helper.draw_crew_overview(), (0, 0))
+
+    def crew_has_space(self):
+        if len(self.crew)!=8:
+            return True
+        return False
