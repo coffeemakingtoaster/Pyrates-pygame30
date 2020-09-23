@@ -60,7 +60,7 @@ def mapgen():
     mapfile = open("data/savegame/map.json", "w")
     mapfile.write(json.dumps(map_list))
     mapfile.close()
-
+mapgen()
 
 
 

@@ -10,7 +10,7 @@ import game_ui
 asset_path = os.path.join(os.getcwd(), "data", "img")
 
 img_grid = [
-    ["small1.png","mid1.png","large1.jpg"],
+    ["small1.png","mid1.jpg","large1.jpg"],
     ["small2.jpg","mid2.jpg","large2.jpg"],
     ["small3.jpg","mid3.jpg","large3.jpg"],
     ["small4.jpg","mid4.jpg","large4.jpg"]

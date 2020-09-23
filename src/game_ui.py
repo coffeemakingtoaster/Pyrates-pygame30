@@ -84,12 +84,9 @@ def main():
     inity = 0
     dot_map_x = 0
     dot_map_y = 0
-    hitradius = 30
     currentangle = 0
-    island_demo_x = 1250
-    island_demo_y = 300
-    speed = 2
-    rotation_speed = 1
+    speed = 8
+    rotation_speed = 4
     ship_hit_box = pygame.Rect(1340, 440, 20, 20)
     clock = pygame.time.Clock()
     shop = ui_helper.shop(None)
@@ -172,6 +169,10 @@ def main():
         pygame.display.flip()
 
         point_hit_box = pygame.Rect(initx, inity, 10, 10)
+
+
+        print("Y: " + str(ship_map_y))
+        print("X: " + str(ship_map_x))
 
 
         y_speed = math.sin(math.radians(currentangle + 90))
