@@ -112,9 +112,6 @@ def main():
                     island = {"island_id": random.randint(0,100), "island_values": {"x": 2375, "y": 437, "size": 0, "type": 4, "visited": False}}
                 if event.key == pygame.K_b:
                     island = {"island_id": random.randint(0, 100),"island_values": {"x": 2375, "y": 437, "size": 0, "type": 2, "visited": False}}
-                if event.key == pygame.K_ESCAPE and UI_is_blocked:
-                    popup.delete_popup(frame, current_game)
-                    UI_is_blocked = False
                 if event.key == pygame.K_0:
                     if is_night is True:
                         is_night = False
@@ -135,6 +132,12 @@ def main():
                     popup = current_game.island_event(type=4, size=2)
                     if popup:
                         UI_is_blocked = True
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    popup = ui_helper.popup_window(type=5)
+                    frame.blit(popup.get_surf(), popup.get_surf().get_rect(center=(800, 450)))
+                    popup.set_offset(800, 450)
+                    UI_is_blocked = True
 
             # Quit
             if event.type == pygame.QUIT:

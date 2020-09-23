@@ -13,8 +13,13 @@ class game():
         self.screen = screen
         self.speed_boost = 0
 
-
-
+    def write_savegame(self):
+        savepath = os.path.join(self.path,"savegame")
+        self.write_crew()
+        f = open(os.path.join(savepath,"savegame.json"),"w")
+        f.write(json.dumps({"gold":self.gold,"supplies":self.supplies,"ammunition":self.ammunition,"game_tick":self.current_tick,"ship_HP":self.ship_HP}))
+        f.close()
+        
     def read_balance(self):
         f = open(os.path.join(self.path,"balancing.json"))
         settings = json.load(f)

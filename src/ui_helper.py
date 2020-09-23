@@ -1,6 +1,7 @@
 import pygame
 import os
 import json
+import sys
 
 #returns surface with bars for all resources and a gold icon
 def draw_resources(current_savegame):
@@ -82,6 +83,32 @@ class popup_window():
             self.init_recruit_screen(event_values,crew)
         elif type==4:
             self.init_yes_no_screen()
+        elif type==5:
+            self.init_pause_screen()
+
+
+    def init_pause_screen(self):
+        self.window_size = (400,400)
+        self.state = True
+        surf = pygame.Surface(self.window_size)
+        surf.fill(self.popup_background)
+        caption_render = self.Caption.render("Pause", False, self.caption_color)
+        caption_rec = caption_render.get_rect(center=(self.window_size[0] / 2, 65))
+        resume_button = self.message_text.render("Resume",False,(0,0,0))
+        save_button = self.message_text.render("Save game",False,(0,0,0))
+        quit_button = self.message_text.render("Save and Quit",False,(0,0,0))
+        resume_button_rect = resume_button.get_rect(center=(self.window_size[0]/2,125))
+        save_button_rect = save_button.get_rect(center=(self.window_size[0]/2,225))
+        quit_button_rect = quit_button.get_rect(center=(self.window_size[0]/2,325))
+        pygame.draw.rect(surf, self.caption_color, resume_button_rect)
+        pygame.draw.rect(surf, self.caption_color, save_button_rect)
+        pygame.draw.rect(surf, self.caption_color, quit_button_rect)
+        surf.blit(caption_render,caption_rec)
+        surf.blit(resume_button,resume_button_rect)
+        surf.blit(save_button,save_button_rect)
+        surf.blit(quit_button,quit_button_rect)
+        self.buttons = [{"button_text": "Resume", "hitbox": resume_button_rect},{"button_text": "Save", "hitbox": save_button_rect},{"button_text":"Exit","hitbox":quit_button_rect}]
+        self.surf = surf
 
     def init_yes_no_screen(self):
         self.state = True
@@ -217,7 +244,7 @@ class popup_window():
                     self.delete_popup(screen,game)
                     self.init_status_update(outcome,details)
                     self.state = False
-                elif button["button_text"]=="Flee" or button["button_text"]=="Abandon" or button["button_text"]=="Keep":
+                elif button["button_text"]=="Flee" or button["button_text"]=="Abandon" or button["button_text"]=="Keep" or button["button_text"]=="Resume":
                     print("we out")
                     self.delete_popup(screen, game)
                     self.surf = None
@@ -233,6 +260,14 @@ class popup_window():
                     self.delete_popup(screen, game)
                     self.surf = None
                     self.state = False
+                elif button["button_text"]=="Save" or button["button_text"]=="Exit":
+                    game.write_savegame()
+                    if button["button_text"] == "Exit":
+                        sys.exit(0)
+                    self.delete_popup(screen, game)
+                    self.surf = None
+                    self.state = False
+
                 return True
         return False
 
