@@ -1,6 +1,7 @@
 import random
 import json
 import os
+import string
 
 
 
@@ -78,7 +79,10 @@ def crewgen():
          "attribute" : random.randint(1,settings["attribute_types"]),
          "injured" : False,
          "level" : random.randint(1,settings["max_starting_level"]),
-         "role" : roledic.get(i)
+         "role" : roledic.get(i),
+         "is_in_action": False,
+         "xp":0,
+         "uID": ''.join(random.choice(string.ascii_letters) for i in range(8))
          }
         crew.append(crew_member)
 
@@ -100,7 +104,7 @@ def island_eventgen(type,size):
         x = random.randint(1,4)
         bonus_item = shop_items[x]
         bonus_price = random.randint(settings["bonus_min_price"],settings["bonus_max_price"])+x
-        bonus_amount = random.randint(settings["bonus_min_amount"],settings["bonus_max_amount"])*(size/2)
+        bonus_amount = int(random.randint(settings["bonus_min_amount"],settings["bonus_max_amount"])*(size/2))
         return {"supplies":
                     {"price":supply_price,
                      "amount":supply_amount},
@@ -147,11 +151,14 @@ def island_eventgen(type,size):
             with open('data/other/names.json') as json_file:
                 name_list = json.load(json_file)
             castaway = {
-                "name" : name_list[random.randint(0,settings["name_count"]-1)],
-                "attribute" : random.randint(1,settings["attribute_types"]),
-                "injured" : False,
-                "level" : random.randint(1,settings["max_starting_level"]),
-                "role" : roledic.get(random.randint(0,7))
+                "name": name_list[random.randint(0, settings["name_count"] - 1)],
+                "attribute": random.randint(1, settings["attribute_types"]),
+                "injured": False,
+                "level": random.randint(1, settings["max_starting_level"]),
+                "role": roledic.get(random.choice(roledic)),
+                "is_in_action": False,
+                "xp": 0,
+                "uID": ''.join(random.choice(string.ascii_letters) for i in range(8))
                 }
             return {"castaway":castaway}
         #found supplies

@@ -2,5 +2,6 @@
   "gold":15,
   "supplies": 80,
   "ammunition": 120,
-  "ship_HP": 3
+  "ship_HP": 3,
+  "game_tick": 0
 }
