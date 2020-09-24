@@ -93,8 +93,8 @@ def main():
     dot_map_x = 0
     dot_map_y = 0
     currentangle = 0
-    speed = 3
-    rotation_speed = 1.5
+    speed = 8
+    rotation_speed = 4
     ship_hit_box = pygame.Rect(1340, 440, 20, 20)
     clock = pygame.time.Clock()
     shop = ui_helper.shop(None)
