@@ -13,11 +13,27 @@ class game():
         self.screen = screen
         self.speed_boost = 0
 
+    def is_game_over(self):
+        if self.supplies<0 or len(self.crew)<=0 or self.ship_HP==0:
+            for file in os.listdir(os.path.join(self.path,"savegame")):
+                os.unlink(os.path.join(self.path,"savegame",file))
+            return True, "You done fucked up!"
+        else:
+            return False,None
+
+    def set_minimap(self,minimap):
+        self.minimap = minimap
+
+    def get_minimap(self):
+        return  self.minimap
+
     def write_savegame(self):
         savepath = os.path.join(self.path,"savegame")
+        print(self.max_ship_HP)
         self.write_crew()
         f = open(os.path.join(savepath,"savegame.json"),"w")
-        f.write(json.dumps({"gold":self.gold,"supplies":self.supplies,"ammunition":self.ammunition,"game_tick":self.current_tick,"ship_HP":self.ship_HP}))
+        f.write(json.dumps({"gold":self.gold,"supplies":self.supplies,"ammunition":self.ammunition,"game_tick":self.current_tick,"ship_HP":self.ship_HP,"max_ship_hp":self.max_ship_HP}))
+        print("saved")
         f.close()
         
     def read_balance(self):
@@ -36,10 +52,19 @@ class game():
         self.supplies = data["supplies"]
         self.ammunition = data["ammunition"]
         self.ship_HP = data["ship_HP"]
+        if "max_ship_hp" in data.keys():
+            self.max_ship_HP = data["max_ship_hp"]
         self.current_tick = self.current_tick+data["game_tick"]
         f = open(os.path.join(self.path,"savegame","crew.json"))
         self.crew = json.load(f)
+        for member in self.crew:
+            if "xp" in member.keys():
+                member["xp"] += 1
+                if member["xp"] >= member["level"]:
+                    member["xp"] = member["xp"]-member["level"]
+                    member["level"] += 1
         f.close()
+        self.write_crew()
 
     def island_event(self):
         text = "Wow this does things"
@@ -73,7 +98,7 @@ class game():
             return battle_window
         elif type==3:
             pass
-        elif type==4:
+        elif type==0:
             print(event_values)
             if event_values is None:
                 update_window = ui_helper.popup_window(type=1, caption="ZZZ", text="nothing happened")
@@ -112,10 +137,16 @@ class game():
                 update_window.set_offset(800, 450)
                 print(message)
                 return update_window
+        elif type==5:
+            print("Game over")
+
 
 
     def battle(self,values):
         outcome = random.randint(0,100)
+        if self.ammunition<=0:
+            print("no supplies")
+            outcome = 999
         #battle won
         if outcome<=values["victory"]:
             outcome = "Victory"
@@ -153,6 +184,9 @@ class game():
         else:
             outcome = "Defeat"
             message = ""
+            if self.ammunition<=0:
+                message+="You fought without ammunition"
+                values["damage"] = 1
             index = random.randint(0,len(self.crew)-1)
             crew_member = self.crew[index]
             crew_member_name = crew_member["name"]
@@ -168,6 +202,7 @@ class game():
             else:
                 message += "Luckily your ship is not damaged"
             message += "!"
+            self.ship_HP -= values["damage"]
         self.level_up_crew()
         return outcome,message
 
@@ -207,44 +242,74 @@ class game():
     def crew_ability(self, index):
         member = self.crew[index]
         print(member)
-        if member["role"] == "Carpenter":
-            if member["is_in_action"] is False:
-                print("now in action")
-                member["finish_tick"] = self.current_tick + 1
-                member["is_in_action"] = True
+        if member["role"] == "Carpenter" and member["is_in_action"] is False:
+            print("now in action")
+            member["finish_tick"] = self.current_tick + 1
+            member["is_in_action"] = True
         elif member["role"] == "Helmsman":
-            print("is boosting speed by " + str(member["level"]) + "%!")
+            return ui_helper.popup_window(type=1,caption ="Info",text="Is boosting ship speed by "+str(member["level"])+"%!")
+        elif member["role"] == "Fattie":
+            return ui_helper.popup_window(type=1, caption="Info",text="Is fat, useless and does not contribute in any way...is there any real reason to have him on board?!")
+        elif member["role"] == "Adventurer":
+            return ui_helper.popup_window(type=1, caption="Info",text="Increases chance for successful treasure hunt by " + str(member["level"]) + "%!")
+        elif member["role"] == "Doctor" and member["is_in_action"] is False:
+            return ui_helper.popup_window(type=7,event_values=member)
+        elif member["role"] == "Cook":
+            return ui_helper.popup_window(type=1, caption="Info",text="Consumes "+str(member["level"])+"gold per day but also produces "+str(member["level"])+" supplies per day")
+        elif member["role"] == "Brute":
+            return ui_helper.popup_window(type=1, caption="Info",text="Increases victory chance in battly by " + str(member["level"]) + "%!")
         self.write_crew()
         self.screen.blit(ui_helper.draw_crew_overview(), (0, 0))
+        return None
 
     def advance_tick(self):
         self.current_tick += 1
         print("now at gametick" + str(self.current_tick))
         for member in self.crew:
+            if "xp" in member.keys():
+                member["xp"] += 1
+                if member["xp"] >= member["level"]:
+                    member["xp"] = 0
+                    member["level"] += 1
+        for member in self.crew:
             if "is_in_action" in member.keys():
                 if member["is_in_action"] == True:
+                    print(self.current_tick)
+                    if "finish_tick" in member.keys():
+                        print(member["finish_tick"])
                     if member["finish_tick"] <= self.current_tick:
                         if member["role"] == "Doctor":
+                            print("finding healed")
                             for target in self.crew:
                                 if target["uID"] == member["target_id"]:
-                                    target["is_injured"] = False
+                                    print("found healer")
+                                    print(target)
+                                    target["injured"] = False
                                     break
                         elif member["role"] == "Carpenter":
-                            if self.ship_HP < 5:
+                            print("fixing")
+                            if self.ship_HP < self.max_ship_HP:
                                 self.ship_HP += 1
+                            elif (self.ship_HP+1) <= member["level"]:
+                                print("overhealing")
+                                self.ship_HP+=1
+                                self.max_ship_HP+=1
                         member["xp"] += 1
                         member["is_in_action"] = False
             else:
                 member["is_in_action"] = False
-        food_cons = 0
-        gold_cons = 0
         for member in self.crew:
             if member["role"] == "Cook":
-                gold_cons += member["level"]
+                if self.gold < member["level"]:
+                    self.supplies -= member["level"]*2
+                else:
+                    self.gold -= member["level"]
+                    self.supplies+=member["level"]
             else:
-                food_cons += member["level"]
-        self.supplies -= food_cons
-        self.gold -= gold_cons
+                self.supplies-=member["level"]
+        if self.supplies<0:
+            self.supplies = 0
+        print(self.supplies)
         self.write_crew()
 
     def update_screen(self,screen):
@@ -271,3 +336,16 @@ class game():
         if len(self.crew)!=8:
             return True
         return False
+
+    def heal_crewmember(self,target,source):
+        for member in self.crew:
+            if member["uID"]==source:
+                member["is_in_action"] = True
+                member["target_id"] = target["uID"]
+                if member["level"]>=target["level"]:
+                    member["finish_tick"] = self.current_tick+1
+                else:
+                    member["finish_tick"] = self.current_tick + (target["level"]-member["level"])
+                break
+        self.write_crew()
+        print("healing initiated")

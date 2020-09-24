@@ -2,16 +2,17 @@ Wednesday:
 - playable
     x day night cycle
     x food consumption
-- implement castaway mechanic
-- Game Over
-- Main menu
-- Pause button
+x implement castaway mechanic
+x Pause button
 x flee button not working
 
 thursday:
-- save castaway position
+- Game Over (M)
+x Main menu (M)
+- save castaway position (B)
 - balancing and maybe even first packaging
-- save gamestate
+x save gamestate
+- save minimap (B)
 
 nice to have:
 - find outcasts in new playthrough
