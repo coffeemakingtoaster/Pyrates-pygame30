@@ -111,6 +111,8 @@ def main():
 
 
 
+
+
         for event in pygame.event.get():
 
             #########################################################################
@@ -203,7 +205,9 @@ def main():
         y_speed = math.sin(math.radians(currentangle + 90))
         x_speed = math.cos(math.radians(currentangle + 90))
 
-        if dotexists and not (ship_hit_box.colliderect(point_hit_box)):
+
+
+        if dotexists and not (ship_hit_box.colliderect(point_hit_box)) and not is_paused:
             if 0>dot_map_x and initx<1350:
                 initx=1350
             if 1000<dot_map_x and initx>1350:
@@ -302,10 +306,8 @@ def main():
                 frame.blit(popup.get_surf(), popup.get_surf().get_rect(center=(800, 450)))'''
 
         screen.blit(frame, (0, 0))
-        '''
-        if not in_shop:
-            pygame.draw.rect(screen, (0, 0, 0), (573, 0, 493, 450), 0)
-        '''
+
+
 
 
 if __name__ == "__main__":
