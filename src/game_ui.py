@@ -147,6 +147,7 @@ def main():
                     frame.blit(popup.get_surf(), popup.get_surf().get_rect(center=(800, 450)))
                     popup.set_offset(800, 450)
                     UI_is_blocked = True
+                    is_paused = True
 
             # Quit
             if event.type == pygame.QUIT:
@@ -204,6 +205,8 @@ def main():
                 if not popup.is_active():
                     UI_is_blocked = False
                     del popup
+                    if is_paused is True:
+                        is_paused = False
 
         pygame.display.flip()
 
