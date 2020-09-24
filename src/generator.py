@@ -103,7 +103,7 @@ def crewgen():
         img_head = Image.open(os.path.join(img_path,"crew","head",crew_img_list[2][random.randint(0, 7)]))
         img_base.paste(img_face,(0,0),img_face)
         img_base.paste(img_head,(0,0),img_head)
-        img_base.save(os.path.join(img_path,crew_member["uID"]+".png"))
+        img_base.save(os.path.join(img_path,"crew_faces",crew_member["uID"]+".png"))
         crew.append(crew_member)
 
     crewfile = open("data/savegame/crew.json", "w")

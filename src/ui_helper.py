@@ -536,7 +536,7 @@ def draw_crew_overview():
         castaway_icon = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "x_button.png"))
         crew_overview_surface.blit(pygame.transform.scale((castaway_icon),(40,40)),(475, 100 + (index * 100)))
         crew_overview_surface.blit(display_text_render, (100, 100 + (index * 100)))
-        crew_face = pygame.image.load(os.path.join(os.getcwd(), "data", "img",str(member["uID"])+".png"))
+        crew_face = pygame.image.load(os.path.join(os.getcwd(), "data", "img","crew_faces",str(member["uID"])+".png"))
         crew_overview_surface.blit(pygame.transform.scale((crew_face),(50,50)),(25,100 + (index * 100)))
         index += 1
     return crew_overview_surface

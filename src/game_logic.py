@@ -17,6 +17,8 @@ class game():
         if self.supplies<0 or len(self.crew)<=0 or self.ship_HP==0:
             for file in os.listdir(os.path.join(self.path,"savegame")):
                 os.unlink(os.path.join(self.path,"savegame",file))
+            for file in os.listdir(os.path.join(self.path,"img","crew_faces")):
+                os.unlink(os.path.join(self.path, "savegame", file))
             return True, "You done fucked up!"
         else:
             return False,None
