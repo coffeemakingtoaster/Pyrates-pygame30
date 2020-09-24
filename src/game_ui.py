@@ -54,6 +54,7 @@ def main():
     # init UI elements and provide them with coordinates
     overlay = pygame.image.load(os.path.join(asset_path, "overlay.png"))
     ship = pygame.image.load(os.path.join(asset_path, "ship.png"))
+    minimap = pygame.image.load(os.path.join(asset_path, "minimap.jpg"))
     screen = pygame.display.set_mode((width, height))
     current_game = game_logic.game(screen)
     frame = pygame.Surface((width, height))
@@ -71,8 +72,10 @@ def main():
     pygame.draw.rect(frame, (0, 0, 0), ship_visual)
     pygame.draw.rect(frame, (161, 83, 27), ressource_visual)
     pygame.draw.rect(frame, (43, 132, 216), ship_movement_UI)
+
     resource_screen = ui_helper.draw_resources(current_game)
    ######### frame.blit(, (533, 450))
+
 
     frame.blit(ship, (1250, 350))
     #screen.blit(overlay, (0, 0))
@@ -98,8 +101,8 @@ def main():
     dot_map_x = 0
     dot_map_y = 0
     currentangle = 0
-    speed = 3
-    rotation_speed = 1.5
+    speed = 8
+    rotation_speed = 4
     ship_hit_box = pygame.Rect(1340, 440, 20, 20)
     clock = pygame.time.Clock()
     shop = ui_helper.shop(None)

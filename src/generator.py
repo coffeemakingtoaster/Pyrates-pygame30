@@ -74,6 +74,11 @@ def mapgen():
 
 
 
+crew_img_list = [["beige_base.png","brown_base.png","invis_base.png","pink_base.png"],
+                 ["ascended_face.png","baby_face.png","blind_face","creepy_face.png","protagonist_face","scared_face.png","sleepy_face.png","smart_face.png","twoface_face.png","weird_face.png","twoface_face.png"],
+                 ["blonde_head.png","brown_head.png","crown_head.png","flamingo_head.png","pink_head.png","pirate_head.png","princess_head.png","protagonist_head.png"]
+                 ]
+
 
 def crewgen():
 
@@ -89,7 +94,11 @@ def crewgen():
          "role" : roledic.get(i),
          "is_in_action": False,
          "xp":0,
-         "uID": ''.join(random.choice(string.ascii_letters) for i in range(8))
+         "uID": ''.join(random.choice(string.ascii_letters) for i in range(8)),
+         "img_base":crew_img_list[0][random.randint(0,3)],
+         "img_face":crew_img_list[1][random.randint(0,10)],
+         "img_head":crew_img_list[2][random.randint(0,7)]
+
          }
         crew.append(crew_member)
 
