@@ -238,7 +238,7 @@ def main():
 
             #map
             # ----------------------------------------------------------
-            gfxdraw.pixel(screen, int((ship_map_x/20))+533,int(450-(ship_map_y/20)),(255,255,255))
+            gfxdraw.pixel(screen, int((ship_map_x/25))+533,int(450-(ship_map_y/25)),(255,255,255))
 
 
 
