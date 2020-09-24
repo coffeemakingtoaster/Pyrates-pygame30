@@ -22,11 +22,13 @@ def rotate_image(image, angle):
     rot_image = rot_image.subsurface(rot_rect).copy()
     return rot_image
 
-def reset_screen(screen,current_game):
+#does not get called
+
+'''def reset_screen(screen,current_game):
     screen.blit(ui_helper.draw_resources(current_game), (533, 450))
     screen.blit(ui_helper.draw_crew_overview(),(0, 0))
     ship_visual = pygame.Rect(width / 3, 0, width / 3, height / 2)
-    pygame.draw.rect(screen, (0, 0, 0), ship_visual)
+    pygame.draw.rect(screen, (0, 0, 0), ship_visual)'''
 
 def display_night(screen,night):
     if night is True:
@@ -51,6 +53,7 @@ def main():
     ship = pygame.image.load(os.path.join(asset_path, "ship.png"))
     screen = pygame.display.set_mode((width, height))
     current_game = game_logic.game(screen)
+    frame = pygame.Surface((width, height))
     managment_UI = pygame.Rect(0, 0, width / 3, height)
     ship_visual = pygame.Rect(width / 3, 0, width / 3, height / 2)
     ressource_visual = pygame.Rect(width / 3, height / 2, width / 3, height / 2)
@@ -58,14 +61,14 @@ def main():
 
     # fill the screen with said elements
     pygame.display.set_caption("Pirate game")
-    screen.fill(background_color)
-    pygame.draw.rect(screen, (127, 4, 50), managment_UI)
-    pygame.draw.rect(screen, (0, 0, 0), ship_visual)
-    pygame.draw.rect(screen, (161, 83, 27), ressource_visual)
-    pygame.draw.rect(screen, (43, 132, 216), ship_movement_UI)
-    screen.blit(ui_helper.draw_resources(current_game), (533, 450))
+    frame.fill(background_color)
+    pygame.draw.rect(frame, (127, 4, 50), managment_UI)
+    pygame.draw.rect(frame, (0, 0, 0), ship_visual)
+    pygame.draw.rect(frame, (161, 83, 27), ressource_visual)
+    pygame.draw.rect(frame, (43, 132, 216), ship_movement_UI)
+    frame.blit(ui_helper.draw_resources(current_game), (533, 450))
 
-    screen.blit(ship, (1250, 350))
+    frame.blit(ship, (1250, 350))
     #screen.blit(overlay, (0, 0))
 
     # flip displayes everything for the user to see
@@ -84,6 +87,7 @@ def main():
     dotexists = False
     initx = 0
     inity = 0
+    popup = None
     dot_map_x = 0
     dot_map_y = 0
     currentangle = 0
@@ -95,7 +99,8 @@ def main():
     last_island = {}
     paused_time = 0
     start_time = time.time()
-    game_tick = 0
+    screen.blit(frame, (0, 0))
+    current_game.update_screen(frame)
     while running:
         island = map.collisioncheck(ship_map_x, ship_map_y,)
 
@@ -113,9 +118,6 @@ def main():
                     island = {"island_id": random.randint(0,100), "island_values": {"x": 2375, "y": 437, "size": 0, "type": 4, "visited": False}}
                 if event.key == pygame.K_b:
                     island = {"island_id": random.randint(0, 100),"island_values": {"x": 2375, "y": 437, "size": 0, "type": 2, "visited": False}}
-                if event.key == pygame.K_ESCAPE and UI_is_blocked:
-                    popup.delete_popup(screen, current_game)
-                    UI_is_blocked = False
                 if event.key == pygame.K_0:
                     if is_night is True:
                         is_night = False
@@ -136,26 +138,32 @@ def main():
                     popup = current_game.island_event(type=4, size=2)
                     if popup:
                         UI_is_blocked = True
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    popup = ui_helper.popup_window(type=5)
+                    frame.blit(popup.get_surf(), popup.get_surf().get_rect(center=(800, 450)))
+                    popup.set_offset(800, 450)
+                    UI_is_blocked = True
 
             # Quit
             if event.type == pygame.QUIT:
                 running = False
             # at mouseclick:
             # - checks if click was in ship movement window and if so rotates the ship image
-            # TODO: add support for more parts of the screen
             if event.type == pygame.MOUSEBUTTONDOWN and ship_movement_UI.collidepoint(pygame.mouse.get_pos()) and not in_shop and not UI_is_blocked:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 initx, inity = pygame.mouse.get_pos()
                 dot_map_x = ship_map_x - 266 + mouse_x - 1066
                 dot_map_y = 900 - mouse_y + ship_map_y - 200
                 # angle = (180 / math.pi) * -math.atan2((mouse_y - 450), (mouse_x - 1350))
-                pygame.draw.rect(screen, (43, 132, 216), ship_movement_UI)
+                pygame.draw.rect(frame, (43, 132, 216), ship_movement_UI)
                 #screen.blit(overlay, (0, 0))
-                pygame.draw.ellipse(screen, (255, 0, 0), pygame.Rect(mouse_x, mouse_y, 10, 10))
+                pygame.draw.ellipse(frame, (255, 0, 0), pygame.Rect(mouse_x, mouse_y, 10, 10))
                 dotexists = True
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN and managment_UI.collidepoint(pygame.mouse.get_pos()) and not in_shop and not UI_is_blocked:
                 mouse_x,mouse_y = pygame.mouse.get_pos()
+                print("managing")
                 if 50<mouse_x<150:
                     i = 0
                     while i<9:
@@ -164,22 +172,32 @@ def main():
                             current_game.crew_ability(i)
                             break
                         i+=1
+                if 475<mouse_x<505:
+                    i = 0
+                    while i < 9:
+                        button_y = 100 + i * 100
+                        if button_y < mouse_y < (button_y + 40):
+                            print("dispatching")
+                            popup = current_game.attempt_dispatch(i)
+                            UI_is_blocked = True
+                            break
+                        i += 1
 
             if event.type == pygame.MOUSEBUTTONDOWN and in_shop:
                 if managment_UI.collidepoint(pygame.mouse.get_pos()):
                     item,price = shop.interact(pygame.mouse.get_pos())
                     if shop.is_active():
                         current_game.make_purchase(item, price)
-                        screen.blit(ui_helper.draw_resources(current_game),(533,450))
-                        screen.blit(shop.get_surface(),(0,0))
+                        frame.blit(ui_helper.draw_resources(current_game),(533,450))
+                        frame.blit(shop.get_surface(),(0,0))
                     else:
                         in_shop = False
 
             if event.type == pygame.MOUSEBUTTONDOWN and UI_is_blocked:
-                popup.is_collide(pygame.mouse.get_pos(),screen,current_game)
+                popup.is_collide(pygame.mouse.get_pos(),frame,current_game)
                 pop_surf = popup.get_surf()
                 if pop_surf:
-                    screen.blit(pop_surf, pop_surf.get_rect(center=(800, 450)))
+                    frame.blit(pop_surf, pop_surf.get_rect(center=(800, 450)))
                 if not popup.is_active():
                     UI_is_blocked = False
                     del popup
@@ -206,10 +224,10 @@ def main():
                 initx=1350
             initx -= x_speed * speed
             inity += y_speed * speed
-            pygame.draw.rect(screen, (43, 132, 216), ship_movement_UI)
-            map.mapdraw(ship_map_x,ship_map_y,screen)
+            pygame.draw.rect(frame, (43, 132, 216), ship_movement_UI)
+            map.mapdraw(ship_map_x,ship_map_y,frame)
 
-            pygame.draw.ellipse(screen, (255, 0, 0), pygame.Rect(initx, inity, 10, 10))
+            pygame.draw.ellipse(frame, (255, 0, 0), pygame.Rect(initx, inity, 10, 10))
 
 
             ship_map_x += x_speed * speed
@@ -232,8 +250,8 @@ def main():
                 currentangle = 89.5
             elif currentangle > 89.5:
                 currentangle = -279.5
-            screen.blit(rotate_image(ship, +currentangle), (1250, 350))
-            display_night(screen,is_night)
+            frame.blit(rotate_image(ship, +currentangle), (1250, 350))
+            display_night(frame,is_night)
             # ------------------------------------------------------------
 
             #map
@@ -256,7 +274,10 @@ def main():
 
         if (time.time()-start_time-paused_time)>=20 and is_night:
             current_game.advance_tick()
-            screen.blit(ui_helper.draw_resources(current_game), (533, 450))
+            frame.blit(ui_helper.draw_resources(current_game), (533, 450))
+            if UI_is_blocked:
+                if popup.is_active():
+                    frame.blit(popup.get_surf(), popup.get_surf().get_rect(center=(800, 450)))
             is_night = False
             start_time = time.time()
 
@@ -266,7 +287,9 @@ def main():
             screen.blit(ui_helper.draw_resources(current_game),(533,450))
         '''
         if not in_shop and not UI_is_blocked:
-            screen.blit(ui_helper.draw_crew_overview(),(0,0))
+            frame.blit(ui_helper.draw_crew_overview(),(0,0))
+
+        screen.blit(frame, (0, 0))
 
 if __name__ == "__main__":
     main()
