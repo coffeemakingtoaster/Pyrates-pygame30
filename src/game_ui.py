@@ -7,6 +7,7 @@ import game_logic
 import map
 import random
 import generator
+import sys
 
 
 # given an image and an angle this returns the rotated image
@@ -86,6 +87,7 @@ def main():
     is_paused = False
     pause_timestamp = None
     is_night = False
+    game_over = False
     angle = 0
     ship_map_x = 750
     ship_map_y = 350
@@ -110,7 +112,8 @@ def main():
     map.mapdraw(ship_map_x, ship_map_y, current_game.get_minimap(),frame)
 
     while running:
-        island = map.collisioncheck(ship_map_x, ship_map_y,)
+        if not game_over:
+            island = map.collisioncheck(ship_map_x, ship_map_y,)
 
         for event in pygame.event.get():
 
@@ -132,7 +135,7 @@ def main():
 
             # Quit
             if event.type == pygame.QUIT:
-                running = False
+                sys.exit(0)
             # at mouseclick:
             # - checks if click was in ship movement window and if so rotates the ship image
             if event.type == pygame.MOUSEBUTTONDOWN and ship_movement_UI.collidepoint(pygame.mouse.get_pos()) and not in_shop and not UI_is_blocked:
@@ -161,7 +164,12 @@ def main():
                     while i<9:
                         button_y = 130+i*100
                         if button_y<mouse_y<(button_y+50):
-                            current_game.crew_ability(i)
+                            popup = current_game.crew_ability(i)
+                            if popup:
+                                frame.blit(popup.get_surf(), popup.get_surf().get_rect(center=(800, 450)))
+                                popup.set_offset(800, 450)
+                                UI_is_blocked = True
+                                is_paused = True
                             break
                         i+=1
                 if 475<mouse_x<505:
@@ -191,11 +199,14 @@ def main():
                 pop_surf = popup.get_surf()
                 if pop_surf:
                     frame.blit(pop_surf, pop_surf.get_rect(center=(800, 450)))
-                if not popup.is_active():
+                if not popup.is_active() and game_over is False:
                     resource_screen = ui_helper.draw_resources(current_game)
                     UI_is_blocked = False
                     del popup
                     is_paused = False
+                elif not popup.is_active() and game_over is True:
+                    running = False
+
 
         pygame.display.flip()
 
@@ -213,7 +224,7 @@ def main():
         x_speed = math.cos(math.radians(currentangle + 90))
 
 
-        if dotexists and not (ship_hit_box.colliderect(point_hit_box)) and not is_paused:
+        if dotexists and not (ship_hit_box.colliderect(point_hit_box)) and not is_paused and not game_over:
             if 0>dot_map_x and initx<1350:
                 initx=1350
             if 1000<dot_map_x and initx>1350:
@@ -300,6 +311,7 @@ def main():
         if (time.time()-start_time-paused_time)>=20 and is_night:
             current_game.advance_tick()
             resource_screen = ui_helper.draw_resources(current_game)
+            frame.blit(ui_helper.draw_crew_overview(),(0,0))
             frame.blit(resource_screen, (533, 450))
             if UI_is_blocked:
                 if popup.is_active():
@@ -319,14 +331,18 @@ def main():
         '''if popup :
             if popup.is_active():
                 frame.blit(popup.get_surf(), popup.get_surf().get_rect(center=(800, 450)))'''
+        if game_over is False:
+            game_over,message = current_game.is_game_over()
 
-        game_over,message = current_game.is_game_over()
+            if game_over:
+                popup = ui_helper.popup_window(type=6,text=message)
+                frame.blit(popup.get_surf(), popup.get_surf().get_rect(center=(800, 450)))
+                popup.set_offset(800, 450)
+                is_paused = True
+                UI_is_blocked = True
+        screen.blit(frame, (0, 0))
 
-        if game_over:
-            print(message)
-            running = False
-        else:
-            screen.blit(frame, (0, 0))
+    pygame.quit()
 
 
 

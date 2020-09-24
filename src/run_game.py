@@ -14,10 +14,13 @@ class main_menu():
         header.pack()
         self.start_game_button = tkinter.Button(root, text="New game", command=self.validate_new_game)
         self.load_game_button = tkinter.Button(root, text="Load game", command =self.load_game)
+        if len(os.listdir(os.path.join(os.getcwd(), "data", "savegame"))) == 0:
+            self.load_game_button["state"] = "disable"
         self.exit_button = tkinter.Button(root,text="exit", command=root.destroy)
         self.start_game_button.pack()
         self.load_game_button.pack()
         self.exit_button.pack()
+        self.confirm_window = None
 
 
 
@@ -30,7 +33,6 @@ class main_menu():
             warning_label = tkinter.Label(self.confirm_window,text="Creating a new savegame will overwrite your existing saves!")
             confirm_button = tkinter.Button(self.confirm_window,text="Continue",command=self.start_new_game)
             cancel_button = tkinter.Button(self.confirm_window,text="Cancel",command = self.activate_mm)
-
             warning_label.pack()
             confirm_button.pack()
             cancel_button.pack()
@@ -40,19 +42,27 @@ class main_menu():
     def activate_mm(self):
         self.start_game_button["state"] = "normal"
         self.confirm_window.destroy()
+        self.confirm_window = None
 
 
     def start_new_game(self):
+        if self.confirm_window:
+            self.confirm_window.destroy()
+            self.confirm_window = None
         for file in os.listdir(os.path.join(os.getcwd(),"data","savegame")):
             filepath = os.path.join(os.path.join(os.getcwd(),"data","savegame",file))
             os.unlink(filepath)
-        root.destroy()
+        root.withdraw()
         game_ui.main()
+        root.deiconify()
+        self.start_game_button["state"] = "normal"
 
 
     def load_game(self):
-        root.destroy()
+        root.withdraw()
         game_ui.main()
+        root.deiconify()
+        self.start_game_button["state"] = "normal"
 
 
 

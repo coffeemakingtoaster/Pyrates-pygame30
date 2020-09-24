@@ -60,6 +60,8 @@ class popup_window():
     # 2 - Battlescreen (Fight and Flee button)
     # 3 - Recruitscreen (Recruit and Leave here)
     # 4 - Abandonscreen (yes and no)
+    # 5 - PauseScreen (Resume,Save,Save and Exit)
+    # 6 - GameOver  (MM, Quit)
     def __init__(self, type,caption=None,text=None,event_values = None,crew = None):
         self.state = False
         pygame.font.init()
@@ -85,7 +87,88 @@ class popup_window():
             self.init_yes_no_screen()
         elif type==5:
             self.init_pause_screen()
+        elif type==6:
+            self.init_game_over_screen(text)
+        elif type==7:
+            self.page = 0
+            self.init_heal_crew_member()
 
+    def init_heal_crew_member(self):
+        self.state = True
+        self.buttons =[]
+        f = open(os.path.join(os.getcwd(), "data", "savegame", "crew.json"))
+        crew = json.load(f)
+        f.close()
+        wounded_count = 0
+        for member in crew:
+            if member["injured"] == True:
+                wounded_count+=1
+        #crew_overview_surface = pygame.Surface((400, 200+(wounded_count*50)))
+        crew_overview_surface = pygame.Surface((400, 300))
+        crew_overview_surface.fill((217, 141, 0))
+        caption_render = self.Caption.render("Heal", False, (196, 33, 0))
+        caption_rect = caption_render.get_rect(center=(200, 50))
+        crew_overview_surface.blit(caption_render, caption_rect)
+        index = 0
+        cnt = 0
+        for member in crew:
+            if member["injured"] == True:
+                cnt+=1
+            if member["injured"] == True and (self.page*4)<cnt<(self.page*4+4):
+                if member["level"]<=self.event_values["level"]:
+                    duration = 1
+                else:
+                    duration = member["level"] - self.event_values["level"]
+                display_text = member["name"] + " Lvl:" + str(member["level"]) + " Role:" + member["role"] +"("+str(duration)+" days)"
+                display_text_render = self.message_text.render(display_text, False, (0, 0, 0))
+                display_text_rect = display_text_render.get_rect(center=(200,100+(index*50)))
+                crew_overview_surface.blit(display_text_render, display_text_rect)
+                self.buttons.append({"button_text":"heal","hitbox":display_text_rect,"crew_member":member})
+                index += 1
+        next_page_button_render = self.message_text.render(">", False, self.text_color)
+        next_page_button_rect = next_page_button_render.get_rect(center=((self.window_size[0]/4)*3, 250))
+        previous_page_button_render = self.message_text.render("<", False, self.text_color)
+        previous_page_button_rect = previous_page_button_render.get_rect(center=((self.window_size[0] / 4), 250))
+        Cancel_button_render = self.message_text.render("Cancel", False, self.text_color)
+        Cancel_button_rect = Cancel_button_render.get_rect(center=((self.window_size[0]/4)*2, 250))
+        crew_overview_surface.blit(Cancel_button_render,Cancel_button_rect)
+        crew_overview_surface.blit(next_page_button_render,next_page_button_rect)
+        crew_overview_surface.blit(previous_page_button_render, previous_page_button_rect)
+        self.buttons.append({"button_text":"Cancel","hitbox":Cancel_button_rect})
+        self.buttons.append({"button_text": "Next", "hitbox": next_page_button_rect})
+        self.buttons.append({"button_text":"Previous", "hitbox":previous_page_button_rect})
+        self.surf = crew_overview_surface
+
+    def init_game_over_screen(self,text):
+        self.state = True
+        surf = pygame.Surface(self.window_size)
+        surf.fill(self.popup_background)
+        caption_render = self.Caption.render("Game Over!", False, self.caption_color)
+        caption_rec = caption_render.get_rect(center=(self.window_size[0] / 2, 65))
+        i = 0
+        while i < len(text):
+            print(i)
+            if (i + 25) > len(text):
+                text_to_print = text[i:len(text)]
+            else:
+                text_to_print = text[i:i + 25]
+            print(text_to_print)
+            text_render = self.message_text.render(text_to_print, False, (0, 0, 0))
+            text_rect = caption_render.get_rect(center=(200, (self.window_size[1] / 2) + (50 * (i / 20))))
+            surf.blit(text_render, text_rect)
+            i += 25
+        MM_button_render = self.message_text.render("Main Menu", False, self.text_color)
+        MM_button_rect = MM_button_render.get_rect(center=(self.window_size[0] / 3, 265))
+        Quit_button_render = self.message_text.render("Quit", False, self.text_color)
+        Quit_button_rect = MM_button_render.get_rect(center=((self.window_size[0] / 3)*2, 265))
+        surf.blit(caption_render, caption_rec)
+        surf.blit(text_render, text_rect)
+        pygame.draw.rect(surf, (0, 0, 0), MM_button_rect)
+        pygame.draw.rect(surf, (0, 0, 0), Quit_button_rect)
+        surf.blit(MM_button_render, MM_button_rect)
+        surf.blit(Quit_button_render, Quit_button_rect)
+        self.buttons = [{"button_text": "MM", "hitbox": MM_button_rect},{"button_text":"Quit","hitbox":Quit_button_rect}]
+        self.surf = surf
 
     def init_pause_screen(self):
         self.window_size = (400,400)
@@ -234,6 +317,7 @@ class popup_window():
             print(mouse_pos)
             print(button["hitbox"].center)
             if button["hitbox"].collidepoint(mouse_pos):
+                print(button)
                 if button["button_text"]=="OK":
                     print("OK")
                     self.delete_popup(screen,game)
@@ -243,7 +327,7 @@ class popup_window():
                     outcome,details = game.battle(self.event_values)
                     self.delete_popup(screen,game)
                     self.init_status_update(outcome,details)
-                elif button["button_text"]=="Flee" or button["button_text"]=="Abandon" or button["button_text"]=="Keep" or button["button_text"]=="Resume":
+                elif button["button_text"]=="Flee" or button["button_text"]=="Abandon" or button["button_text"]=="Keep" or button["button_text"]=="Resume" or button["button_text"]=="Cancel":
                     print("we out")
                     self.delete_popup(screen, game)
                     self.surf = None
@@ -266,8 +350,26 @@ class popup_window():
                     self.delete_popup(screen, game)
                     self.surf = None
                     self.state = False
-
+                elif button["button_text"] == "Quit":
+                    sys.exit(1)
+                elif button["button_text"] == "MM":
+                    self.surf = None
+                    self.state = False
+                elif button["button_text"] == "heal":
+                    print("healing")
+                    game.heal_crewmember(button["crew_member"],self.event_values["uID"])
+                    self.delete_popup(screen, game)
+                    self.surf = None
+                    self.state = False
+                    print("all clear")
+                elif button["button_text"] == "Next":
+                    self.page +=1
+                    self.init_heal_crew_member()
+                elif button["button_text"] == "Previous":
+                    self.page -=1
+                    self.init_heal_crew_member()
                 return True
+        print("no matching button found")
         return False
 
     #get alive state of object

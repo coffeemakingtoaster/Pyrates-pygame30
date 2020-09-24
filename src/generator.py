@@ -13,16 +13,16 @@ f.close()
 
 roledic = {
     0:"Helmsman",                      #Speed (basespeed*level*x)
-    1:"Navigator",                     #
-    2:"look out",                      #Fog of war range
+    1:"Fattie",                        #HighScore - high food consumption - no direct buffs
+    2:"Adventurer",                    #Higher chance to get treasure without casulties
     3:"Doctor",                        #Heal injured teammate - 1 + level delta time to heal
     4:"Carpenter",                     #Repair ship (levelbased)
     5:"Cook",                          #decreases food consumption - but consumes gold per day with increasing level
-    6:"Brute",                         # + x % battle win chance - reduces damage to ship but food consumption increases with level
-    7:"Brute"                          # + x % battle win chance - reduces damage to ship but food consumption increases with level
+    6:"Brute",                         # + lvl % battle win chance - reduces damage to ship but food consumption increases with level
+    7:"Brute"                          # + lvl % battle win chance - reduces damage to ship but food consumption increases with level
 
 }
-
+#currently unused
 attributedic = {
     0:"Giant",
     1:"Zen",
