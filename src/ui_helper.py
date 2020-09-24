@@ -506,7 +506,7 @@ def draw_crew_overview():
     crew_overview_surface = pygame.Surface((533, 900))
     crew_overview_surface.fill((217, 141, 0))
     Caption = pygame.font.Font(os.path.join(os.getcwd(), "data", "other", "Avara.ttf"), 50)
-    text = pygame.font.Font(os.path.join(os.getcwd(), "data", "other", "Carlito-Regular.ttf"), 30)
+    text = pygame.font.Font(os.path.join(os.getcwd(), "data", "other", "Carlito-Regular.ttf"), 20)
     caption_render = Caption.render("Your Crew", False, (196, 33, 0))
     caption_rect = caption_render.get_rect(center=(533 / 2, 50))
     crew_overview_surface.blit(caption_render, caption_rect)
@@ -532,9 +532,11 @@ def draw_crew_overview():
                     ability_icon = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "status_busy.png"))
         else:
             ability_icon = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "status_boosting.png"))
-        crew_overview_surface.blit(pygame.transform.scale(ability_icon, (100, 33)), (50, 130 + (index * 100)))
+        crew_overview_surface.blit(pygame.transform.scale(ability_icon, (100, 33)), (100, 130 + (index * 100)))
         castaway_icon = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "x_button.png"))
         crew_overview_surface.blit(pygame.transform.scale((castaway_icon),(40,40)),(475, 100 + (index * 100)))
-        crew_overview_surface.blit(display_text_render, (50, 100 + (index * 100)))
+        crew_overview_surface.blit(display_text_render, (100, 100 + (index * 100)))
+        crew_face = pygame.image.load(os.path.join(os.getcwd(), "data", "img","crew_faces",str(member["uID"])+".png"))
+        crew_overview_surface.blit(pygame.transform.scale((crew_face),(50,50)),(25,100 + (index * 100)))
         index += 1
     return crew_overview_surface

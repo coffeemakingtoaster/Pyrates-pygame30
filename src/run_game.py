@@ -52,6 +52,9 @@ class main_menu():
         for file in os.listdir(os.path.join(os.getcwd(),"data","savegame")):
             filepath = os.path.join(os.path.join(os.getcwd(),"data","savegame",file))
             os.unlink(filepath)
+        for file in os.listdir(os.path.join(os.getcwd(),"data","img","crew_faces")):
+            filepath = os.path.join(os.path.join(os.getcwd(), "data", "img","crew_faces", file))
+            os.unlink(filepath)
         root.withdraw()
         game_ui.main()
         root.deiconify()

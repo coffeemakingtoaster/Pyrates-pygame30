@@ -162,11 +162,13 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN and managment_UI.collidepoint(pygame.mouse.get_pos()) and not in_shop and not UI_is_blocked:
                 mouse_x,mouse_y = pygame.mouse.get_pos()
                 print("managing")
-                if 50<mouse_x<150:
+                if 100<mouse_x<200:
                     i = 0
+                    #ability
                     while i<9:
                         button_y = 130+i*100
                         if button_y<mouse_y<(button_y+50):
+                            print("send to work")
                             popup = current_game.crew_ability(i)
                             if popup:
                                 frame.blit(popup.get_surf(), popup.get_surf().get_rect(center=(800, 450)))
@@ -175,6 +177,7 @@ def main():
                                 is_paused = True
                             break
                         i+=1
+                #dispatch
                 if 475<mouse_x<505:
                     i = 0
                     while i < 9:
