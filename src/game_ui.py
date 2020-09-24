@@ -34,7 +34,7 @@ def display_night(screen,night):
     if night is True:
         night_display = pygame.Surface((533, 900))
         night_display.set_alpha(128)
-        night_display.fill((0, 0, 0))
+        night_display.fill((0,0,0))
         screen.blit(night_display, ((533 * 2), 0))
 
 def main():
@@ -58,6 +58,8 @@ def main():
     ship_visual = pygame.Rect(width / 3, 0, width / 3, height / 2)
     ressource_visual = pygame.Rect(width / 3, height / 2, width / 3, height / 2)
     ship_movement_UI = pygame.Rect((width / 3) * 2, 0, width / 3, height)
+    minimap = pygame.Surface((40,450))
+    minimap.fill((43, 132, 216))
 
     # fill the screen with said elements
     pygame.display.set_caption("Pirate game")
@@ -66,7 +68,8 @@ def main():
     pygame.draw.rect(frame, (0, 0, 0), ship_visual)
     pygame.draw.rect(frame, (161, 83, 27), ressource_visual)
     pygame.draw.rect(frame, (43, 132, 216), ship_movement_UI)
-    frame.blit(ui_helper.draw_resources(current_game), (533, 450))
+    resource_screen = ui_helper.draw_resources(current_game)
+   ######### frame.blit(, (533, 450))
 
     frame.blit(ship, (1250, 350))
     #screen.blit(overlay, (0, 0))
@@ -101,17 +104,11 @@ def main():
     start_time = time.time()
     screen.blit(frame, (0, 0))
     current_game.update_screen(frame)
-
-    map.mapdraw(ship_map_x, ship_map_y, frame)
+    current_game.set_minimap(minimap)
+    map.mapdraw(ship_map_x, ship_map_y, current_game.get_minimap(),frame)
 
     while running:
         island = map.collisioncheck(ship_map_x, ship_map_y,)
-
-
-
-
-
-
 
         for event in pygame.event.get():
 
@@ -147,6 +144,13 @@ def main():
                 pygame.draw.ellipse(frame, (255, 0, 0), pygame.Rect(mouse_x, mouse_y, 10, 10))
                 dotexists = True
 
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    if is_paused is True and popup:
+                        popup = None
+                        is_paused = False
+                        UI_is_blocked = False
+
             if event.type == pygame.MOUSEBUTTONDOWN and managment_UI.collidepoint(pygame.mouse.get_pos()) and not in_shop and not UI_is_blocked:
                 mouse_x,mouse_y = pygame.mouse.get_pos()
                 print("managing")
@@ -178,6 +182,7 @@ def main():
                         frame.blit(shop.get_surface(),(0,0))
                     else:
                         in_shop = False
+                        is_paused = False
 
             if event.type == pygame.MOUSEBUTTONDOWN and UI_is_blocked:
                 popup.is_collide(pygame.mouse.get_pos(),frame,current_game)
@@ -185,10 +190,10 @@ def main():
                 if pop_surf:
                     frame.blit(pop_surf, pop_surf.get_rect(center=(800, 450)))
                 if not popup.is_active():
+                    resource_screen = ui_helper.draw_resources(current_game)
                     UI_is_blocked = False
                     del popup
-                    if is_paused is True:
-                        is_paused = False
+                    is_paused = False
 
         pygame.display.flip()
 
@@ -206,7 +211,6 @@ def main():
         x_speed = math.cos(math.radians(currentangle + 90))
 
 
-
         if dotexists and not (ship_hit_box.colliderect(point_hit_box)) and not is_paused:
             if 0>dot_map_x and initx<1350:
                 initx=1350
@@ -215,7 +219,7 @@ def main():
             initx -= x_speed * speed
             inity += y_speed * speed
             pygame.draw.rect(frame, (43, 132, 216), ship_movement_UI)
-            map.mapdraw(ship_map_x,ship_map_y,frame)
+            map.mapdraw(ship_map_x,ship_map_y,current_game.get_minimap(),frame)
 
             pygame.draw.ellipse(frame, (255, 0, 0), pygame.Rect(initx, inity, 10, 10))
 
@@ -242,6 +246,10 @@ def main():
                 currentangle = -279.5
             frame.blit(rotate_image(ship, +currentangle), (1250, 350))
             display_night(frame,is_night)
+            frame.blit(current_game.get_minimap(), (533, 0))
+
+        if not UI_is_blocked:
+            frame.blit(resource_screen,((533, 450)))
 
         if island and island != last_island:
             last_island = island
@@ -249,24 +257,29 @@ def main():
                 shop = current_game.island_event(type=island["island_values"]["type"],
                                                  size=island["island_values"]["size"])
                 in_shop = True
+                is_paused = True
             elif island["island_values"]["type"] == 2:
                 popup = current_game.island_event(type=island["island_values"]["type"],
                                                   size=island["island_values"]["size"])
                 UI_is_blocked = True
+                is_paused = True
             elif island["island_values"]["type"] == 3:
                 pass
-            elif island["island_values"]["type"] == 4:
-                popup = current_game.island_event(type=4, size=2)
+            elif island["island_values"]["type"] == 0:
+                popup = current_game.island_event(type=0, size=2)
                 if popup:
                     UI_is_blocked = True
-            is_paused = True
+                    is_paused = True
+
+
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                popup = ui_helper.popup_window(type=5)
-                frame.blit(popup.get_surf(), popup.get_surf().get_rect(center=(800, 450)))
-                popup.set_offset(800, 450)
-                UI_is_blocked = True
-                is_paused = True
+                if is_paused is False:
+                    popup = ui_helper.popup_window(type=5)
+                    frame.blit(popup.get_surf(), popup.get_surf().get_rect(center=(800, 450)))
+                    popup.set_offset(800, 450)
+                    UI_is_blocked = True
+                    is_paused = True
 
 
 
@@ -284,7 +297,8 @@ def main():
 
         if (time.time()-start_time-paused_time)>=20 and is_night:
             current_game.advance_tick()
-            frame.blit(ui_helper.draw_resources(current_game), (533, 450))
+            resource_screen = ui_helper.draw_resources(current_game)
+            frame.blit(resource_screen, (533, 450))
             if UI_is_blocked:
                 if popup.is_active():
                     frame.blit(popup.get_surf(), popup.get_surf().get_rect(center=(800, 450)))
@@ -300,12 +314,18 @@ def main():
         if not in_shop and not UI_is_blocked:
             frame.blit(ui_helper.draw_crew_overview(),(0,0))
 
-
         '''if popup :
             if popup.is_active():
                 frame.blit(popup.get_surf(), popup.get_surf().get_rect(center=(800, 450)))'''
 
-        screen.blit(frame, (0, 0))
+        game_over,message = current_game.is_game_over()
+
+        if game_over:
+            print(message)
+            running = False
+        else:
+            screen.blit(frame, (0, 0))
+
 
 
 

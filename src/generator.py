@@ -36,11 +36,12 @@ shop_items = {
 }
 
 # types:
+# 0 - normal
 # 1 - Shop
 # 2 - Fortress
 # 3 - Treasure
-# 4 - normal
-#
+# 4 - start
+# 5 - end
 #
 
 def mapgen():

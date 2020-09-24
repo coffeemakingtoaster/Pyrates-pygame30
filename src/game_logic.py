@@ -13,6 +13,18 @@ class game():
         self.screen = screen
         self.speed_boost = 0
 
+    def is_game_over(self):
+        if self.supplies<0 or len(self.crew)<=0 or self.ship_HP==0:
+            return True,"You done fucked up!"
+        else:
+            return False,None
+
+    def set_minimap(self,minimap):
+        self.minimap = minimap
+
+    def get_minimap(self):
+        return  self.minimap
+
     def write_savegame(self):
         savepath = os.path.join(self.path,"savegame")
         self.write_crew()
@@ -73,7 +85,7 @@ class game():
             return battle_window
         elif type==3:
             pass
-        elif type==4:
+        elif type==0:
             print(event_values)
             if event_values is None:
                 update_window = ui_helper.popup_window(type=1, caption="ZZZ", text="nothing happened")
@@ -112,10 +124,16 @@ class game():
                 update_window.set_offset(800, 450)
                 print(message)
                 return update_window
+        elif type==5:
+            print("Game over")
+
 
 
     def battle(self,values):
         outcome = random.randint(0,100)
+        if self.ammunition<=0:
+            print("no supplies")
+            outcome = 999
         #battle won
         if outcome<=values["victory"]:
             outcome = "Victory"
@@ -153,6 +171,9 @@ class game():
         else:
             outcome = "Defeat"
             message = ""
+            if self.ammunition<=0:
+                message+="You fought without ammunition"
+                values["damage"] = 1
             index = random.randint(0,len(self.crew)-1)
             crew_member = self.crew[index]
             crew_member_name = crew_member["name"]
@@ -168,6 +189,7 @@ class game():
             else:
                 message += "Luckily your ship is not damaged"
             message += "!"
+            self.ship_HP -= values["damage"]
         self.level_up_crew()
         return outcome,message
 
@@ -236,15 +258,17 @@ class game():
                         member["is_in_action"] = False
             else:
                 member["is_in_action"] = False
-        food_cons = 0
-        gold_cons = 0
         for member in self.crew:
             if member["role"] == "Cook":
-                gold_cons += member["level"]
+                if self.gold < member["level"]:
+                    self.supplies -= member["level"]*2
+                else:
+                    self.gold -= member["level"]
             else:
-                food_cons += member["level"]
-        self.supplies -= food_cons
-        self.gold -= gold_cons
+                self.supplies-=member["level"]
+        if self.supplies<0:
+            self.supplies = 0
+        print(self.supplies)
         self.write_crew()
 
     def update_screen(self,screen):

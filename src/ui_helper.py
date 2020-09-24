@@ -243,7 +243,6 @@ class popup_window():
                     outcome,details = game.battle(self.event_values)
                     self.delete_popup(screen,game)
                     self.init_status_update(outcome,details)
-                    self.state = False
                 elif button["button_text"]=="Flee" or button["button_text"]=="Abandon" or button["button_text"]=="Keep" or button["button_text"]=="Resume":
                     print("we out")
                     self.delete_popup(screen, game)
