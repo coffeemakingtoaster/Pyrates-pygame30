@@ -44,6 +44,11 @@ shop_items = {
 # 5 - end
 #
 
+def start_state_gen():
+    f = open(os.path.join(os.getcwd(),"data","savegame","savegame.json"),"w")
+    f.write(json.dumps({"gold": 15, "supplies": 50, "ammunition": 50, "game_tick": 0, "ship_HP": 5}))
+    f.close()
+
 def mapgen():
 
     x_coordinates = random.sample(range(1, settings["map_width"]), settings["island_count"])
@@ -66,7 +71,7 @@ def mapgen():
     mapfile = open("data/savegame/map.json", "w")
     mapfile.write(json.dumps(map_list))
     mapfile.close()
-mapgen()
+
 
 
 

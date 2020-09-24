@@ -43,8 +43,10 @@ def main():
     width, height = (1600, 900)
     background_color = (0, 0, 0)
 
-    generator.crewgen()
-
+    if len(os.listdir(os.path.join(os.getcwd(),"data","savegame"))) < 3:
+        generator.crewgen()
+        generator.start_state_gen()
+        generator.mapgen()
     # path to resources (images in this case)
     asset_path = os.path.join(os.getcwd(), "data", "img")
 
@@ -330,5 +332,4 @@ def main():
 
 
 
-if __name__ == "__main__":
-    main()
+
