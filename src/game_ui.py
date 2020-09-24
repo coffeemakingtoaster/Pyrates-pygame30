@@ -129,27 +129,7 @@ def main():
                     else:
                         is_night = True
             #######################################################################
-            if island and island!=last_island:
-                last_island = island
-                if island["island_values"]["type"] == 1:
-                    shop = current_game.island_event(type=island["island_values"]["type"], size=island["island_values"]["size"])
-                    in_shop = True
-                elif island["island_values"]["type"] == 2:
-                    popup = current_game.island_event(type=island["island_values"]["type"],size=island["island_values"]["size"])
-                    UI_is_blocked = True
-                elif island["island_values"]["type"] == 3:
-                    pass
-                elif island["island_values"]["type"] == 4:
-                    popup = current_game.island_event(type=4, size=2)
-                    if popup:
-                        UI_is_blocked = True
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    popup = ui_helper.popup_window(type=5)
-                    frame.blit(popup.get_surf(), popup.get_surf().get_rect(center=(800, 450)))
-                    popup.set_offset(800, 450)
-                    UI_is_blocked = True
-                    is_paused = True
+
 
             # Quit
             if event.type == pygame.QUIT:
@@ -263,10 +243,30 @@ def main():
             frame.blit(rotate_image(ship, +currentangle), (1250, 350))
             display_night(frame,is_night)
 
-
-
-
-
+        if island and island != last_island:
+            last_island = island
+            if island["island_values"]["type"] == 1:
+                shop = current_game.island_event(type=island["island_values"]["type"],
+                                                 size=island["island_values"]["size"])
+                in_shop = True
+            elif island["island_values"]["type"] == 2:
+                popup = current_game.island_event(type=island["island_values"]["type"],
+                                                  size=island["island_values"]["size"])
+                UI_is_blocked = True
+            elif island["island_values"]["type"] == 3:
+                pass
+            elif island["island_values"]["type"] == 4:
+                popup = current_game.island_event(type=4, size=2)
+                if popup:
+                    UI_is_blocked = True
+            is_paused = True
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                popup = ui_helper.popup_window(type=5)
+                frame.blit(popup.get_surf(), popup.get_surf().get_rect(center=(800, 450)))
+                popup.set_offset(800, 450)
+                UI_is_blocked = True
+                is_paused = True
 
 
 
@@ -301,7 +301,12 @@ def main():
             frame.blit(ui_helper.draw_crew_overview(),(0,0))
 
 
+        '''if popup :
+            if popup.is_active():
+                frame.blit(popup.get_surf(), popup.get_surf().get_rect(center=(800, 450)))'''
+
         screen.blit(frame, (0, 0))
+
 
 
 
