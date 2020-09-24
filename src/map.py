@@ -14,7 +14,7 @@ img_grid = [
     ["small2.jpg","mid2.jpg","large2.jpg"],
     ["small3.jpg","mid3.jpg","large3.jpg"],
     ["small4.jpg","mid4.jpg","large4.jpg"],
-    ["start.png"],
+    ["start.jpg"],
     ["end.png"]
 ]
 
