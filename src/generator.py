@@ -2,6 +2,7 @@ import random
 import json
 import os
 import string
+from PIL import Image
 
 
 
@@ -75,13 +76,13 @@ def mapgen():
 
 
 crew_img_list = [["beige_base.png","brown_base.png","invis_base.png","pink_base.png"],
-                 ["ascended_face.png","baby_face.png","blind_face","creepy_face.png","protagonist_face","scared_face.png","sleepy_face.png","smart_face.png","twoface_face.png","weird_face.png","twoface_face.png"],
+                 ["ascended_face.png","baby_face.png","blind_face.png","creepy_face.png","protagonist_face.png","scared_face.png","sleepy_face.png","smart_face.png","twoface_face.png","weird_face.png","twoface_face.png"],
                  ["blonde_head.png","brown_head.png","crown_head.png","flamingo_head.png","pink_head.png","pirate_head.png","princess_head.png","protagonist_head.png"]
                  ]
 
 
 def crewgen():
-
+    img_path = os.path.join(os.getcwd(),"data","img")
     with open('data/other/names.json') as json_file:
         name_list = json.load(json_file)
     crew = []
@@ -95,11 +96,14 @@ def crewgen():
          "is_in_action": False,
          "xp":0,
          "uID": ''.join(random.choice(string.ascii_letters) for i in range(8)),
-         "img_base":crew_img_list[0][random.randint(0,3)],
-         "img_face":crew_img_list[1][random.randint(0,10)],
-         "img_head":crew_img_list[2][random.randint(0,7)]
-
          }
+        print(os.path.join(img_path,crew_img_list[0][random.randint(0, 3)]))
+        img_base = Image.open(os.path.join(img_path,"crew","base",crew_img_list[0][random.randint(0, 3)]))
+        img_face = Image.open(os.path.join(img_path,"crew","face",crew_img_list[1][random.randint(0, 10)]))
+        img_head = Image.open(os.path.join(img_path,"crew","head",crew_img_list[2][random.randint(0, 7)]))
+        img_base.paste(img_face,(0,0),img_face)
+        img_base.paste(img_head,(0,0),img_head)
+        img_base.save(os.path.join(img_path,crew_member["uID"]+".png"))
         crew.append(crew_member)
 
     crewfile = open("data/savegame/crew.json", "w")
