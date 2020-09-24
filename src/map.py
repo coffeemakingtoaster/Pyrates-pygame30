@@ -5,7 +5,7 @@ import os
 import ui_helper
 import game_logic
 import game_ui
-
+from pygame import gfxdraw
 
 asset_path = os.path.join(os.getcwd(), "data", "img")
 
@@ -27,12 +27,13 @@ island_hitbox = pygame.Rect(0,0,0,0)
 def mapdraw(ship_pos_x,ship_pos_y,screen):
     with open('data/savegame/map.json') as json_file:
         map = json.load(json_file)
+        gfxdraw.pixel(screen, int((ship_pos_x / 25)) + 533, int(450 - (ship_pos_y / 25)), (255, 255, 255))
     i = 0
     for island in map:
         if ship_pos_x-500 < island.get("x") < ship_pos_x+500 and  ship_pos_y-600 < island.get("y") < ship_pos_y+600:
                 current_island = pygame.image.load(os.path.join(asset_path, img_grid[island.get("type")][island.get("size")]))
                 screen.blit(current_island, (1350 + (island.get("x") - ship_pos_x),(450 - (island.get("y") - ship_pos_y))))
-                print(str(island.get("type")) + "/" + str(island.get("x")))
+
 
 
         i+=1
@@ -45,7 +46,7 @@ def collisioncheck(ship_pos_x,ship_pos_y):
         island_hitbox = pygame.Rect(1350 + (island.get("x") - ship_pos_x), (450 - (island.get("y") - ship_pos_y)),
                                     size_dic.get(island.get("size")), size_dic.get(island.get("size")))
         if island_hitbox.colliderect(1340,440,20,20):
-            #print("Collision")
+            print("Collision with type: "+ str(island.get("type")))
             island["visited"] = True
             write_map(map)
             return {"island_id":i,"island_values":island}

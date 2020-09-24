@@ -7,7 +7,7 @@ import game_logic
 import map
 import random
 import generator
-from pygame import gfxdraw
+
 
 # given an image and an angle this returns the rotated image
 # can directly be drawn to screen
@@ -91,8 +91,8 @@ def main():
     dot_map_x = 0
     dot_map_y = 0
     currentangle = 0
-    speed = 2
-    rotation_speed = 1
+    speed = 3
+    rotation_speed = 1.5
     ship_hit_box = pygame.Rect(1340, 440, 20, 20)
     clock = pygame.time.Clock()
     shop = ui_helper.shop(None)
@@ -101,6 +101,9 @@ def main():
     start_time = time.time()
     screen.blit(frame, (0, 0))
     current_game.update_screen(frame)
+
+    map.mapdraw(ship_map_x, ship_map_y, frame)
+
     while running:
         island = map.collisioncheck(ship_map_x, ship_map_y,)
 
@@ -252,11 +255,11 @@ def main():
                 currentangle = -279.5
             frame.blit(rotate_image(ship, +currentangle), (1250, 350))
             display_night(frame,is_night)
-            # ------------------------------------------------------------
 
-            #map
-            # ----------------------------------------------------------
-            gfxdraw.pixel(screen, int((ship_map_x/25))+533,int(450-(ship_map_y/25)),(255,255,255))
+
+
+
+
 
 
 
@@ -286,10 +289,15 @@ def main():
         if not in_shop and not UI_is_blocked:
             screen.blit(ui_helper.draw_resources(current_game),(533,450))
         '''
+
         if not in_shop and not UI_is_blocked:
             frame.blit(ui_helper.draw_crew_overview(),(0,0))
 
+
         screen.blit(frame, (0, 0))
+        if not in_shop:
+            pygame.draw.rect(screen, (0, 0, 0), (573, 0, 493, 450), 0)
+
 
 if __name__ == "__main__":
     main()

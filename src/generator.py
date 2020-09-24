@@ -46,7 +46,7 @@ shop_items = {
 def mapgen():
 
     x_coordinates = random.sample(range(1, settings["map_width"]), settings["island_count"])
-    y_coordinates = random.sample(range(1, settings["map_length"]), settings["island_count"])
+    y_coordinates = random.sample(range(3, settings["map_length"]), settings["island_count"])
     map_list = []
     for i in range(settings["island_count"]):
         island = {
