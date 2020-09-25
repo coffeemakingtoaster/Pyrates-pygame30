@@ -39,7 +39,7 @@ def display_night(screen,night):
         night_display.fill((0,0,0))
         screen.blit(night_display, ((533 * 2), 0))
 
-def main():
+def main(username):
     pygame.init()
     # init size of the window. The background color is never visible
     width, height = (1600, 900)
@@ -47,7 +47,7 @@ def main():
 
     if len(os.listdir(os.path.join(os.getcwd(),"data","savegame"))) < 3:
         generator.crewgen()
-        generator.start_state_gen()
+        generator.start_state_gen(username)
         generator.mapgen()
     # path to resources (images in this case)
     asset_path = os.path.join(os.getcwd(), "data", "img")
@@ -65,6 +65,9 @@ def main():
     ship_movement_UI = pygame.Rect((width / 3) * 2, 0, width / 3, height)
     minimap = pygame.Surface((40,450))
     minimap.fill((43, 132, 216))
+    if os.path.isfile(os.path.join(os.getcwd(),"data","savegame","minimap.png")):
+        saved_minimap = pygame.image.load(os.path.join(os.getcwd(),"data","savegame","minimap.png"))
+        minimap.blit(saved_minimap,(0,0))
 
     # fill the screen with said elements
     pygame.display.set_caption("Pirate game")
@@ -124,7 +127,10 @@ def main():
     current_game.set_minimap(minimap)
     map.mapdraw(ship_map_x, ship_map_y, current_game.get_minimap(),frame)
 
+
+
     while running:
+        print(ship_map_y)
         if not game_over:
             island = map.collisioncheck(ship_map_x, ship_map_y,)
 
@@ -198,6 +204,15 @@ def main():
                             UI_is_blocked = True
                             break
                         i += 1
+                if 225<mouse_x<325:
+                    i = 0
+                    while i<9:
+                        button_y = 133+(i*100)
+                        if button_y < mouse_y < (button_y+33):
+                            popup = current_game.crew_heal_potion(i)
+                            UI_is_blocked = True
+                            break
+                        i+=1
 
             if event.type == pygame.MOUSEBUTTONDOWN and in_shop:
                 if managment_UI.collidepoint(pygame.mouse.get_pos()):
@@ -314,6 +329,7 @@ def main():
             if event.key == pygame.K_ESCAPE:
                 if is_paused is False:
                     current_game.set_cord(ship_map_x,ship_map_y)
+                    current_game.set_minimap(minimap)
                     popup = ui_helper.popup_window(type=5)
                     frame.blit(popup.get_surf(), popup.get_surf().get_rect(center=(800, 450)))
                     popup.set_offset(800, 450)
@@ -368,6 +384,9 @@ def main():
                 UI_is_blocked = True
         screen.blit(frame, (0, 0))
 
+    del current_game
+    del popup
+    del resource_screen
     pygame.quit()
 
 

@@ -1,0 +1,78 @@
+Hey Pyrate...as our project has gotten out of hand in terms of complexity but we don´t have time for a full fledged tutorial:
+ Here is a long ass text file that will go over the basics!
+
+ ::::THE GAME::::
+ The game is fairly simple: You start at an island the bottom of the map and have to make your way to the final island at the top of the map. You control
+ your boat by clicking somewhere on the very right side of your screen. On your way to the final island you gotta be carefull not to run out of food or have your ship wrecked in
+ battles...and every ship neeeds a crew obviously so a dead crew also is game over.
+ On your way you will see a lot of islands. While visiting those can mean injuring or even losing crew members, we highly recommend visiting the for resources.
+
+
+ ::::THE ISLANDS::::
+ There are 6 different islands. Yet only 4 are relevant to as the other 2 are start and finish of your journey:
+ 1 - "Normal" islands
+     These islands have the biggest variety of events, yet the most likely is meeting a castaway willing to join your crew...
+ 2 - Shops
+     If you happen to visit a shop island you will be able to buy necessary goods like ammunition or supplies (aka food) from them...maybe you even get lucky
+     and find a shop with a rare special item.
+ 3 - treasure island
+     When visiting this island you will be presented with a chance of finding a treasure of high value. Yet there also is a chance that you will find nothing and one of your crew
+     members will be injured...
+     (Chance to successfully find the treasure can be increased by having adventurers in your crew. For every level a brute will increase your winchance by 1%)
+ 4 - fortress/Kraken
+     When passing by a fortress or encountering a kraken you will be presented with the choice to either flee or stand and fight. To make this choice easier you will shown
+     your exact chance of winning
+     (Chance to win can be increased by having brutes in your crew. For every level a brute will increase your winchance by 1%)
+
+::::YOUR CREW::::
+Every ship needs a crew. You commmand up to 8 crewmembers (visible on the left of your screen) who have certain roles (and therefore benefits) and level up individually.
+To give you an overview of the roles:
+1 - Helmsman
+    The Helmsman knows a lot about ships, the sea and teh wind...due to his many years of experience he is able to increases your ship´s speed by 1% per level
+2 - Adventurer
+    With his great expertise of traps and the islands of the area he/she increases the chance for you to successfully find a treasure on a treasure Island
+    by 1% per level.
+3 - Doctor
+    The doctor is essential on every ship! He is the only role that can heal his allies. By clicking his work button you can choose an injured crewmember for him to heal.
+    Be aware though: While the doctor can heal other crewmembers which level is equal or lower within a day, if the crewmember has a higher level than the doctor it will take
+    1 + level difference days to heal his ally.
+4 - Carpenter
+    From a young age on the carpenter has worked on ships and therefore has learned to fix them very quickly.
+    He can heal your ship for one HP per day (don´t forget to send him to work every day). If you ship is at full health and your Carpenter has a higher level than your ship´s max HP
+    he will be able to "overheal" the ship and therefore permanently increase your ship´s HP by 1 per day.
+5 - Cook
+    The Cook is the only mobile source of supplies(food). While he consumes his level in gold every day, he also produces his level in supplies every day.
+6 - Brute
+    The Brute is a fierce warrior eager to face every opponent...therefore the increases your chance to win in a battle by 1% per level.
+7 - Fattie
+    Honestly we (the devs) are unsure what he is good for...he does not provide any buffs or has any skills...seems pretty useless right...well maybe he is? unless
+
+Considering the amount of "levels" in this section it might be obvious by now: There are certain actions in the game that give your crewmembers xp and they level individually!
+While having stronger crewmembers in itself seems nice there also is a downside: Your crewmembers consume their level in supplies each day...meaning a high level crew might not
+be sustainable in the long run. Maybe ditching them every once in a while...you could always find new crewmembers on islands nearby.
+That being said: Recruiting a new member is not possible if you have a full crew of 8...so maybe ditching a high level wounded crewmember is not such a bad choice after all.
+They all are dispose- and replaceable after all...
+
+
+::::ITEMS::::
+There is 3 things you need to keep track of if you want to finish the game:
+- Supplies
+    Supplies are a combined measurement of food and water...while you can find them on islands and buy them in shops if you drop (below) 0 that means game over
+- Ammunition
+    Battling costs ammunition! If you don´t keep track of your ammunition you will instantly loose every battle and take double damage...what is a Pirateship without
+    cannons?!
+There also are a few bonus items:
+- heal potion: is instantly consumed when clicking on somebodys injured indicator and instantly heals them...this potion is strong so it doesn´t matter what level
+  the crewmember is
+- safeguard: Is automatically consumed when you visit a treasure island. This item will prevent your crew from being hurt...for once that is
+- treasure map: Is automatically consumed when you visit a treasure island. This item will increase your chance of successfully finding the treasure by 15%
+
+
+::::WHAT IS THE GOAL?::::
+As mentioned earlier: Your goal is to reach an island on the very top of the map. Depending on your resources and crewmembers when completing your journey you will be awarded with
+a score...there also is a (local) highscore list in the main menu.
+The map is randomly generated every time you start a new game...so memorizing routes beforehand is useless.
+
+
+Thanks a lot for playing and have Fun!
+Ben & Max

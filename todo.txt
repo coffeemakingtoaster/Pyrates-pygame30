@@ -1,21 +1,22 @@
 Wednesday:
 xplayable
-    x day night cycle
-    x food consumption
-x implement castaway mechanic
-x Pause button
-x flee button not working
+    x day night cycle (M)
+    x food consumption (M)
+x implement castaway mechanic (M)
+x Pause button (M)
+x flee button not working (M)
 
 thursday:
 x Game Over (M)
 x Main menu (M)
 x save gamestate (M)
 x Save position (M)
-x Merge Ben changes
-- items
-- shop bug
-- save highscores
-- supplies game over missing?
+x Merge Ben changes (M)
+x items (M)
+? shop bug - not encountered in a while...fixed? (M)
+x supplies game over missing? (M)
+x save highscores (M)
+x display highscores
 - save minimap (B)
 
 nice to have:

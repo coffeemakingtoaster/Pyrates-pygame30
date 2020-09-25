@@ -45,9 +45,15 @@ shop_items = {
 # 5 - end
 #
 
-def start_state_gen():
+def start_state_gen(username):
     f = open(os.path.join(os.getcwd(),"data","savegame","savegame.json"),"w")
-    f.write(json.dumps({"gold": 15, "supplies": 50, "ammunition": 50, "game_tick": 0, "ship_HP": 5}))
+    f.write(json.dumps({"username": username,
+                        "gold": 15,
+                        "supplies": 50,
+                        "ammunition": 50,
+                        "game_tick": 0,
+                        "ship_HP": 5,
+                        "inventory":{"heal_pots":0,"safeguard":0,"treasure_map":0,"fancy_costumes":0}}))
     f.close()
 
 def mapgen():
@@ -65,7 +71,7 @@ def mapgen():
         }
         map_list.append(island)
     map_list.append({"x": 600, "y": 100, "size": 0, "type": 4, "visited": True})
-    map_list.append({"x": 600, "y": 1100, "size": 0, "type": 5, "visited": False})
+    map_list.append({"x": 600, "y": 11000, "size": 0, "type": 5, "visited": False})
 
 
     print(map_list)
@@ -140,7 +146,7 @@ def island_eventgen(type,size):
         possible_loot = ["supplies","ammunition","gold"]
         victory_chances = random.randint(settings["fortress_min_win_chance"],settings["fortress_max_win_chance"])
         for member in crew_data:
-            if member["role"] == "Brute":
+            if member["role"] == "Brute" and member["injured"] is False:
                 victory_chances+=member["level"]
                 if victory_chances==100:
                     break
@@ -158,6 +164,11 @@ def island_eventgen(type,size):
     #TODO
     elif type==3:
         success_chance = random.randint(settings["treasure_min_chance"],settings["treasure_max_chance"])
+        for member in crew_data:
+            if member["role"] == "Adventurer" and member["injured"] is False:
+                success_chance+=member["level"]
+                if success_chance==100:
+                    break
         has_bonus_item = False
         if random.randint(0,100)<=settings["treasure_bonus_percentage"]:
             has_bonus_item = True
@@ -165,10 +176,12 @@ def island_eventgen(type,size):
         if not has_bonus_item:
             return {"success":success_chance,"gold":int(loot)}
         return {"success":success_chance,"gold":int(loot),"bonus":{"type":shop_items[random.randint(1,4)]}}
-    elif type==4:
-        event = random.randint(1,4)
+    elif type==0:
+        print("found island")
+        event = random.randint(1,8)
+        print(event)
         #found new crewmember
-        if event == 1:
+        if event > 2:
             with open('data/other/names.json') as json_file:
                 name_list = json.load(json_file)
             castaway = {
@@ -183,7 +196,7 @@ def island_eventgen(type,size):
                 }
             return {"castaway":castaway}
         #found supplies
-        elif event == 2:
+        elif event == 1:
             item = random.randint(1,2)
             if item == 1:
                 item = "supplies"
@@ -192,7 +205,7 @@ def island_eventgen(type,size):
             amount = random.randint(settings["island_min_loot"],settings["island_max_loot"])
             return {"loot":{"type":str(item),"amount":int(amount)}}
         #lost resources
-        elif event == 3:
+        elif event == 2:
             item = random.randint(1, 2)
             if item == 1:
                 item = "supplies"

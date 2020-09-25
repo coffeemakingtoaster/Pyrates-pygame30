@@ -1,6 +1,7 @@
 import tkinter
 import os
 import game_ui
+import json
 from PIL import ImageTk,Image
 
 
@@ -10,18 +11,68 @@ class main_menu():
         #close_img = Image.open(os.path.join(os.getcwd(),"data","img","x_button.png"))
         #close_img = close_img.resize((40,40),Image.ANTIALIAS)
         #close_img = ImageTk.PhotoImage(close_img)
+        self.Name_Label = tkinter.Label(root,text="Enter your username (Will be used for higscores):")
+        self.Name_Label.pack()
+        self.e1 = tkinter.Entry(root)
+        self.e1.pack()
+        OK_button = tkinter.Button(root,text="OK",command=lambda:self.init_main_menu(OK_button))
+        OK_button.pack()
+        self.confirm_window = None
+
+    def init_main_menu(self,button_to_destroy):
+        self.username = self.e1.get()
+        self.e1.destroy()
+        self.Name_Label.destroy()
+        button_to_destroy.destroy()
         header = tkinter.Label(root, text="Pyrates")
         header.pack()
         self.start_game_button = tkinter.Button(root, text="New game", command=self.validate_new_game)
-        self.load_game_button = tkinter.Button(root, text="Load game", command =self.load_game)
+        self.load_game_button = tkinter.Button(root, text="Load game", command=self.load_game)
         if len(os.listdir(os.path.join(os.getcwd(), "data", "savegame"))) == 0:
             self.load_game_button["state"] = "disable"
-        self.exit_button = tkinter.Button(root,text="exit", command=root.destroy)
+        self.show_highscores_button = tkinter.Button(root,text="Show local highscores",command=self.display_highscores)
+        self.exit_button = tkinter.Button(root, text="exit", command=root.destroy)
         self.start_game_button.pack()
         self.load_game_button.pack()
+        self.show_highscores_button.pack()
         self.exit_button.pack()
-        self.confirm_window = None
 
+
+    #TODO: Sort highscores correctly
+    def display_highscores(self):
+        f = open(os.path.join(os.getcwd(),"data","other","highscores.json"))
+        data = json.load(f)
+        f.close()
+        scores=[]
+        for item in data:
+            print(item)
+            placed = False
+            print(len(scores))
+            if scores == []:
+                scores.append(item)
+                continue
+            index = 0
+            for element in scores:
+                if item["score"] >= element["score"]:
+                    scores.insert(index, item)
+                    if len(scores)>10:
+                        del scores[-1]
+                    print(scores)
+                    placed = True
+                    break
+                index += 1
+            if not placed:
+                if len(scores) < 10:
+                    scores.append(item)
+        score_window = tkinter.Toplevel()
+        score_window.geometry("200x500")
+        highscores_head_label = tkinter.Label(score_window,text="You local highscores:")
+        highscores_head_label.pack()
+        cnt = 1
+        for item in scores:
+            tmp_lbl = tkinter.Label(score_window,text=str(cnt)+".   %s      %s Points!"%(item["username"],item["score"]))
+            tmp_lbl.pack()
+        close_highscores_button = tkinter.Button(score_window,text="Close",command=score_window.destroy)
 
 
     def validate_new_game(self):
@@ -56,14 +107,14 @@ class main_menu():
             filepath = os.path.join(os.path.join(os.getcwd(), "data", "img","crew_faces", file))
             os.unlink(filepath)
         root.withdraw()
-        game_ui.main()
+        game_ui.main(self.username)
         root.deiconify()
         self.start_game_button["state"] = "normal"
 
 
     def load_game(self):
         root.withdraw()
-        game_ui.main()
+        game_ui.main(self.username)
         root.deiconify()
         self.start_game_button["state"] = "normal"
 
@@ -72,7 +123,7 @@ class main_menu():
 if __name__ == "__main__":
     root = tkinter.Tk()
     root.title("MainMenu")
-    root.geometry("300x100")
+    root.geometry("300x150")
     windowWidth = root.winfo_reqwidth()
     windowHeight = root.winfo_reqheight()
     positionRight = int(root.winfo_screenwidth() / 2 - windowWidth / 2)
