@@ -3,6 +3,8 @@ import json
 import generator
 import random
 import ui_helper
+import asyncio
+import asyncio
 
 class game():
     def __init__(self,screen):
@@ -16,9 +18,15 @@ class game():
     def is_game_over(self):
         if self.supplies<0 or len(self.crew)<=0 or self.ship_HP==0:
             for file in os.listdir(os.path.join(self.path,"savegame")):
-                os.unlink(os.path.join(self.path,"savegame",file))
+                try:
+                    os.remove(os.path.join(self.path,"savegame",file))
+                except Exception as e:
+                    print(e)
             for file in os.listdir(os.path.join(self.path,"img","crew_faces")):
-                os.unlink(os.path.join(self.path, "savegame", file))
+                try:
+                    os.remove(os.path.join(self.path, "savegame", file))
+                except Exception as e:
+                    print(e)
             return True, "You done fucked up!"
         else:
             return False,None
@@ -53,6 +61,7 @@ class game():
         self.write_crew()
         f = open(os.path.join(savepath,"savegame.json"),"w")
         f.write(json.dumps({
+            "username":self.username,
             "gold":self.gold,
             "supplies":self.supplies,
             "ammunition":self.ammunition,
@@ -81,6 +90,7 @@ class game():
         self.supplies = data["supplies"]
         self.ammunition = data["ammunition"]
         self.ship_HP = data["ship_HP"]
+        self.username = str(data["username"])
         if "max_ship_hp" in data.keys():
             self.max_ship_HP = data["max_ship_hp"]
         self.current_tick = self.current_tick+data["game_tick"]
@@ -193,6 +203,23 @@ class game():
                 multiplier+=member["level"]/2
             score += member["level"]*5
         score = score * multiplier
+        if os.path.isfile(os.path.join(os.getcwd(),"data","other","highscores.json")):
+            print("file exists")
+            f = open(os.path.join(os.getcwd(),"data","other","highscores.json"))
+            data = json.load(f)
+            print(data)
+            f.close()
+            new_score = {"username": self.username, "score": int(score)}
+            print(data)
+            data.append(new_score)
+            new_f = open(os.path.join(os.getcwd(),"data","other","highscores.json"),"w")
+            new_f.write(json.dumps(data))
+            new_f.close()
+        else:
+            print("creating file")
+            f = open(os.path.join(os.getcwd(), "data", "other", "highscores.json"), "w")
+            f.write(json.dumps([{"username":self.username,"score":int(score)}]))
+            f.close()
         return int(score)
 
     def treasure_hunt(self,values):
@@ -390,8 +417,6 @@ class game():
                     self.supplies+=member["level"]
             else:
                 self.supplies-=member["level"]
-        if self.supplies<0:
-            self.supplies = 0
         print(self.supplies)
         self.write_crew()
 

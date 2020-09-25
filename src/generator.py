@@ -45,9 +45,10 @@ shop_items = {
 # 5 - end
 #
 
-def start_state_gen():
+def start_state_gen(username):
     f = open(os.path.join(os.getcwd(),"data","savegame","savegame.json"),"w")
-    f.write(json.dumps({"gold": 15,
+    f.write(json.dumps({"username": username,
+                        "gold": 15,
                         "supplies": 50,
                         "ammunition": 50,
                         "game_tick": 0,
@@ -70,7 +71,7 @@ def mapgen():
         }
         map_list.append(island)
     map_list.append({"x": 600, "y": 100, "size": 0, "type": 4, "visited": True})
-    map_list.append({"x": 600, "y": 1100, "size": 0, "type": 5, "visited": False})
+    map_list.append({"x": 600, "y": 11000, "size": 0, "type": 5, "visited": False})
 
 
     print(map_list)

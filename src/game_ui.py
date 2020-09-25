@@ -39,7 +39,7 @@ def display_night(screen,night):
         night_display.fill((0,0,0))
         screen.blit(night_display, ((533 * 2), 0))
 
-def main():
+def main(username):
     pygame.init()
     # init size of the window. The background color is never visible
     width, height = (1600, 900)
@@ -47,7 +47,7 @@ def main():
 
     if len(os.listdir(os.path.join(os.getcwd(),"data","savegame"))) < 3:
         generator.crewgen()
-        generator.start_state_gen()
+        generator.start_state_gen(username)
         generator.mapgen()
     # path to resources (images in this case)
     asset_path = os.path.join(os.getcwd(), "data", "img")
@@ -124,7 +124,10 @@ def main():
     current_game.set_minimap(minimap)
     map.mapdraw(ship_map_x, ship_map_y, current_game.get_minimap(),frame)
 
+
+
     while running:
+        print(ship_map_y)
         if not game_over:
             island = map.collisioncheck(ship_map_x, ship_map_y,)
 
@@ -377,6 +380,9 @@ def main():
                 UI_is_blocked = True
         screen.blit(frame, (0, 0))
 
+    del current_game
+    del popup
+    del resource_screen
     pygame.quit()
 
 
