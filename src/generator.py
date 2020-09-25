@@ -146,7 +146,7 @@ def island_eventgen(type,size):
         possible_loot = ["supplies","ammunition","gold"]
         victory_chances = random.randint(settings["fortress_min_win_chance"],settings["fortress_max_win_chance"])
         for member in crew_data:
-            if member["role"] == "Brute":
+            if member["role"] == "Brute" and member["injured"] is False:
                 victory_chances+=member["level"]
                 if victory_chances==100:
                     break
@@ -164,6 +164,11 @@ def island_eventgen(type,size):
     #TODO
     elif type==3:
         success_chance = random.randint(settings["treasure_min_chance"],settings["treasure_max_chance"])
+        for member in crew_data:
+            if member["role"] == "Adventurer" and member["injured"] is False:
+                success_chance+=member["level"]
+                if success_chance==100:
+                    break
         has_bonus_item = False
         if random.randint(0,100)<=settings["treasure_bonus_percentage"]:
             has_bonus_item = True

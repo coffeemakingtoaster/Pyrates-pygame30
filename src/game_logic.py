@@ -344,6 +344,10 @@ class game():
         f.close()
 
     def get_speed_multiplier(self):
+        self.speed_boost = 1
+        for member in self.crew:
+            if member["role"] == "Helmsman" and member["injured"] is False:
+                self.speed_boost += (member["level"]/100)
         return self.speed_boost
 
     def level_up_crew(self):
@@ -356,13 +360,13 @@ class game():
                     member["level"] += 1
             else:
                 member["xp"]=1
-            if member["role"] == "Helmsman":
-                self.speed_boost += member["level"]
         self.write_crew()
 
     def crew_ability(self, index):
         member = self.crew[index]
         print(member)
+        if member["injured"] == True:
+            return ui_helper.popup_window(type=1, caption="Info",text=str(member["name"])+"is hurt and therefore useless...heal this crewmember first!")
         if member["role"] == "Carpenter" and member["is_in_action"] is False:
             print("now in action")
             member["finish_tick"] = self.current_tick + 1
