@@ -23,6 +23,15 @@ size_dic = {
     1: 175,
     2: 250
 }
+color_dic = {
+    0: (255, 243, 196),
+    1: (255, 255, 0),
+    2: (242, 125, 255),
+    3: (255, 0, 0),
+    4: (99, 99, 99),
+    5: (0, 255, 0)
+}
+
 island_hitbox = pygame.Rect(0,0,0,0)
 def mapdraw(ship_pos_x,ship_pos_y,minimap,screen):
     with open('data/savegame/map.json') as json_file:
@@ -33,7 +42,8 @@ def mapdraw(ship_pos_x,ship_pos_y,minimap,screen):
         if ship_pos_x-500 < island.get("x") < ship_pos_x+500 and  ship_pos_y-600 < island.get("y") < ship_pos_y+600:
                 current_island = pygame.image.load(os.path.join(asset_path, img_grid[island.get("type")][island.get("size")]))
                 screen.blit(current_island, (1350 + (island.get("x") - ship_pos_x),(450 - (island.get("y") - ship_pos_y))))
-                gfxdraw.pixel(minimap, int((island.get("x") / 25)), int(450 - (island.get("y") / 25)), (0, 255, 0))
+                pygame.draw.rect(minimap, color_dic.get(island.get("type")), (int((island.get("x") / 25)), int(450 - (island.get("y") / 25)), 2*(island.get("size")+1), 2*(island.get("size")+1)), 0)
+                #gfxdraw.pixel(minimap, int((island.get("x") / 25)), int(450 - (island.get("y") / 25)), (0, 255, 0))
         i+=1
     pygame.draw.rect(screen, (0, 0, 0), (573, 0, 493, 450), 0)
     return None

@@ -65,7 +65,7 @@ def mapgen():
         }
         map_list.append(island)
     map_list.append({"x": 600, "y": 100, "size": 0, "type": 4, "visited": True})
-    map_list.append({"x": 600, "y": 20000, "size": 0, "type": 5, "visited": False})
+    map_list.append({"x": 600, "y": 1100, "size": 0, "type": 5, "visited": False})
 
 
     print(map_list)

@@ -23,6 +23,10 @@ class game():
         else:
             return False,None
 
+    def set_cord(self,x,y):
+        self.ship_x = x
+        self.ship_y = y
+
     def set_minimap(self,minimap):
         self.minimap = minimap
 
@@ -34,7 +38,7 @@ class game():
         print(self.max_ship_HP)
         self.write_crew()
         f = open(os.path.join(savepath,"savegame.json"),"w")
-        f.write(json.dumps({"gold":self.gold,"supplies":self.supplies,"ammunition":self.ammunition,"game_tick":self.current_tick,"ship_HP":self.ship_HP,"max_ship_hp":self.max_ship_HP}))
+        f.write(json.dumps({"gold":self.gold,"supplies":self.supplies,"ammunition":self.ammunition,"game_tick":self.current_tick,"ship_HP":self.ship_HP,"max_ship_hp":self.max_ship_HP,"ship_map_x":self.ship_x,"ship_map_y":self.ship_y}))
         print("saved")
         f.close()
         

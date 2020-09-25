@@ -8,6 +8,7 @@ import map
 import random
 import generator
 import sys
+import json
 
 
 # given an image and an angle this returns the rotated image
@@ -83,6 +84,17 @@ def main():
     # flip displayes everything for the user to see
     pygame.display.flip()
 
+    ship_map_x = 750
+    ship_map_y = 350
+
+    if "savegame.json" in os.listdir(os.path.join(os.getcwd(),"data","savegame")):
+        savefile = open(os.path.join(os.path.join(os.getcwd(),"data","savegame","savegame.json")))
+        data = json.load(savefile)
+        if "ship_map_x" in data.keys():
+            ship_map_x = data["ship_map_x"]
+        if "ship_map_y" in data.keys():
+            ship_map_y = data["ship_map_y"]
+
     # gameloop
     running = True
     in_shop = False
@@ -92,8 +104,6 @@ def main():
     is_night = False
     game_over = False
     angle = 0
-    ship_map_x = 750
-    ship_map_y = 350
     dotexists = False
     initx = 0
     inity = 0
@@ -230,10 +240,10 @@ def main():
 
 
         if dotexists and not (ship_hit_box.colliderect(point_hit_box)) and not is_paused and not game_over:
-            if 0>dot_map_x and initx<1350:
-                initx=1350
-            if 1000<dot_map_x and initx>1350:
-                initx=1350
+            if ship_map_x > 1200 :
+                ship_map_x += -1500
+            if ship_map_x < -300:
+                ship_map_x += 1500
             initx -= x_speed * speed
             inity += y_speed * speed
             pygame.draw.rect(frame, (43, 132, 216), ship_movement_UI)
@@ -303,6 +313,7 @@ def main():
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 if is_paused is False:
+                    current_game.set_cord(ship_map_x,ship_map_y)
                     popup = ui_helper.popup_window(type=5)
                     frame.blit(popup.get_surf(), popup.get_surf().get_rect(center=(800, 450)))
                     popup.set_offset(800, 450)
