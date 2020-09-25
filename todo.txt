@@ -1,5 +1,5 @@
 Wednesday:
-- playable
+xplayable
     x day night cycle
     x food consumption
 x implement castaway mechanic
@@ -7,13 +7,19 @@ x Pause button
 x flee button not working
 
 thursday:
-- Game Over (M)
+x Game Over (M)
 x Main menu (M)
-- save castaway position (B)
-- balancing and maybe even first packaging
-x save gamestate
+x save gamestate (M)
+x Save position (M)
+x Merge Ben changes
+- items
+- shop bug
+- save highscores
+- supplies game over missing?
 - save minimap (B)
 
 nice to have:
 - find outcasts in new playthrough
 - visuals
+
+- balancing and maybe even first packaging
