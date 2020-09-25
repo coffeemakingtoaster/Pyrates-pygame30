@@ -23,6 +23,20 @@ class game():
         else:
             return False,None
 
+    def crew_heal_potion(self,index):
+        if self.inventory["heal_pots"] > 0:
+            member = self.crew[index]
+            member_name = member["name"]
+            member["injured"] = False
+            self.inventory["heal_pots"] = 0
+            self.write_crew()
+            popup = ui_helper.popup_window(type=1,caption="Healed",text="%s was healed but 1 heal pot was consumed"%member_name)
+        else:
+            popup = ui_helper.popup_window(type=1, caption="Meh",text="You dont have enough heal potions for this")
+        self.screen.blit(popup.get_surf(), popup.get_surf().get_rect(center=(800, 450)))
+        popup.set_offset(800, 450)
+        return popup
+
     def set_cord(self,x,y):
         self.ship_x = x
         self.ship_y = y
@@ -38,7 +52,16 @@ class game():
         print(self.max_ship_HP)
         self.write_crew()
         f = open(os.path.join(savepath,"savegame.json"),"w")
-        f.write(json.dumps({"gold":self.gold,"supplies":self.supplies,"ammunition":self.ammunition,"game_tick":self.current_tick,"ship_HP":self.ship_HP,"max_ship_hp":self.max_ship_HP,"ship_map_x":self.ship_x,"ship_map_y":self.ship_y}))
+        f.write(json.dumps({
+            "gold":self.gold,
+            "supplies":self.supplies,
+            "ammunition":self.ammunition,
+            "game_tick":self.current_tick,
+            "ship_HP":self.ship_HP,
+            "max_ship_hp":self.max_ship_HP,
+            "ship_map_x":self.ship_x,
+            "ship_map_y":self.ship_y,
+            "inventory":self.inventory}))
         print("saved")
         f.close()
         
@@ -51,7 +74,7 @@ class game():
         self.max_ammunition = settings["max_ammunition_amount"]
 
     def read_savegame(self):
-        f = open(os.path.join(self.path,"savegame","savegame.json"))
+        f = open(os.path.join(self.path,"savegame","savegame.json"),"r")
         data = json.load(f)
         f.close()
         self.gold = data["gold"]
@@ -61,6 +84,7 @@ class game():
         if "max_ship_hp" in data.keys():
             self.max_ship_HP = data["max_ship_hp"]
         self.current_tick = self.current_tick+data["game_tick"]
+        self.inventory = data["inventory"]
         f = open(os.path.join(self.path,"savegame","crew.json"))
         self.crew = json.load(f)
         for member in self.crew:
@@ -105,7 +129,13 @@ class game():
             return battle_window
         elif type==3:
             print("treasure 2")
-            treasure_window = ui_helper.popup_window(type=8, event_values=event_values)
+            has_map = False
+            if self.inventory["treasure_map"]>0:
+                has_map = True
+                event_values["success"]+=15
+                if event_values["success"]>100:
+                    event_values["success"] = 100
+            treasure_window = ui_helper.popup_window(type=8, event_values=event_values,has_map = has_map)
             self.screen.blit(treasure_window.get_surf(), treasure_window.get_surf().get_rect(center=(800, 450)))
             treasure_window.set_offset(800, 450)
             return treasure_window
@@ -187,6 +217,8 @@ class game():
                 crew_member["injured"] = True
                 message += " " + str(crew_member_name) + " was wounded while trying their best"
                 self.crew[index] = crew_member
+            if self.inventory["safeguard"]>0:
+                message = "You failed to find the treasure! Luckily safeguard protected "+str(crew_member_name)+" from harm"
             message+="!"
         return outcome,message
 

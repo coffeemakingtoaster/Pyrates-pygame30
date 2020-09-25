@@ -47,7 +47,12 @@ shop_items = {
 
 def start_state_gen():
     f = open(os.path.join(os.getcwd(),"data","savegame","savegame.json"),"w")
-    f.write(json.dumps({"gold": 15, "supplies": 50, "ammunition": 50, "game_tick": 0, "ship_HP": 5}))
+    f.write(json.dumps({"gold": 15,
+                        "supplies": 50,
+                        "ammunition": 50,
+                        "game_tick": 0,
+                        "ship_HP": 5,
+                        "inventory":{"heal_pots":0,"safeguard":0,"treasure_map":0,"fancy_costumes":0}}))
     f.close()
 
 def mapgen():

@@ -198,6 +198,15 @@ def main():
                             UI_is_blocked = True
                             break
                         i += 1
+                if 225<mouse_x<325:
+                    i = 0
+                    while i<9:
+                        button_y = 133+(i*100)
+                        if button_y < mouse_y < (button_y+33):
+                            popup = current_game.crew_heal_potion(i)
+                            UI_is_blocked = True
+                            break
+                        i+=1
 
             if event.type == pygame.MOUSEBUTTONDOWN and in_shop:
                 if managment_UI.collidepoint(pygame.mouse.get_pos()):
