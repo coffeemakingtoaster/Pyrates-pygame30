@@ -92,6 +92,28 @@ class popup_window():
         elif type==7:
             self.page = 0
             self.init_heal_crew_member()
+        elif type==8:
+            self.init_treasure_screen()
+
+    def init_treasure_screen(self):
+        print("init treasure screen")
+        self.state = True
+        surf = pygame.Surface(self.window_size)
+        surf.fill(self.popup_background)
+        caption_render = self.Caption.render("Treasure awaits", False, self.caption_color)
+        caption_rec = caption_render.get_rect(center=(self.window_size[0] / 2, 65))
+        fight_button_render = self.message_text.render("Search! (" + str(self.event_values["success"]) + "%)", False,self.text_color)
+        fight_button_rect = fight_button_render.get_rect(center=(self.window_size[0] / 3, 265))
+        flee_button_render = self.message_text.render("Leave it", False, self.text_color)
+        flee_button_rect = flee_button_render.get_rect(center=((self.window_size[0] / 3) * 2, 265))
+        surf.blit(caption_render, caption_rec)
+        pygame.draw.rect(surf, (0, 0, 0), fight_button_rect)
+        surf.blit(fight_button_render, fight_button_rect)
+        pygame.draw.rect(surf, (0, 0, 0), flee_button_rect)
+        surf.blit(flee_button_render, flee_button_rect)
+        self.buttons = [{"button_text": "Flee", "hitbox": flee_button_rect},
+                        {"button_text": "Search", "hitbox": fight_button_rect}]
+        self.surf = surf
 
     def init_heal_crew_member(self):
         self.state = True
@@ -368,7 +390,12 @@ class popup_window():
                 elif button["button_text"] == "Previous":
                     self.page -=1
                     self.init_heal_crew_member()
+                elif button["button_text"] == "Search":
+                    outcome, details = game.treasure_hunt(self.event_values)
+                    self.delete_popup(screen, game)
+                    self.init_status_update(outcome, details)
                 return True
+
         print("no matching button found")
         return False
 

@@ -88,7 +88,8 @@ class game():
         return (self.ship_HP,self.max_ship_HP)
 
     def island_event(self,type,size):
-        event_values = generator.island_eventgen(type,size)
+        if type != 5:
+            event_values = generator.island_eventgen(type,size)
         if type==1:
             shop_popup = ui_helper.shop(event_values,self.gold)
             self.screen.blit(shop_popup.get_surface(),(0,0))
@@ -99,7 +100,11 @@ class game():
             battle_window.set_offset(800, 450)
             return battle_window
         elif type==3:
-            pass
+            print("treasure 2")
+            treasure_window = ui_helper.popup_window(type=8, event_values=event_values)
+            self.screen.blit(treasure_window.get_surf(), treasure_window.get_surf().get_rect(center=(800, 450)))
+            treasure_window.set_offset(800, 450)
+            return treasure_window
         elif type==0:
             print(event_values)
             if event_values is None:
@@ -140,8 +145,46 @@ class game():
                 print(message)
                 return update_window
         elif type==5:
-            print("Game over")
+            update_window = ui_helper.popup_window(type=1, caption="VICTORY", text="you reached "+str(self.calc_score())+" points!")
+            self.screen.blit(update_window.get_surf(), update_window.get_surf().get_rect(center=(800, 450)))
+            update_window.set_offset(800, 450)
+            return update_window
 
+    def calc_score(self):
+        score = self.gold*100+self.ammunition*10+self.supplies*10
+        print("score"+str(score))
+        multiplier = 1
+        for member in self.crew:
+            if member["role"] == "Fattie":
+                multiplier+=member["level"]/2
+            score += member["level"]*5
+        score = score * multiplier
+        return int(score)
+
+    def treasure_hunt(self,values):
+        outcome = random.randint(0, 100)
+        if outcome<=values["success"]:
+            outcome = "Success"
+            message = "You found "+str(values["gold"])+" gold"
+            self.gold += int(values["gold"])
+            if "bonus" in values.keys():
+                message+=" and 1 "+str(values["bonus"]["type"])
+            message+="!"
+        else:
+            outcome = "Failure"
+            message = "You failed to find the treasure "
+            index = random.randint(0, len(self.crew) - 1)
+            crew_member = self.crew[index]
+            crew_member_name = crew_member["name"]
+            if crew_member["injured"] == True:
+                self.crew.remove(crew_member)
+                message += " " + str(crew_member_name) + " had to die for it"
+            else:
+                crew_member["injured"] = True
+                message += " " + str(crew_member_name) + " was wounded while trying their best"
+                self.crew[index] = crew_member
+            message+="!"
+        return outcome,message
 
 
     def battle(self,values):
@@ -149,6 +192,8 @@ class game():
         if self.ammunition<=0:
             print("no supplies")
             outcome = 999
+        else:
+            self.ammunition-=5
         #battle won
         if outcome<=values["victory"]:
             outcome = "Victory"

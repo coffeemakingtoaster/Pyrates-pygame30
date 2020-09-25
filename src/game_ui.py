@@ -194,11 +194,10 @@ def main():
                     item,price = shop.interact(pygame.mouse.get_pos())
                     if shop.is_active():
                         current_game.make_purchase(item, price)
-                        frame.blit(ui_helper.draw_resources(current_game),(533,450))
-                        frame.blit(shop.get_surface(),(0,0))
                     else:
                         in_shop = False
                         is_paused = False
+                    resource_screen = ui_helper.draw_resources(current_game)
 
             if event.type == pygame.MOUSEBUTTONDOWN and UI_is_blocked:
                 popup.is_collide(pygame.mouse.get_pos(),frame,current_game)
@@ -283,12 +282,22 @@ def main():
                 UI_is_blocked = True
                 is_paused = True
             elif island["island_values"]["type"] == 3:
-                pass
-            elif island["island_values"]["type"] == 0:
-                popup = current_game.island_event(type=0, size=2)
+                print("treasure")
+                popup = current_game.island_event(type=3, size=island["island_values"]["size"])
                 if popup:
                     UI_is_blocked = True
                     is_paused = True
+            elif island["island_values"]["type"] == 0:
+                popup = current_game.island_event(type=0, size=island["island_values"]["size"])
+                if popup:
+                    UI_is_blocked = True
+                    is_paused = True
+            elif island["island_values"]["type"] == 5:
+                popup = current_game.island_event(type=5, size=island["island_values"]["size"])
+                if popup:
+                    UI_is_blocked = True
+                    is_paused = True
+                    game_over = True
 
 
         if event.type == pygame.KEYDOWN:
