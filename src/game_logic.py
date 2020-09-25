@@ -7,6 +7,12 @@ import pygame
 from PIL import Image
 import io
 
+
+crew_img_list = [["beige_base.png","brown_base.png","invis_base.png","pink_base.png"],
+                 ["ascended_face.png","baby_face.png","blind_face.png","creepy_face.png","protagonist_face.png","scared_face.png","sleepy_face.png","smart_face.png","twoface_face.png","weird_face.png","twoface_face.png"],
+                 ["blonde_head.png","brown_head.png","crown_head.png","flamingo_head.png","pink_head.png","pirate_head.png","princess_head.png","protagonist_head.png"]
+                 ]
+
 class game():
     def __init__(self,screen):
         self.current_tick = 0
@@ -429,6 +435,13 @@ class game():
         self.screen = screen
 
     def recruit(self,crewmember):
+        img_path = os.path.join(os.getcwd(),"data","img")
+        img_base = Image.open(os.path.join(img_path, "crew", "base", crew_img_list[0][random.randint(0, 3)]))
+        img_face = Image.open(os.path.join(img_path, "crew", "face", crew_img_list[1][random.randint(0, 10)]))
+        img_head = Image.open(os.path.join(img_path, "crew", "head", crew_img_list[2][random.randint(0, 7)]))
+        img_base.paste(img_face, (0, 0), img_face)
+        img_base.paste(img_head, (0, 0), img_head)
+        img_base.save(os.path.join(img_path, "crew_faces", crewmember["uID"] + ".png"))
         self.crew.append(crewmember)
         self.write_crew()
         self.screen.blit(ui_helper.draw_crew_overview(), (0, 0))

@@ -8,8 +8,14 @@ def draw_resources(current_savegame):
     asset_path = os.path.join(os.getcwd(), "data", "img")
     text_color = (0, 0, 0)
     ammunition_values, max_ammunition = current_savegame.get_ammunition()
+    if ammunition_values<0:
+        ammunition_values=0
     supplies_values, max_supply = current_savegame.get_supplies()
+    if supplies_values<0:
+        supplies_values = 0
     ship_HP, max_ship_HP = current_savegame.get_ship_HP()
+    if ship_HP<0:
+        ship_HP = 0
     gold = current_savegame.get_gold_value()
     #create the bars and load font
     values_text = pygame.font.Font(os.path.join(os.getcwd(), "data", "other", "Carlito-Regular.ttf"), 30)

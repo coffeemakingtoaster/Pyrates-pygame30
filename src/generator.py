@@ -171,10 +171,12 @@ def island_eventgen(type,size):
         if not has_bonus_item:
             return {"success":success_chance,"gold":int(loot)}
         return {"success":success_chance,"gold":int(loot),"bonus":{"type":shop_items[random.randint(1,4)]}}
-    elif type==4:
-        event = random.randint(1,4)
+    elif type==0:
+        print("found island")
+        event = random.randint(1,8)
+        print(event)
         #found new crewmember
-        if event == 1:
+        if event > 2:
             with open('data/other/names.json') as json_file:
                 name_list = json.load(json_file)
             castaway = {
@@ -189,7 +191,7 @@ def island_eventgen(type,size):
                 }
             return {"castaway":castaway}
         #found supplies
-        elif event == 2:
+        elif event == 1:
             item = random.randint(1,2)
             if item == 1:
                 item = "supplies"
@@ -198,7 +200,7 @@ def island_eventgen(type,size):
             amount = random.randint(settings["island_min_loot"],settings["island_max_loot"])
             return {"loot":{"type":str(item),"amount":int(amount)}}
         #lost resources
-        elif event == 3:
+        elif event == 2:
             item = random.randint(1, 2)
             if item == 1:
                 item = "supplies"
