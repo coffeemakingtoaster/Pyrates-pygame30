@@ -525,6 +525,7 @@ class shop():
                     self.values["bonus"]["amount"]-= 1
                 self.draw_shop(self.values)
                 self.player_gold -= price
+                self.draw_shop(self.values)
                 return item,price
 
         return None,None

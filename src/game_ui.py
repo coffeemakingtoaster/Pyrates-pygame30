@@ -219,6 +219,7 @@ def main(username):
                     item,price = shop.interact(pygame.mouse.get_pos())
                     if shop.is_active():
                         current_game.make_purchase(item, price)
+                        frame.blit(shop.get_surface(),(0,0))
                     else:
                         in_shop = False
                         is_paused = False
