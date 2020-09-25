@@ -65,6 +65,9 @@ def main(username):
     ship_movement_UI = pygame.Rect((width / 3) * 2, 0, width / 3, height)
     minimap = pygame.Surface((40,450))
     minimap.fill((43, 132, 216))
+    if os.path.isfile(os.path.join(os.getcwd(),"data","savegame","minimap.png")):
+        saved_minimap = pygame.image.load(os.path.join(os.getcwd(),"data","savegame","minimap.png"))
+        minimap.blit(saved_minimap,(0,0))
 
     # fill the screen with said elements
     pygame.display.set_caption("Pirate game")
@@ -326,6 +329,7 @@ def main(username):
             if event.key == pygame.K_ESCAPE:
                 if is_paused is False:
                     current_game.set_cord(ship_map_x,ship_map_y)
+                    current_game.set_minimap(minimap)
                     popup = ui_helper.popup_window(type=5)
                     frame.blit(popup.get_surf(), popup.get_surf().get_rect(center=(800, 450)))
                     popup.set_offset(800, 450)

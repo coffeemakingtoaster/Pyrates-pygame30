@@ -3,8 +3,9 @@ import json
 import generator
 import random
 import ui_helper
-import asyncio
-import asyncio
+import pygame
+from PIL import Image
+import io
 
 class game():
     def __init__(self,screen):
@@ -73,6 +74,10 @@ class game():
             "inventory":self.inventory}))
         print("saved")
         f.close()
+        image_string = pygame.image.tostring(self.minimap,'RGBA')
+        print(image_string)
+        img = Image.frombytes("RGBA",(40,450),image_string,"raw")
+        img.save(os.path.join(os.getcwd(),"data","savegame","minimap.png"))
         
     def read_balance(self):
         f = open(os.path.join(self.path,"balancing.json"))
