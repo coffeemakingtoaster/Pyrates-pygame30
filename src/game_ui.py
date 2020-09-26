@@ -53,7 +53,6 @@ def main(username):
     asset_path = os.path.join(os.getcwd(), "data", "img")
 
     # init UI elements and provide them with coordinates
-    overlay = pygame.image.load(os.path.join(asset_path, "overlay.png"))
     ship = pygame.image.load(os.path.join(asset_path, "ship.png"))
     minimap = pygame.image.load(os.path.join(asset_path, "minimap.jpg"))
     screen = pygame.display.set_mode((width, height))
