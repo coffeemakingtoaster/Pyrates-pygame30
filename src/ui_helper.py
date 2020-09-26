@@ -27,12 +27,12 @@ def draw_resources(current_savegame):
     ship_HP_bar_filled = pygame.Rect(50, 300, (ship_HP / max_ship_HP) * 250, 30)  ##
     #render Text
     supplies_title_render = values_text.render("Supplies:",False,text_color)
-    supplies_text_render = values_text.render(str(supplies_values) + "/" + str(max_supply), False, text_color)
+    supplies_text_render = values_text.render(str(supplies_values) + "/" + str(max_supply)+" (- "+str(current_savegame.get_supply_consumption())+")", False, text_color)
     ammunition_title_render = values_text.render("Ammunition:", False, text_color)
     ammunition_text_render = values_text.render(str(ammunition_values) + "/" + str(max_ammunition), False, text_color)
     ship_HP_title_render = values_text.render("Ship HP:", False, text_color)
     HP_text_render = values_text.render(str(ship_HP) + "/" + str(max_ship_HP), False, text_color)
-    gold_render = values_text.render(str(gold), False, text_color)
+    gold_render = values_text.render(str(gold)+" (- "+str(current_savegame.get_gold_consumption())+")", False, text_color)
     #draw bars and text onto surface
     values_surf = pygame.Surface((533, 450))
     values_surf.fill((82, 62, 16))
@@ -342,7 +342,7 @@ class popup_window():
         button_rect = button_render.get_rect(center=((self.window_size[0]/2), 265))
         surf.blit(caption_render, caption_rec)
         #surf.blit(text_render, text_rect)
-        pygame.draw.rect(surf,(0,0,0),button_rect)
+        pygame.draw.rect(surf, (0, 0, 0), button_rect)
         surf.blit(button_render, button_rect)
         self.buttons = [{"button_text":"OK","hitbox":button_rect}]
         self.surf = surf
@@ -440,12 +440,11 @@ class popup_window():
 
 #generates shop interface based on values that are generated in generator.py
 class shop():
-    def __init__(self,values = None,player_gold=None):
-        if values and player_gold:
-            self.state = True
-            self.values = values
-            self.player_gold = player_gold
-            self.draw_shop(values)
+    def __init__(self,values = None,player_gold=0):
+        self.state = True
+        self.values = values
+        self.player_gold = player_gold
+        self.draw_shop(values)
 
     #draws the shop onto surface
     def draw_shop(self,values):
@@ -609,6 +608,6 @@ def draw_crew_overview():
         crew_overview_surface.blit(pygame.transform.scale((castaway_icon),(40,40)),(475, 100 + (index * 100)))
         crew_overview_surface.blit(display_text_render, (100, 100 + (index * 100)))
         crew_face = pygame.image.load(os.path.join(os.getcwd(), "data", "img","crew_faces",str(member["uID"])+".png"))
-        crew_overview_surface.blit(pygame.transform.scale((crew_face),(50,50)),(25,100 + (index * 100)))
+        crew_overview_surface.blit(pygame.transform.scale((crew_face),(50,50)),(15,100 + (index * 100)))
         index += 1
     return crew_overview_surface

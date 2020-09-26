@@ -46,10 +46,12 @@ def mapdraw(ship_pos_x,ship_pos_y,minimap,screen):
 
 
 def collisioncheck(ship_pos_x,ship_pos_y):
-    with open('data/savegame/map.json') as json_file:
+    with open(os.path.join(os.getcwd(),'data/savegame/map.json')) as json_file:
         map = json.load(json_file)
     i = 0
     for island in map:
+        if island["visited"] == True:
+            continue
         island_hitbox = pygame.Rect(1350 + (island.get("x") - ship_pos_x), (450 - (island.get("y") - ship_pos_y)),
                                     size_dic.get(island.get("size")), size_dic.get(island.get("size")))
         if island_hitbox.colliderect(1340,440,20,20):

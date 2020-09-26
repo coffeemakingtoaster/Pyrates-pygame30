@@ -347,6 +347,22 @@ class game():
         f.write(json.dumps(self.crew))
         f.close()
 
+    def get_supply_consumption(self):
+        consum = 0
+        for member in self.crew:
+            if member["role"] == "Cook":
+                consum -= member["level"]*2
+            else:
+                consum += member["level"]
+        return consum
+
+    def get_gold_consumption(self):
+        consum = 0
+        for member in self.crew:
+            if member["role"] == "Cook":
+                consum = member["level"]
+        return consum
+
     def get_speed_multiplier(self):
         self.speed_boost = 1
         for member in self.crew:

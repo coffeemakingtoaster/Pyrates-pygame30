@@ -27,7 +27,7 @@ class main_menu():
             self.Name_Label.destroy()
         if button_to_destroy:
             button_to_destroy.destroy()
-            root.geometry("300x310")
+            root.geometry("300x325")
         img = ImageTk.PhotoImage(Image.open(os.path.join(os.getcwd(),"data","img","pyrates_icon.png")))
         header = tkinter.Label(root, image = img)
         self.image = img

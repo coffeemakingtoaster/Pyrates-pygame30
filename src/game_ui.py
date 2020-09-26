@@ -114,11 +114,11 @@ def main(username):
     dot_map_x = 0
     dot_map_y = 0
     currentangle = 0
-    speed = 8
+    speed = 4
     rotation_speed = 4
     ship_hit_box = pygame.Rect(1340, 440, 20, 20)
     clock = pygame.time.Clock()
-    shop = ui_helper.shop(None)
+    shop = None
     last_island = {}
     paused_time = 0
     start_time = time.time()
@@ -265,7 +265,7 @@ def main(username):
                 if not popup.is_active() and game_over is False:
                     resource_screen = ui_helper.draw_resources(current_game)
                     UI_is_blocked = False
-                    del popup
+                    popup = None
                     is_paused = False
                     if sound_state == 1:
                         water_sound = pygame.mixer.Sound(os.path.join(os.path.join(os.getcwd(), "data", "sound", "water.wav")))
@@ -276,14 +276,14 @@ def main(username):
 
             if time.time() - song_timer > duration:
                 if song_loaded == 1:
-                    song = pygame.mixer.Sound(os.path.join(os.getcwd(), "data", "sound", "background2.mp3"))
+                    song = pygame.mixer.Sound(os.path.join(os.getcwd(), "data", "sound", "background2.wav"))
                     song.set_volume(0.1)
                     pygame.mixer.Sound.play(song)
                     song_timer = time.time()
                     song_loaded = 2
                     duration = 139
                 else:
-                    song = pygame.mixer.Sound(os.path.join(os.getcwd(), "data", "sound", "background1.mp3"))
+                    song = pygame.mixer.Sound(os.path.join(os.getcwd(), "data", "sound", "background1.wav"))
                     song.set_volume(0.1)
                     pygame.mixer.Sound.play(song)
                     song_timer = time.time()
@@ -323,8 +323,8 @@ def main(username):
                 ship_map_x += -1500
             if ship_map_x < -300:
                 ship_map_x += 1500
-            initx -= x_speed * speed
-            inity += y_speed * speed
+            initx -= x_speed * speed * current_game.get_speed_multiplier()
+            inity += y_speed * speed * current_game.get_speed_multiplier()
             pygame.draw.rect(frame, (43, 132, 216), ship_movement_UI)
             map.mapdraw(ship_map_x,ship_map_y,current_game.get_minimap(),frame)
 
@@ -447,10 +447,6 @@ def main(username):
             print("seagull")
             pygame.mixer.Sound.play(seagull_sound)
             sound_time = time.time()
-
-
-
-
 
     del current_game
     del popup
