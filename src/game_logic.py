@@ -456,6 +456,8 @@ class game():
                     self.supplies+=member["level"]
             else:
                 self.supplies-=member["level"]
+        if self.gold<0:
+            self.gold = 0
         print(self.supplies)
         self.write_crew()
 
