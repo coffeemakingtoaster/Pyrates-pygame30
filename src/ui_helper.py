@@ -440,8 +440,7 @@ class popup_window():
         width,height = pygame.display.get_surface().get_size()
         screen.blit(draw_resources(game), (533, 450))
         screen.blit(draw_crew_overview(), (0, 0))
-        ship_visual = pygame.Rect(width / 3, 0, width / 3, height / 2)
-        pygame.draw.rect(screen, (0, 0, 0), ship_visual)
+        screen.blit(game.get_minimap(),(533,0))
         self.state = False
 
 #generates shop interface based on values that are generated in generator.py

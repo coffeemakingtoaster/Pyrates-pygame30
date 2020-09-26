@@ -69,6 +69,10 @@ def main(username):
         saved_minimap = pygame.image.load(os.path.join(os.getcwd(),"data","savegame","minimap.png"))
         minimap.blit(saved_minimap,(0,0))
 
+    day_night_display = pygame.Surface(593,450)
+    time_display = pygame.image.load(os.path.join(os.getcwd(),"data","img","clock_sunrise.jpg"))
+    day_night_display.blit(time_display,(0,0))
+
     # fill the screen with said elements
     pygame.display.set_caption("Pirate game")
     frame.fill(background_color)
@@ -233,6 +237,7 @@ def main(username):
                         if button_y < mouse_y < (button_y + 40):
                             print("dispatching")
                             popup = current_game.attempt_dispatch(i)
+
                             UI_is_blocked = True
                             break
                         i += 1
@@ -390,10 +395,6 @@ def main(username):
 
 
 
-
-
-
-
         if is_paused is False and pause_timestamp is not None:
             paused_time+= time.time()-pause_timestamp
             pause_timestamp = None
@@ -402,9 +403,22 @@ def main(username):
             is_paused = True
             pause_timestamp = time.time()
 
+        if (time.time()-start_time-paused_time)>=5 and not is_night:
+            day_night_display = pygame.Surface(593, 450)
+            time_display = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "clock_day.jpg"))
+            day_night_display.blit(time_display, (0, 0))
+
         if (time.time()-start_time-paused_time)>=10 and not is_night:
             print("night has come")
             is_night = True
+            day_night_display = pygame.Surface(593, 450)
+            time_display = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "clock_dawn.jpg"))
+            day_night_display.blit(time_display, (0, 0))
+
+        if (time.time()-start_time-paused_time)>=15 and is_night:
+            day_night_display = pygame.Surface(593, 450)
+            time_display = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "clock_night.jpg"))
+            day_night_display.blit(time_display, (0, 0))
 
         if (time.time()-start_time-paused_time)>=20 and is_night:
             current_game.advance_tick()
@@ -417,6 +431,9 @@ def main(username):
                     frame.blit(popup.get_surf(), popup.get_surf().get_rect(center=(800, 450)))
             is_night = False
             start_time = time.time()
+            day_night_display = pygame.Surface(593, 450)
+            time_display = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "clock_sunrise.jpg"))
+            day_night_display.blit(time_display, (0, 0))
 
         clock.tick(60)
         '''
@@ -427,11 +444,15 @@ def main(username):
         if not in_shop and not UI_is_blocked:
             frame.blit(ui_helper.draw_crew_overview(),(0,0))
 
-        '''if popup :
+        if popup:
             if popup.is_active():
-                frame.blit(popup.get_surf(), popup.get_surf().get_rect(center=(800, 450)))'''
+                frame.blit(resource_screen,(533,450))
+                frame.blit(popup.get_surf(), popup.get_surf().get_rect(center=(800, 450)))
+                frame.blit(day_night_display,(533+40,0))
+
         if game_over is False:
             game_over,message = current_game.is_game_over()
+
 
             if game_over:
                 popup = ui_helper.popup_window(type=6,text=message)

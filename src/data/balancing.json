@@ -21,7 +21,7 @@
     "bonus_max_price": 15,
     "bonus_min_amount" : 1,
     "bonus_max_amount" : 2,
-    "fortress_min_win_chance": 10,
+    "fortress_min_win_chance": 20,
     "fortress_max_win_chance": 75,
     "fortress_min_loot": 5,
     "fortress_max_loot": 15,

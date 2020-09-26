@@ -262,6 +262,7 @@ class game():
             if self.inventory["safeguard"]>0:
                 message = "You failed to find the treasure! Luckily safeguard protected "+str(crew_member_name)+" from harm"
             message+="!"
+        self.write_crew()
         return outcome,message
 
 
@@ -328,6 +329,7 @@ class game():
                 message += "Luckily your ship is not damaged"
             message += "!"
             self.ship_HP -= values["damage"]
+        self.write_crew()
         self.level_up_crew()
         return outcome,message
 
@@ -448,7 +450,9 @@ class game():
             else:
                 member["is_in_action"] = False
         for member in self.crew:
-            if member["role"] == "Cook":
+            if member["role"] == "Fattie":
+                self.supplies -= member["level"]*2
+            elif member["role"] == "Cook":
                 if self.gold < member["level"]:
                     self.supplies -= member["level"]*2
                 else:
