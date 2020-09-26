@@ -70,7 +70,7 @@ def main(username):
 
 
 
-    time_display = pygame.image.load(os.path.join(os.getcwd(),"data","img","clock_sunrise.jpg"))
+    time_display = pygame.image.load(os.path.join(os.getcwd(),"data","img","clock_day.jpg"))
 
 
     # fill the screen with said elements
@@ -118,7 +118,7 @@ def main(username):
     dot_map_x = 0
     dot_map_y = 0
     currentangle = 0
-    speed = 12
+    speed = 4
     rotation_speed = 4
     ship_hit_box = pygame.Rect(1340, 440, 20, 20)
     clock = pygame.time.Clock()
@@ -408,18 +408,18 @@ def main(username):
         if (time.time()-start_time-paused_time)>=5 and not is_night:
 
 
-            time_display = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "clock_day.jpg"))
+            time_display = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "clock_dawn.jpg"))
             frame.blit(time_display,(533+40,0))
 
         if (time.time()-start_time-paused_time)>=10 and not is_night:
             print("night has come")
             is_night = True
 
-            time_display = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "clock_dawn.jpg"))
+            time_display = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "clock_night.jpg"))
             frame.blit(time_display, (533 + 40, 0))
 
         if (time.time()-start_time-paused_time)>=15 and is_night:
-            time_display = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "clock_night.jpg"))
+            time_display = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "clock_sunrise.jpg"))
             frame.blit(time_display, (533 + 40, 0))
 
         if (time.time()-start_time-paused_time)>=20 and is_night:
