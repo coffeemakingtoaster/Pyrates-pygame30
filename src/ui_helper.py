@@ -8,8 +8,14 @@ def draw_resources(current_savegame):
     asset_path = os.path.join(os.getcwd(), "data", "img")
     text_color = (0, 0, 0)
     ammunition_values, max_ammunition = current_savegame.get_ammunition()
+    if ammunition_values<0:
+        ammunition_values=0
     supplies_values, max_supply = current_savegame.get_supplies()
+    if supplies_values<0:
+        supplies_values = 0
     ship_HP, max_ship_HP = current_savegame.get_ship_HP()
+    if ship_HP<0:
+        ship_HP = 0
     gold = current_savegame.get_gold_value()
     #create the bars and load font
     values_text = pygame.font.Font(os.path.join(os.getcwd(), "data", "other", "Carlito-Regular.ttf"), 30)
@@ -62,7 +68,7 @@ class popup_window():
     # 4 - Abandonscreen (yes and no)
     # 5 - PauseScreen (Resume,Save,Save and Exit)
     # 6 - GameOver  (MM, Quit)
-    def __init__(self, type,caption=None,text=None,event_values = None,crew = None):
+    def __init__(self, type,caption=None,text=None,event_values = None,crew = None,has_map = False,is_crewmember=False):
         self.state = False
         pygame.font.init()
         self.caption_size = 70
@@ -78,7 +84,7 @@ class popup_window():
         if event_values:
             self.event_values = event_values
         if type==1:
-            self.init_status_update(caption,text)
+            self.init_status_update(caption,text,is_crewmember)
         elif type==2:
             self.init_battle_screen(event_values)
         elif type==3:
@@ -93,19 +99,23 @@ class popup_window():
             self.page = 0
             self.init_heal_crew_member()
         elif type==8:
-            self.init_treasure_screen()
+            self.init_treasure_screen(has_map)
 
-    def init_treasure_screen(self):
+    def init_treasure_screen(self, has_map):
         print("init treasure screen")
         self.state = True
         surf = pygame.Surface(self.window_size)
         surf.fill(self.popup_background)
+        self.Caption = pygame.font.Font(os.path.join(os.getcwd(), "data", "other", "Avara.ttf"), 40)
         caption_render = self.Caption.render("Treasure awaits", False, self.caption_color)
         caption_rec = caption_render.get_rect(center=(self.window_size[0] / 2, 65))
-        fight_button_render = self.message_text.render("Search! (" + str(self.event_values["success"]) + "%)", False,self.text_color)
+        if has_map:
+            fight_button_render = self.message_text.render("Search! (" + str(self.event_values["success"]) + "%)(+15%)",False, self.text_color)
+        else:
+            fight_button_render = self.message_text.render("Search! (" + str(self.event_values["success"]) + "%)", False,self.text_color)
         fight_button_rect = fight_button_render.get_rect(center=(self.window_size[0] / 3, 265))
         flee_button_render = self.message_text.render("Leave it", False, self.text_color)
-        flee_button_rect = flee_button_render.get_rect(center=((self.window_size[0] / 3) * 2, 265))
+        flee_button_rect = flee_button_render.get_rect(center=((self.window_size[0] / 3) * 2+50, 265))
         surf.blit(caption_render, caption_rec)
         pygame.draw.rect(surf, (0, 0, 0), fight_button_rect)
         surf.blit(fight_button_render, fight_button_rect)
@@ -294,28 +304,43 @@ class popup_window():
          self.surf = surf
 
     #status update displays changes of stats and therefore only features okay button
-    def init_status_update(self,title,text):
+    def init_status_update(self,title,text,is_crewmember=False):
+        print("!"+title+"!")
+        print("!"+text+"!")
         self.state = True
         surf = pygame.Surface(self.window_size)
         surf.fill(self.popup_background)
         caption_render = self.Caption.render(title, False, self.caption_color)
         caption_rec = caption_render.get_rect(center=(self.window_size[0] / 2, 65))
         i = 0
+        if len(text)<=30:
+            text_render = self.message_text.render(text.strip(), False, (0, 0, 0))
+            text_rect = caption_render.get_rect(center=(self.window_size[0]/2, (self.window_size[1] / 3) + 40 + (30 * (i / 20))))
+            surf.blit(text_render, text_rect)
+            i = 40
         while i < len(text):
             print(i)
-            if (i+25)>len(text):
+            if (i+30)>len(text):
                 text_to_print = text[i:len(text)]
             else:
-                text_to_print = text[i:i+25]
-            print(text_to_print)
-            text_render = self.message_text.render(text_to_print, False, (0, 0, 0))
-            text_rect = caption_render.get_rect(center=(200, (self.window_size[1] / 2)+(50*(i/20))))
-            surf.blit(text_render, text_rect)
-            i += 25
+                text_to_print = text[i:i+30]
+            print(text_to_print.strip())
+            text_render = self.message_text.render(text_to_print.strip(), False, (0, 0, 0))
+            print(self.window_size)
+            #This has to be here...I dont know why, but without this all the formatting is (even more) fucked
+            #this annoys me
+            if is_crewmember == True:
+                x_cord =(self.window_size[0]/2)-75
+            else:
+                x_cord = (self.window_size[0]/2)-50
+            text_rect = caption_render.get_rect(center=((x_cord, (self.window_size[1]/3)+40+(30*(i/20)))))
+            surf.blit(text_render,text_rect)
+            #surf.blit(text_render, (25, (self.window_size[1]/3)+40+(30*(i/20))))
+            i += 30
         button_render = self.message_text.render("OK", False, self.text_color)
-        button_rect = button_render.get_rect(center=(self.window_size[0] / 2, 265))
+        button_rect = button_render.get_rect(center=((self.window_size[0]/2), 265))
         surf.blit(caption_render, caption_rec)
-        surf.blit(text_render, text_rect)
+        #surf.blit(text_render, text_rect)
         pygame.draw.rect(surf,(0,0,0),button_rect)
         surf.blit(button_render, button_rect)
         self.buttons = [{"button_text":"OK","hitbox":button_rect}]
@@ -348,7 +373,7 @@ class popup_window():
                 elif button["button_text"]=="Battle":
                     outcome,details = game.battle(self.event_values)
                     self.delete_popup(screen,game)
-                    self.init_status_update(outcome,details)
+                    self.init_status_update(outcome,details,is_crewmember=False)
                 elif button["button_text"]=="Flee" or button["button_text"]=="Abandon" or button["button_text"]=="Keep" or button["button_text"]=="Resume" or button["button_text"]=="Cancel":
                     print("we out")
                     self.delete_popup(screen, game)
@@ -393,7 +418,7 @@ class popup_window():
                 elif button["button_text"] == "Search":
                     outcome, details = game.treasure_hunt(self.event_values)
                     self.delete_popup(screen, game)
-                    self.init_status_update(outcome, details)
+                    self.init_status_update(outcome, details,is_crewmember=True)
                 return True
 
         print("no matching button found")
@@ -477,10 +502,26 @@ class shop():
             pygame.draw.rect(self.shop_surface,color,amount_rect)
             amount_render = text.render(str(values["bonus"]["amount"])+"x",False,(0,0,0))
             price_render = text.render(str(values["bonus"]["price"]),False,(0,0,0))
+            print(values["bonus"]["name"])
+            if values["bonus"]["name"] == "Healing potion":
+                print("heal")
+                bonus_icon = pygame.image.load(os.path.join(asset_path, "heal_pot.png"))
+            elif values["bonus"]["name"] == "Safeguard":
+                print("safe")
+                bonus_icon = pygame.image.load(os.path.join(asset_path, "safeguard.png"))
+            elif values["bonus"]["name"] == "Treasure map":
+                print("treasure")
+                bonus_icon = pygame.image.load(os.path.join(asset_path, "treasure_map.png"))
+            elif values["bonus"]["name"] == "Fancy costumes":
+                print("cost")
+                bonus_icon = pygame.image.load(os.path.join(asset_path, "costumes.png"))
+            print(bonus_icon)
             self.shop_surface.blit(amount_render,(amount_pos_x-50,amount_pos_y-10))
             self.shop_surface.blit(price_render,(amount_pos_x+50,amount_pos_y-10))
             self.shop_surface.blit(pygame.transform.scale(gold_icon, (50, 50)),(370,(amount_rect.centery-25)))
+            self.shop_surface.blit(pygame.transform.scale(bonus_icon, (50, 50)), (100, (amount_rect.centery - 25)))
             self.items.append({"item": values["bonus"]["name"], "hitbox": amount_rect})
+
             index += 1
         exit_icon = pygame.image.load(os.path.join(asset_path,"x_button.png"))
         self.leave_rect = pygame.Rect(400, 800, 50, 50)
@@ -515,6 +556,7 @@ class shop():
                     self.values["bonus"]["amount"]-= 1
                 self.draw_shop(self.values)
                 self.player_gold -= price
+                self.draw_shop(self.values)
                 return item,price
 
         return None,None
@@ -550,6 +592,7 @@ def draw_crew_overview():
                     icon = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "status_hungry.png"))
                 crew_overview_surface.blit(pygame.transform.scale(icon, (100, 33)), (400, 130 + (index * 100)))
         if member["injured"]:
+            #injured hitbox: 225 + 100 , 130+(index*100)+33
             icon = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "status_injured.png"))
             crew_overview_surface.blit(pygame.transform.scale(icon, (100, 33)), (225, 130 + (index * 100)))
         if member["role"] == "Doctor" or member["role"] == "Carpenter":

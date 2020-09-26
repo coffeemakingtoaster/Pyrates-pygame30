@@ -15,7 +15,7 @@ img_grid = [
     ["small3.jpg","mid3.jpg","large3.jpg"],
     ["small4.jpg","mid4.jpg","large4.jpg"],
     ["start.jpg"],
-    ["end.png"]
+    ["end.jpg"]
 ]
 
 size_dic = {

@@ -3,6 +3,15 @@ import json
 import generator
 import random
 import ui_helper
+import pygame
+from PIL import Image
+import io
+
+
+crew_img_list = [["beige_base.png","brown_base.png","invis_base.png","pink_base.png"],
+                 ["ascended_face.png","baby_face.png","blind_face.png","creepy_face.png","protagonist_face.png","scared_face.png","sleepy_face.png","smart_face.png","twoface_face.png","weird_face.png","twoface_face.png"],
+                 ["blonde_head.png","brown_head.png","crown_head.png","flamingo_head.png","pink_head.png","pirate_head.png","princess_head.png","protagonist_head.png"]
+                 ]
 
 class game():
     def __init__(self,screen):
@@ -16,12 +25,32 @@ class game():
     def is_game_over(self):
         if self.supplies<0 or len(self.crew)<=0 or self.ship_HP==0:
             for file in os.listdir(os.path.join(self.path,"savegame")):
-                os.unlink(os.path.join(self.path,"savegame",file))
+                try:
+                    os.remove(os.path.join(self.path,"savegame",file))
+                except Exception as e:
+                    print(e)
             for file in os.listdir(os.path.join(self.path,"img","crew_faces")):
-                os.unlink(os.path.join(self.path, "savegame", file))
+                try:
+                    os.remove(os.path.join(self.path, "savegame", file))
+                except Exception as e:
+                    print(e)
             return True, "You done fucked up!"
         else:
             return False,None
+
+    def crew_heal_potion(self,index):
+        if self.inventory["heal_pots"] > 0:
+            member = self.crew[index]
+            member_name = member["name"]
+            member["injured"] = False
+            self.inventory["heal_pots"] = 0
+            self.write_crew()
+            popup = ui_helper.popup_window(type=1,caption="Healed",text="%s was healed but 1 heal pot was consumed"%member_name)
+        else:
+            popup = ui_helper.popup_window(type=1, caption="Meh",text="You dont have enough heal potions for this")
+        self.screen.blit(popup.get_surf(), popup.get_surf().get_rect(center=(800, 450)))
+        popup.set_offset(800, 450)
+        return popup
 
     def set_cord(self,x,y):
         self.ship_x = x
@@ -38,9 +67,23 @@ class game():
         print(self.max_ship_HP)
         self.write_crew()
         f = open(os.path.join(savepath,"savegame.json"),"w")
-        f.write(json.dumps({"gold":self.gold,"supplies":self.supplies,"ammunition":self.ammunition,"game_tick":self.current_tick,"ship_HP":self.ship_HP,"max_ship_hp":self.max_ship_HP,"ship_map_x":self.ship_x,"ship_map_y":self.ship_y}))
+        f.write(json.dumps({
+            "username":self.username,
+            "gold":self.gold,
+            "supplies":self.supplies,
+            "ammunition":self.ammunition,
+            "game_tick":self.current_tick,
+            "ship_HP":self.ship_HP,
+            "max_ship_hp":self.max_ship_HP,
+            "ship_map_x":self.ship_x,
+            "ship_map_y":self.ship_y,
+            "inventory":self.inventory}))
         print("saved")
         f.close()
+        image_string = pygame.image.tostring(self.minimap,'RGBA')
+        print(image_string)
+        img = Image.frombytes("RGBA",(40,450),image_string,"raw")
+        img.save(os.path.join(os.getcwd(),"data","savegame","minimap.png"))
         
     def read_balance(self):
         f = open(os.path.join(self.path,"balancing.json"))
@@ -51,16 +94,18 @@ class game():
         self.max_ammunition = settings["max_ammunition_amount"]
 
     def read_savegame(self):
-        f = open(os.path.join(self.path,"savegame","savegame.json"))
+        f = open(os.path.join(self.path,"savegame","savegame.json"),"r")
         data = json.load(f)
         f.close()
         self.gold = data["gold"]
         self.supplies = data["supplies"]
         self.ammunition = data["ammunition"]
         self.ship_HP = data["ship_HP"]
+        self.username = str(data["username"])
         if "max_ship_hp" in data.keys():
             self.max_ship_HP = data["max_ship_hp"]
         self.current_tick = self.current_tick+data["game_tick"]
+        self.inventory = data["inventory"]
         f = open(os.path.join(self.path,"savegame","crew.json"))
         self.crew = json.load(f)
         for member in self.crew:
@@ -105,7 +150,13 @@ class game():
             return battle_window
         elif type==3:
             print("treasure 2")
-            treasure_window = ui_helper.popup_window(type=8, event_values=event_values)
+            has_map = False
+            if self.inventory["treasure_map"]>0:
+                has_map = True
+                event_values["success"]+=15
+                if event_values["success"]>100:
+                    event_values["success"] = 100
+            treasure_window = ui_helper.popup_window(type=8, event_values=event_values,has_map = has_map)
             self.screen.blit(treasure_window.get_surf(), treasure_window.get_surf().get_rect(center=(800, 450)))
             treasure_window.set_offset(800, 450)
             return treasure_window
@@ -163,6 +214,23 @@ class game():
                 multiplier+=member["level"]/2
             score += member["level"]*5
         score = score * multiplier
+        if os.path.isfile(os.path.join(os.getcwd(),"data","other","highscores.json")):
+            print("file exists")
+            f = open(os.path.join(os.getcwd(),"data","other","highscores.json"))
+            data = json.load(f)
+            print(data)
+            f.close()
+            new_score = {"username": self.username, "score": int(score)}
+            print(data)
+            data.append(new_score)
+            new_f = open(os.path.join(os.getcwd(),"data","other","highscores.json"),"w")
+            new_f.write(json.dumps(data))
+            new_f.close()
+        else:
+            print("creating file")
+            f = open(os.path.join(os.getcwd(), "data", "other", "highscores.json"), "w")
+            f.write(json.dumps([{"username":self.username,"score":int(score)}]))
+            f.close()
         return int(score)
 
     def treasure_hunt(self,values):
@@ -187,6 +255,8 @@ class game():
                 crew_member["injured"] = True
                 message += " " + str(crew_member_name) + " was wounded while trying their best"
                 self.crew[index] = crew_member
+            if self.inventory["safeguard"]>0:
+                message = "You failed to find the treasure! Luckily safeguard protected "+str(crew_member_name)+" from harm"
             message+="!"
         return outcome,message
 
@@ -274,6 +344,10 @@ class game():
         f.close()
 
     def get_speed_multiplier(self):
+        self.speed_boost = 1
+        for member in self.crew:
+            if member["role"] == "Helmsman" and member["injured"] is False:
+                self.speed_boost += (member["level"]/100)
         return self.speed_boost
 
     def level_up_crew(self):
@@ -286,29 +360,32 @@ class game():
                     member["level"] += 1
             else:
                 member["xp"]=1
-            if member["role"] == "Helmsman":
-                self.speed_boost += member["level"]
         self.write_crew()
 
     def crew_ability(self, index):
         member = self.crew[index]
         print(member)
+        if member["injured"] == True:
+            return ui_helper.popup_window(type=1, caption="Info",text=str(member["name"])+"is hurt and therefore useless...heal this crewmember first!")
         if member["role"] == "Carpenter" and member["is_in_action"] is False:
             print("now in action")
             member["finish_tick"] = self.current_tick + 1
             member["is_in_action"] = True
+            start_sound = pygame.mixer.Sound(os.path.join(os.getcwd(), "data", "sound", "job_start.mp3"))
+            start_sound.set_volume(0.5)
+            pygame.mixer.Sound.play(start_sound)
         elif member["role"] == "Helmsman":
-            return ui_helper.popup_window(type=1,caption ="Info",text="Is boosting ship speed by "+str(member["level"])+"%!")
+            return ui_helper.popup_window(type=1,caption ="Info",text="Is boosting ship speed by "+str(member["level"])+"%",is_crewmember = True)
         elif member["role"] == "Fattie":
-            return ui_helper.popup_window(type=1, caption="Info",text="Is fat, useless and does not contribute in any way...is there any real reason to have him on board?!")
+            return ui_helper.popup_window(type=1, caption="Info",text="Is fat, useless and does not contribute in any way...is there any real reason to have him on board?!",is_crewmember = True)
         elif member["role"] == "Adventurer":
-            return ui_helper.popup_window(type=1, caption="Info",text="Increases chance for successful treasure hunt by " + str(member["level"]) + "%!")
+            return ui_helper.popup_window(type=1, caption="Info",text="Increases chance for successful treasure hunt by " + str(member["level"]) + "%",is_crewmember = True)
         elif member["role"] == "Doctor" and member["is_in_action"] is False:
             return ui_helper.popup_window(type=7,event_values=member)
         elif member["role"] == "Cook":
-            return ui_helper.popup_window(type=1, caption="Info",text="Consumes "+str(member["level"])+"gold per day but also produces "+str(member["level"])+" supplies per day")
+            return ui_helper.popup_window(type=1, caption="Info",text="Consumes "+str(member["level"])+"gold per day but also produces "+str(member["level"])+" supplies per day",is_crewmember = True)
         elif member["role"] == "Brute":
-            return ui_helper.popup_window(type=1, caption="Info",text="Increases victory chance in battly by " + str(member["level"]) + "%!")
+            return ui_helper.popup_window(type=1, caption="Info",text="Increases victory chance in battly by " + str(member["level"]) + "%",is_crewmember = True)
         self.write_crew()
         self.screen.blit(ui_helper.draw_crew_overview(), (0, 0))
         return None
@@ -358,8 +435,6 @@ class game():
                     self.supplies+=member["level"]
             else:
                 self.supplies-=member["level"]
-        if self.supplies<0:
-            self.supplies = 0
         print(self.supplies)
         self.write_crew()
 
@@ -367,6 +442,13 @@ class game():
         self.screen = screen
 
     def recruit(self,crewmember):
+        img_path = os.path.join(os.getcwd(),"data","img")
+        img_base = Image.open(os.path.join(img_path, "crew", "base", crew_img_list[0][random.randint(0, 3)]))
+        img_face = Image.open(os.path.join(img_path, "crew", "face", crew_img_list[1][random.randint(0, 10)]))
+        img_head = Image.open(os.path.join(img_path, "crew", "head", crew_img_list[2][random.randint(0, 7)]))
+        img_base.paste(img_face, (0, 0), img_face)
+        img_base.paste(img_head, (0, 0), img_head)
+        img_base.save(os.path.join(img_path, "crew_faces", crewmember["uID"] + ".png"))
         self.crew.append(crewmember)
         self.write_crew()
         self.screen.blit(ui_helper.draw_crew_overview(), (0, 0))
@@ -399,4 +481,7 @@ class game():
                     member["finish_tick"] = self.current_tick + (target["level"]-member["level"])
                 break
         self.write_crew()
+        start_sound = pygame.mixer.Sound(os.path.join(os.getcwd(),"data","sound","job_start.mp3"))
+        start_sound.set_volume(0.5)
+        pygame.mixer.Sound.play(start_sound)
         print("healing initiated")
