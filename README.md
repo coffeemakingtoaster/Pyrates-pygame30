@@ -1,5 +1,8 @@
 # pygame30
 
+
+https://www.code-inspector.com/project/14005/status/svg
+
 Our submission for the 30th pyweek:
 A small ship managment game called Pyrates! For more information about the game check the PyratesReadMeAvara.pdf
 
