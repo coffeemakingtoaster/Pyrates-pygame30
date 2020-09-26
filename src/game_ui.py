@@ -126,11 +126,23 @@ def main(username):
     current_game.update_screen(frame)
     current_game.set_minimap(minimap)
     map.mapdraw(ship_map_x, ship_map_y, current_game.get_minimap(),frame)
-
-
+    sound_time = time.time()
+    seagull_sound = pygame.mixer.Sound(os.path.join(os.path.join(os.getcwd(),"data","sound","seagulls.wav")))
+    seagull_sound.set_volume(0.2)
+    pygame.mixer.Sound.play(seagull_sound)
+    if random.randint(1,2)==1:
+        pygame.mixer.music.load(os.path.join(os.getcwd(),"data","sound","background1.mp3"))
+        song_loaded = 1
+    else:
+        pygame.mixer.music.load(os.path.join(os.getcwd(), "data", "sound", "background2.mp3"))
+        song_loaded = 2
+    pygame.mixer.music.set_volume(0.1)
+    pygame.mixer.music.play()
+    SONG_END = pygame.USEREVENT+1
+    pygame.mixer.music.set_endevent(SONG_END)
+    song_pause = 0
 
     while running:
-        print(ship_map_y)
         if not game_over:
             island = map.collisioncheck(ship_map_x, ship_map_y,)
 
@@ -174,6 +186,9 @@ def main(username):
                         popup = None
                         is_paused = False
                         UI_is_blocked = False
+                        water_sound = pygame.mixer.Sound(os.path.join(os.path.join(os.getcwd(), "data", "sound", "water.wav")))
+                        water_sound.set_volume(0.5)
+                        pygame.mixer.Sound.play(water_sound)
 
             if event.type == pygame.MOUSEBUTTONDOWN and managment_UI.collidepoint(pygame.mouse.get_pos()) and not in_shop and not UI_is_blocked:
                 mouse_x,mouse_y = pygame.mouse.get_pos()
@@ -219,6 +234,7 @@ def main(username):
                     item,price = shop.interact(pygame.mouse.get_pos())
                     if shop.is_active():
                         current_game.make_purchase(item, price)
+                        frame.blit(shop.get_surface(),(0,0))
                     else:
                         in_shop = False
                         is_paused = False
@@ -234,8 +250,25 @@ def main(username):
                     UI_is_blocked = False
                     del popup
                     is_paused = False
+                    water_sound = pygame.mixer.Sound(os.path.join(os.path.join(os.getcwd(), "data", "sound", "water.wav")))
+                    water_sound.set_volume(0.5)
+                    pygame.mixer.Sound.play(water_sound)
                 elif not popup.is_active() and game_over is True:
                     running = False
+
+            if event.type == SONG_END:
+                song_pause = time.time()
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    if is_paused is False:
+                        current_game.set_cord(ship_map_x, ship_map_y)
+                        current_game.set_minimap(minimap)
+                        popup = ui_helper.popup_window(type=5)
+                        frame.blit(popup.get_surf(), popup.get_surf().get_rect(center=(800, 450)))
+                        popup.set_offset(800, 450)
+                        UI_is_blocked = True
+                        is_paused = True
 
 
         pygame.display.flip()
@@ -325,16 +358,17 @@ def main(username):
                     game_over = True
 
 
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                if is_paused is False:
-                    current_game.set_cord(ship_map_x,ship_map_y)
-                    current_game.set_minimap(minimap)
-                    popup = ui_helper.popup_window(type=5)
-                    frame.blit(popup.get_surf(), popup.get_surf().get_rect(center=(800, 450)))
-                    popup.set_offset(800, 450)
-                    UI_is_blocked = True
-                    is_paused = True
+        if time.time()-song_pause>60 and song_pause!=0:
+            if song_loaded == 1:
+                pygame.mixer.music.load(os.path.join(os.getcwd(), "data", "sound", "background2.mp3"))
+                song_loaded = 2
+                song_pause = 0
+            else:
+                pygame.mixer.music.load(os.path.join(os.getcwd(), "data", "sound", "background1.mp3"))
+                song_loaded = 1
+                song_pause = 0
+
+
 
 
 
@@ -353,7 +387,8 @@ def main(username):
         if (time.time()-start_time-paused_time)>=20 and is_night:
             current_game.advance_tick()
             resource_screen = ui_helper.draw_resources(current_game)
-            frame.blit(ui_helper.draw_crew_overview(),(0,0))
+            if not in_shop:
+                frame.blit(ui_helper.draw_crew_overview(),(0,0))
             frame.blit(resource_screen, (533, 450))
             if UI_is_blocked:
                 if popup.is_active():
@@ -383,6 +418,17 @@ def main(username):
                 is_paused = True
                 UI_is_blocked = True
         screen.blit(frame, (0, 0))
+        pygame.display.flip()
+
+
+        if (time.time()-sound_time)>30 and random.randint(0,100)>90:
+            print("seagull")
+            pygame.mixer.Sound.play(seagull_sound)
+            sound_time = time.time()
+
+
+
+
 
     del current_game
     del popup

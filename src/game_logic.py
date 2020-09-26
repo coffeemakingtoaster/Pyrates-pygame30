@@ -371,18 +371,21 @@ class game():
             print("now in action")
             member["finish_tick"] = self.current_tick + 1
             member["is_in_action"] = True
+            start_sound = pygame.mixer.Sound(os.path.join(os.getcwd(), "data", "sound", "job_start.mp3"))
+            start_sound.set_volume(0.5)
+            pygame.mixer.Sound.play(start_sound)
         elif member["role"] == "Helmsman":
-            return ui_helper.popup_window(type=1,caption ="Info",text="Is boosting ship speed by "+str(member["level"])+"%!")
+            return ui_helper.popup_window(type=1,caption ="Info",text="Is boosting ship speed by "+str(member["level"])+"%",is_crewmember = True)
         elif member["role"] == "Fattie":
-            return ui_helper.popup_window(type=1, caption="Info",text="Is fat, useless and does not contribute in any way...is there any real reason to have him on board?!")
+            return ui_helper.popup_window(type=1, caption="Info",text="Is fat, useless and does not contribute in any way...is there any real reason to have him on board?!",is_crewmember = True)
         elif member["role"] == "Adventurer":
-            return ui_helper.popup_window(type=1, caption="Info",text="Increases chance for successful treasure hunt by " + str(member["level"]) + "%!")
+            return ui_helper.popup_window(type=1, caption="Info",text="Increases chance for successful treasure hunt by " + str(member["level"]) + "%",is_crewmember = True)
         elif member["role"] == "Doctor" and member["is_in_action"] is False:
             return ui_helper.popup_window(type=7,event_values=member)
         elif member["role"] == "Cook":
-            return ui_helper.popup_window(type=1, caption="Info",text="Consumes "+str(member["level"])+"gold per day but also produces "+str(member["level"])+" supplies per day")
+            return ui_helper.popup_window(type=1, caption="Info",text="Consumes "+str(member["level"])+"gold per day but also produces "+str(member["level"])+" supplies per day",is_crewmember = True)
         elif member["role"] == "Brute":
-            return ui_helper.popup_window(type=1, caption="Info",text="Increases victory chance in battly by " + str(member["level"]) + "%!")
+            return ui_helper.popup_window(type=1, caption="Info",text="Increases victory chance in battly by " + str(member["level"]) + "%",is_crewmember = True)
         self.write_crew()
         self.screen.blit(ui_helper.draw_crew_overview(), (0, 0))
         return None
@@ -478,4 +481,7 @@ class game():
                     member["finish_tick"] = self.current_tick + (target["level"]-member["level"])
                 break
         self.write_crew()
+        start_sound = pygame.mixer.Sound(os.path.join(os.getcwd(),"data","sound","job_start.mp3"))
+        start_sound.set_volume(0.5)
+        pygame.mixer.Sound.play(start_sound)
         print("healing initiated")
