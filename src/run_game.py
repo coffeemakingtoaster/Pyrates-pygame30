@@ -27,7 +27,10 @@ class main_menu():
             self.Name_Label.destroy()
         if button_to_destroy:
             button_to_destroy.destroy()
-        header = tkinter.Label(root, text="Pyrates")
+            root.geometry("300x310")
+        img = ImageTk.PhotoImage(Image.open(os.path.join(os.getcwd(),"data","img","pyrates_icon.png")))
+        header = tkinter.Label(root, image = img)
+        self.image = img
         header.pack()
         self.start_game_button = tkinter.Button(root, text="New game", command=self.validate_new_game)
         self.load_game_button = tkinter.Button(root, text="Load game", command=self.load_game)
@@ -138,6 +141,7 @@ class main_menu():
             print("directory not empty")
             self.confirm_window = tkinter.Toplevel()
             self.confirm_window.title("Warning")
+            self.confirm_window.geometry("+{}+{}".format(positionRight, positionDown+50))
             self.start_game_button["state"] = "disable"
             warning_label = tkinter.Label(self.confirm_window,text="Creating a new savegame will overwrite your existing saves!")
             confirm_button = tkinter.Button(self.confirm_window,text="Continue",command=self.start_new_game)
@@ -180,7 +184,8 @@ class main_menu():
 
 root = tkinter.Tk()
 root.title("MainMenu")
-root.geometry("300x150")
+root.geometry("260x75")
+root.configure(bg="white")
 windowWidth = root.winfo_reqwidth()
 windowHeight = root.winfo_reqheight()
 positionRight = int(root.winfo_screenwidth() / 2 - windowWidth / 2)
