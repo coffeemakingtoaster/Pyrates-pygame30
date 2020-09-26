@@ -17,7 +17,7 @@ x items (M)
 x supplies game over missing? (M)
 x save highscores (M)
 x display highscores
-- save minimap (B)
+x save minimap (M)
 
 nice to have:
 - find outcasts in new playthrough
