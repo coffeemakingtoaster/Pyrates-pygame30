@@ -69,6 +69,8 @@ def main(username):
         saved_minimap = pygame.image.load(os.path.join(os.getcwd(),"data","savegame","minimap.png"))
         minimap.blit(saved_minimap,(0,0))
 
+
+
     time_display = pygame.image.load(os.path.join(os.getcwd(),"data","img","clock_sunrise.jpg"))
 
 
@@ -405,12 +407,15 @@ def main(username):
             pause_timestamp = time.time()
 
         if (time.time()-start_time-paused_time)>=5 and not is_night:
+
+
             time_display = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "clock_day.jpg"))
             frame.blit(time_display,(533+40,0))
 
         if (time.time()-start_time-paused_time)>=10 and not is_night:
             print("night has come")
             is_night = True
+
             time_display = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "clock_dawn.jpg"))
             frame.blit(time_display, (533 + 40, 0))
 
