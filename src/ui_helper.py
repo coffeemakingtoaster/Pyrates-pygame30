@@ -502,10 +502,26 @@ class shop():
             pygame.draw.rect(self.shop_surface,color,amount_rect)
             amount_render = text.render(str(values["bonus"]["amount"])+"x",False,(0,0,0))
             price_render = text.render(str(values["bonus"]["price"]),False,(0,0,0))
+            print(values["bonus"]["name"])
+            if values["bonus"]["name"] == "Healing potion":
+                print("heal")
+                bonus_icon = pygame.image.load(os.path.join(asset_path, "heal_pot.png"))
+            elif values["bonus"]["name"] == "Safeguard":
+                print("safe")
+                bonus_icon = pygame.image.load(os.path.join(asset_path, "safeguard.png"))
+            elif values["bonus"]["name"] == "Treasure map":
+                print("treasure")
+                bonus_icon = pygame.image.load(os.path.join(asset_path, "treasure_map.png"))
+            elif values["bonus"]["name"] == "Fancy costumes":
+                print("cost")
+                bonus_icon = pygame.image.load(os.path.join(asset_path, "costumes.png"))
+            print(bonus_icon)
             self.shop_surface.blit(amount_render,(amount_pos_x-50,amount_pos_y-10))
             self.shop_surface.blit(price_render,(amount_pos_x+50,amount_pos_y-10))
             self.shop_surface.blit(pygame.transform.scale(gold_icon, (50, 50)),(370,(amount_rect.centery-25)))
+            self.shop_surface.blit(pygame.transform.scale(bonus_icon, (50, 50)), (100, (amount_rect.centery - 25)))
             self.items.append({"item": values["bonus"]["name"], "hitbox": amount_rect})
+
             index += 1
         exit_icon = pygame.image.load(os.path.join(asset_path,"x_button.png"))
         self.leave_rect = pygame.Rect(400, 800, 50, 50)

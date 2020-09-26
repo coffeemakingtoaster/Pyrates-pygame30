@@ -143,7 +143,6 @@ def main(username):
     song_pause = 0
 
     while running:
-        print(ship_map_y)
         if not game_over:
             island = map.collisioncheck(ship_map_x, ship_map_y,)
 
