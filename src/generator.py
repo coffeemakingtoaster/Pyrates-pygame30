@@ -49,7 +49,7 @@ def start_state_gen(username):
     f = open(os.path.join(os.getcwd(),"data","savegame","savegame.json"),"w")
     f.write(json.dumps({"username": username,
                         "gold": 15,
-                        "supplies": 50,
+                        "supplies": 75,
                         "ammunition": 50,
                         "game_tick": 0,
                         "ship_HP": 5,
