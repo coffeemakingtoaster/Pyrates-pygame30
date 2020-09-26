@@ -7,6 +7,10 @@ import sys
 def draw_resources(current_savegame):
     asset_path = os.path.join(os.getcwd(), "data", "img")
     text_color = (0, 0, 0)
+    supplies_background = pygame.image.load("data/img/supply_uy.jpg")
+    supplies_overlay = pygame.image.load("data/img/supply_uy_overlay.png")
+
+
     ammunition_values, max_ammunition = current_savegame.get_ammunition()
     if ammunition_values<0:
         ammunition_values=0
@@ -35,7 +39,7 @@ def draw_resources(current_savegame):
     gold_render = values_text.render(str(gold)+" (- "+str(current_savegame.get_gold_consumption())+")", False, text_color)
     #draw bars and text onto surface
     values_surf = pygame.Surface((533, 450))
-    values_surf.fill((82, 62, 16))
+    values_surf.blit(supplies_background, (0, 0))
     values_surf.blit(supplies_title_render,(50,115-50))
     pygame.draw.rect(values_surf, (107, 86, 28), supplies_bar_basis)
     pygame.draw.rect(values_surf, (58, 235, 52), supplies_bar_filled)
@@ -52,6 +56,8 @@ def draw_resources(current_savegame):
     gold_icon = pygame.image.load(os.path.join(asset_path, "coin.png"))
     values_surf.blit(gold_render, gold_rect)
     values_surf.blit(pygame.transform.scale(gold_icon, (50, 50)), ((533 / 2) + (gold_rect.width / 2) + 20, 375))
+    values_surf.blit(supplies_overlay,(0,0))
+
     return values_surf
 
 
@@ -573,8 +579,10 @@ def draw_crew_overview():
     f = open(os.path.join(os.getcwd(), "data", "savegame", "crew.json"))
     crew = json.load(f)
     f.close()
+    crew_background = pygame.image.load("data/img/ui_improved.jpg")
     crew_overview_surface = pygame.Surface((533, 900))
-    crew_overview_surface.fill((217, 141, 0))
+    crew_overview_surface.blit(crew_background, (0, 0))
+    #crew_overview_surface.fill((217, 141, 0))
     Caption = pygame.font.Font(os.path.join(os.getcwd(), "data", "other", "Avara.ttf"), 50)
     text = pygame.font.Font(os.path.join(os.getcwd(), "data", "other", "Carlito-Regular.ttf"), 20)
     caption_render = Caption.render("Your Crew", False, (196, 33, 0))
