@@ -34,7 +34,7 @@ class game():
                     os.remove(os.path.join(self.path, "savegame", file))
                 except Exception as e:
                     print(e)
-            return True, "You done fucked up!"
+            return True, "Better Luck next time!"
         else:
             return False,None
 
@@ -141,6 +141,7 @@ class game():
             event_values = generator.island_eventgen(type,size)
         if type==1:
             shop_popup = ui_helper.shop(event_values,self.gold)
+            print(shop_popup.is_active())
             self.screen.blit(shop_popup.get_surface(),(0,0))
             return shop_popup
         elif type==2:
@@ -461,6 +462,9 @@ class game():
         return dispatch_dialog
 
     def dispatch(self,crew_member):
+        start_sound = pygame.mixer.Sound(os.path.join(os.getcwd(), "data", "sound", "scream.wav"))
+        start_sound.set_volume(0.1)
+        pygame.mixer.Sound.play(start_sound)
         self.crew.remove(crew_member)
         self.write_crew()
         self.screen.blit(ui_helper.draw_crew_overview(), (0, 0))

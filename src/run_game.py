@@ -65,14 +65,16 @@ class main_menu():
                 if len(scores) < 10:
                     scores.append(item)
         score_window = tkinter.Toplevel()
-        score_window.geometry("200x500")
+        score_window.geometry("200x275")
         highscores_head_label = tkinter.Label(score_window,text="You local highscores:")
         highscores_head_label.pack()
         cnt = 1
         for item in scores:
             tmp_lbl = tkinter.Label(score_window,text=str(cnt)+".   %s      %s Points!"%(item["username"],item["score"]))
             tmp_lbl.pack()
+            cnt+=1
         close_highscores_button = tkinter.Button(score_window,text="Close",command=score_window.destroy)
+        close_highscores_button.pack()
 
 
     def validate_new_game(self):
