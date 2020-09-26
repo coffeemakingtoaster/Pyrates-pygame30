@@ -1,10 +1,6 @@
 import json
 import pygame
-import math
 import os
-import ui_helper
-import game_logic
-import game_ui
 from pygame import gfxdraw
 
 asset_path = os.path.join(os.getcwd(), "data", "img")
@@ -56,10 +52,12 @@ def dispatch_castaway(ship_pos_x,ship_pos_y):
 
 
 def collisioncheck(ship_pos_x,ship_pos_y):
-    with open('data/savegame/map.json') as json_file:
+    with open(os.path.join(os.getcwd(),'data/savegame/map.json')) as json_file:
         map = json.load(json_file)
     i = 0
     for island in map:
+        if island["visited"] == True:
+            continue
         island_hitbox = pygame.Rect(1350 + (island.get("x") - ship_pos_x), (450 - (island.get("y") - ship_pos_y)),
                                     size_dic.get(island.get("size")), size_dic.get(island.get("size")))
         if island_hitbox.colliderect(1340,440,20,20):

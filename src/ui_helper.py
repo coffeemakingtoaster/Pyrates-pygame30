@@ -31,12 +31,12 @@ def draw_resources(current_savegame):
     ship_HP_bar_filled = pygame.Rect(50, 300, (ship_HP / max_ship_HP) * 250, 30)  ##
     #render Text
     supplies_title_render = values_text.render("Supplies:",False,text_color)
-    supplies_text_render = values_text.render(str(supplies_values) + "/" + str(max_supply), False, text_color)
+    supplies_text_render = values_text.render(str(supplies_values) + "/" + str(max_supply)+" (- "+str(current_savegame.get_supply_consumption())+")", False, text_color)
     ammunition_title_render = values_text.render("Ammunition:", False, text_color)
     ammunition_text_render = values_text.render(str(ammunition_values) + "/" + str(max_ammunition), False, text_color)
     ship_HP_title_render = values_text.render("Ship HP:", False, text_color)
     HP_text_render = values_text.render(str(ship_HP) + "/" + str(max_ship_HP), False, text_color)
-    gold_render = values_text.render(str(gold), False, text_color)
+    gold_render = values_text.render(str(gold)+" (- "+str(current_savegame.get_gold_consumption())+")", False, text_color)
     #draw bars and text onto surface
     values_surf = pygame.Surface((533, 450))
     values_surf.blit(supplies_background, (0, 0))
@@ -181,6 +181,7 @@ class popup_window():
         self.state = True
         surf = pygame.Surface(self.window_size)
         surf.fill(self.popup_background)
+        self.Caption = pygame.font.Font(os.path.join(os.getcwd(), "data", "other", "Avara.ttf"), 40)
         caption_render = self.Caption.render("Game Over!", False, self.caption_color)
         caption_rec = caption_render.get_rect(center=(self.window_size[0] / 2, 65))
         i = 0
@@ -192,7 +193,7 @@ class popup_window():
                 text_to_print = text[i:i + 25]
             print(text_to_print)
             text_render = self.message_text.render(text_to_print, False, (0, 0, 0))
-            text_rect = caption_render.get_rect(center=(200, (self.window_size[1] / 2) + (50 * (i / 20))))
+            text_rect = caption_render.get_rect(center=(215, (self.window_size[1] / 2) + (50 * (i / 20))))
             surf.blit(text_render, text_rect)
             i += 25
         MM_button_render = self.message_text.render("Main Menu", False, self.text_color)
@@ -347,7 +348,7 @@ class popup_window():
         button_rect = button_render.get_rect(center=((self.window_size[0]/2), 265))
         surf.blit(caption_render, caption_rec)
         #surf.blit(text_render, text_rect)
-        pygame.draw.rect(surf,(0,0,0),button_rect)
+        pygame.draw.rect(surf, (0, 0, 0), button_rect)
         surf.blit(button_render, button_rect)
         self.buttons = [{"button_text":"OK","hitbox":button_rect}]
         self.surf = surf
@@ -445,25 +446,24 @@ class popup_window():
 
 #generates shop interface based on values that are generated in generator.py
 class shop():
-    def __init__(self,values = None,player_gold=None):
-        if values and player_gold:
-            self.state = True
-            self.values = values
-            self.player_gold = player_gold
-            self.draw_shop(values)
+    def __init__(self,values = None,player_gold=0):
+        self.state = True
+        self.values = values
+        self.player_gold = player_gold
+        self.draw_shop(values)
 
     #draws the shop onto surface
     def draw_shop(self,values):
         active_color = (199, 104, 2)
         inactive_color = (125, 88, 47)
         asset_path = os.path.join(os.getcwd(), "data", "img")
-        self.shop_surface = pygame.Surface((533, 900))
-        self.shop_surface.fill((173, 90, 0))
+        surf = pygame.Surface((533, 900))
+        surf.fill((173, 90, 0))
         caption = pygame.font.Font(os.path.join(os.getcwd(), "data", "other", "Avara.ttf"), 50)
         text = pygame.font.Font(os.path.join(os.getcwd(), "data", "other", "Carlito-Regular.ttf"), 30)
         caption_render = caption.render("The Shop", False, (196, 33, 0))
         caption_rect = caption_render.get_rect(center=(533 / 2, 50))
-        self.shop_surface.blit(caption_render, caption_rect)
+        surf.blit(caption_render, caption_rect)
         gold_icon = pygame.image.load(os.path.join(asset_path, "coin.png"))
         index = 0
         self.items = []
@@ -472,15 +472,15 @@ class shop():
             if values["supplies"]["price"]>self.player_gold:
                 color = inactive_color
             amount_rect = pygame.Rect(50,100+(index*150),400,100)
-            pygame.draw.rect(self.shop_surface,color,amount_rect)
+            pygame.draw.rect(surf,color,amount_rect)
             amount_render = text.render(str(values["supplies"]["amount"])+"x",False,(0,0,0))
             price_render = text.render(str(values["supplies"]["price"]),False,(0,0,0))
             supply_icon = pygame.image.load(os.path.join(asset_path, "supplies.png"))
             amount_pos_x,amount_pos_y = amount_rect.center
-            self.shop_surface.blit(amount_render,(amount_pos_x-50,amount_pos_y-10))
-            self.shop_surface.blit(price_render,(amount_pos_x+50,amount_pos_y-10))
-            self.shop_surface.blit(pygame.transform.scale(supply_icon, (50, 50)), (100, (amount_rect.centery - 25)))
-            self.shop_surface.blit(pygame.transform.scale(gold_icon, (50, 50)),(370,(amount_rect.centery-25)))
+            surf.blit(amount_render,(amount_pos_x-50,amount_pos_y-10))
+            surf.blit(price_render,(amount_pos_x+50,amount_pos_y-10))
+            surf.blit(pygame.transform.scale(supply_icon, (50, 50)), (100, (amount_rect.centery - 25)))
+            surf.blit(pygame.transform.scale(gold_icon, (50, 50)),(370,(amount_rect.centery-25)))
             self.items.append({"item":"supplies","hitbox":amount_rect})
             index+=1
         if values["ammunition"]["amount"]>0:
@@ -489,14 +489,14 @@ class shop():
                 color = inactive_color
             amount_rect = pygame.Rect(50,100+(index*150),400,100)
             amount_pos_x, amount_pos_y = amount_rect.center
-            pygame.draw.rect(self.shop_surface,color,amount_rect)
+            pygame.draw.rect(surf,color,amount_rect)
             amount_render = text.render(str(values["ammunition"]["amount"])+"x",False,(0,0,0))
             price_render = text.render(str(values["ammunition"]["price"]),False,(0,0,0))
             ammunition_icon = pygame.image.load(os.path.join(asset_path, "ammunition.png"))
-            self.shop_surface.blit(amount_render,(amount_pos_x-50,amount_pos_y-10))
-            self.shop_surface.blit(price_render,(amount_pos_x+50,amount_pos_y-10))
-            self.shop_surface.blit(pygame.transform.scale(ammunition_icon, (50, 50)), (100, (amount_rect.centery - 25)))
-            self.shop_surface.blit(pygame.transform.scale(gold_icon, (50, 50)),(370,(amount_rect.centery-25)))
+            surf.blit(amount_render,(amount_pos_x-50,amount_pos_y-10))
+            surf.blit(price_render,(amount_pos_x+50,amount_pos_y-10))
+            surf.blit(pygame.transform.scale(ammunition_icon, (50, 50)), (100, (amount_rect.centery - 25)))
+            surf.blit(pygame.transform.scale(gold_icon, (50, 50)),(370,(amount_rect.centery-25)))
             self.items.append({"item": "ammunition", "hitbox": amount_rect})
             index += 1
         if values["bonus"]["amount"]>0:
@@ -505,7 +505,7 @@ class shop():
                 color = inactive_color
             amount_rect = pygame.Rect(50,100+(index*150),400,100)
             amount_pos_x, amount_pos_y = amount_rect.center
-            pygame.draw.rect(self.shop_surface,color,amount_rect)
+            pygame.draw.rect(surf,color,amount_rect)
             amount_render = text.render(str(values["bonus"]["amount"])+"x",False,(0,0,0))
             price_render = text.render(str(values["bonus"]["price"]),False,(0,0,0))
             print(values["bonus"]["name"])
@@ -522,17 +522,17 @@ class shop():
                 print("cost")
                 bonus_icon = pygame.image.load(os.path.join(asset_path, "costumes.png"))
             print(bonus_icon)
-            self.shop_surface.blit(amount_render,(amount_pos_x-50,amount_pos_y-10))
-            self.shop_surface.blit(price_render,(amount_pos_x+50,amount_pos_y-10))
-            self.shop_surface.blit(pygame.transform.scale(gold_icon, (50, 50)),(370,(amount_rect.centery-25)))
-            self.shop_surface.blit(pygame.transform.scale(bonus_icon, (50, 50)), (100, (amount_rect.centery - 25)))
+            surf.blit(amount_render,(amount_pos_x-50,amount_pos_y-10))
+            surf.blit(price_render,(amount_pos_x+50,amount_pos_y-10))
+            surf.blit(pygame.transform.scale(gold_icon, (50, 50)),(370,(amount_rect.centery-25)))
+            surf.blit(pygame.transform.scale(bonus_icon, (50, 50)), (100, (amount_rect.centery - 25)))
             self.items.append({"item": values["bonus"]["name"], "hitbox": amount_rect})
-
             index += 1
         exit_icon = pygame.image.load(os.path.join(asset_path,"x_button.png"))
         self.leave_rect = pygame.Rect(400, 800, 50, 50)
         #pygame.draw.rect(self.shop_surface, (255, 0, 0), self.leave_rect)
-        self.shop_surface.blit(pygame.transform.scale(exit_icon, (50, 50)), (400,800))
+        surf.blit(pygame.transform.scale(exit_icon, (50, 50)), (400,800))
+        self.shop_surface = surf
 
     #returns obj surface
     def get_surface(self):
@@ -541,6 +541,7 @@ class shop():
     #equivalent to popup collide
     def interact(self,mouse_pos):
         if self.leave_rect.collidepoint(mouse_pos):
+            print("shop_closed")
             self.state = False
             return None,None
         for button in self.items:
@@ -615,6 +616,6 @@ def draw_crew_overview():
         crew_overview_surface.blit(pygame.transform.scale((castaway_icon),(40,40)),(475, 100 + (index * 100)))
         crew_overview_surface.blit(display_text_render, (100, 100 + (index * 100)))
         crew_face = pygame.image.load(os.path.join(os.getcwd(), "data", "img","crew_faces",str(member["uID"])+".png"))
-        crew_overview_surface.blit(pygame.transform.scale((crew_face),(50,50)),(25,100 + (index * 100)))
+        crew_overview_surface.blit(pygame.transform.scale((crew_face),(50,50)),(15,100 + (index * 100)))
         index += 1
     return crew_overview_surface

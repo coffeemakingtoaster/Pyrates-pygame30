@@ -49,7 +49,7 @@ def start_state_gen(username):
     f = open(os.path.join(os.getcwd(),"data","savegame","savegame.json"),"w")
     f.write(json.dumps({"username": username,
                         "gold": 15,
-                        "supplies": 50,
+                        "supplies": 75,
                         "ammunition": 50,
                         "game_tick": 0,
                         "ship_HP": 5,
@@ -94,7 +94,7 @@ def crewgen():
     crew = []
     for i in range(settings["crew_count"]):
         crew_member = {
-         "name" : name_list[random.randint(0,settings["name_count"]-1)],
+         "name" : random.choice(name_list),
          "attribute" : random.randint(1,settings["attribute_types"]),
          "injured" : False,
          "level" : random.randint(1,settings["max_starting_level"]),
