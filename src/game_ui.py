@@ -127,27 +127,34 @@ def main(username):
     current_game.set_minimap(minimap)
     map.mapdraw(ship_map_x, ship_map_y, current_game.get_minimap(),frame)
     sound_time = time.time()
+    pygame.mixer.init()
 
     f = open(os.path.join(os.getcwd(),"data","other", "settings.json"))
     data = json.load(f)
     f.close()
     sound_state = data["sound_state"]
     print(sound_state)
+    SONG_END = pygame.USEREVENT + 1
     if sound_state == 1:
+        print("sounds")
         seagull_sound = pygame.mixer.Sound(os.path.join(os.path.join(os.getcwd(), "data", "sound", "seagulls.wav")))
         seagull_sound.set_volume(0.2)
         pygame.mixer.Sound.play(seagull_sound)
+        print("playing seagull")
         if random.randint(1,2)==1:
             pygame.mixer.music.load(os.path.join(os.getcwd(),"data","sound","background1.mp3"))
             song_loaded = 1
         else:
             pygame.mixer.music.load(os.path.join(os.getcwd(), "data", "sound", "background2.mp3"))
             song_loaded = 2
+        print("loaded song")
         pygame.mixer.music.set_volume(0.1)
+        print("at_start")
         pygame.mixer.music.play()
-    SONG_END = pygame.USEREVENT+1
-    pygame.mixer.music.set_endevent(SONG_END)
+        pygame.mixer.music.set_endevent(SONG_END)
+
     song_pause = 0
+    print("past init")
 
     while running:
         if not game_over:
