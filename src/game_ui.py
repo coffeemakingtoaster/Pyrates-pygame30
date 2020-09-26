@@ -169,22 +169,6 @@ def main(username):
 
         for event in pygame.event.get():
 
-            #########################################################################
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_s:
-                    island = {"island_id":random.randint(0,100),"island_values":{"x": 2375, "y": 437, "size": 4, "type": 1, "visited": False}}
-                if event.key == pygame.K_a:
-                    island = {"island_id": random.randint(0,100), "island_values": {"x": 2375, "y": 437, "size": 0, "type": 4, "visited": False}}
-                if event.key == pygame.K_b:
-                    island = {"island_id": random.randint(0, 100),"island_values": {"x": 2375, "y": 437, "size": 0, "type": 2, "visited": False}}
-                if event.key == pygame.K_0:
-                    if is_night is True:
-                        is_night = False
-                    else:
-                        is_night = True
-            #######################################################################
-
-
             # Quit
             if event.type == pygame.QUIT:
                 sys.exit(0)
