@@ -265,7 +265,11 @@ class game():
         self.write_crew()
         return outcome,message
 
+    def set_time(self,time):
+        self.time = time
 
+    def get_time(self):
+        return self.time
     def battle(self,values):
         outcome = random.randint(0,100)
         if self.ammunition<=0:

@@ -441,6 +441,7 @@ class popup_window():
         screen.blit(draw_resources(game), (533, 450))
         screen.blit(draw_crew_overview(), (0, 0))
         screen.blit(game.get_minimap(),(533,0))
+        screen.blit(game.get_time(), (533+40, 0))
         self.state = False
 
 #generates shop interface based on values that are generated in generator.py
