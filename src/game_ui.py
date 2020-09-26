@@ -40,7 +40,7 @@ def display_night(screen,night):
         screen.blit(night_display, ((533 * 2), 0))
 
 def main(username):
-    pygame.init()
+    pygame.init()  # turn all of pygame on.
     # init size of the window. The background color is never visible
     width, height = (1600, 900)
     background_color = (0, 0, 0)
@@ -127,17 +127,24 @@ def main(username):
     current_game.set_minimap(minimap)
     map.mapdraw(ship_map_x, ship_map_y, current_game.get_minimap(),frame)
     sound_time = time.time()
-    seagull_sound = pygame.mixer.Sound(os.path.join(os.path.join(os.getcwd(),"data","sound","seagulls.wav")))
-    seagull_sound.set_volume(0.2)
-    pygame.mixer.Sound.play(seagull_sound)
-    if random.randint(1,2)==1:
-        pygame.mixer.music.load(os.path.join(os.getcwd(),"data","sound","background1.mp3"))
-        song_loaded = 1
-    else:
-        pygame.mixer.music.load(os.path.join(os.getcwd(), "data", "sound", "background2.mp3"))
-        song_loaded = 2
-    pygame.mixer.music.set_volume(0.1)
-    pygame.mixer.music.play()
+
+    f = open(os.path.join(os.getcwd(),"data","other", "settings.json"))
+    data = json.load(f)
+    f.close()
+    sound_state = data["sound_state"]
+    print(sound_state)
+    if sound_state == 1:
+        seagull_sound = pygame.mixer.Sound(os.path.join(os.path.join(os.getcwd(), "data", "sound", "seagulls.wav")))
+        seagull_sound.set_volume(0.2)
+        pygame.mixer.Sound.play(seagull_sound)
+        if random.randint(1,2)==1:
+            pygame.mixer.music.load(os.path.join(os.getcwd(),"data","sound","background1.mp3"))
+            song_loaded = 1
+        else:
+            pygame.mixer.music.load(os.path.join(os.getcwd(), "data", "sound", "background2.mp3"))
+            song_loaded = 2
+        pygame.mixer.music.set_volume(0.1)
+        pygame.mixer.music.play()
     SONG_END = pygame.USEREVENT+1
     pygame.mixer.music.set_endevent(SONG_END)
     song_pause = 0
@@ -186,9 +193,10 @@ def main(username):
                         popup = None
                         is_paused = False
                         UI_is_blocked = False
-                        water_sound = pygame.mixer.Sound(os.path.join(os.path.join(os.getcwd(), "data", "sound", "water.wav")))
-                        water_sound.set_volume(0.5)
-                        pygame.mixer.Sound.play(water_sound)
+                        if sound_state == 1:
+                            water_sound = pygame.mixer.Sound(os.path.join(os.path.join(os.getcwd(), "data", "sound", "water.wav")))
+                            water_sound.set_volume(0.5)
+                            pygame.mixer.Sound.play(water_sound)
 
             if event.type == pygame.MOUSEBUTTONDOWN and managment_UI.collidepoint(pygame.mouse.get_pos()) and not in_shop and not UI_is_blocked:
                 mouse_x,mouse_y = pygame.mouse.get_pos()
@@ -250,9 +258,10 @@ def main(username):
                     UI_is_blocked = False
                     del popup
                     is_paused = False
-                    water_sound = pygame.mixer.Sound(os.path.join(os.path.join(os.getcwd(), "data", "sound", "water.wav")))
-                    water_sound.set_volume(0.5)
-                    pygame.mixer.Sound.play(water_sound)
+                    if sound_state == 1:
+                        water_sound = pygame.mixer.Sound(os.path.join(os.path.join(os.getcwd(), "data", "sound", "water.wav")))
+                        water_sound.set_volume(0.5)
+                        pygame.mixer.Sound.play(water_sound)
                 elif not popup.is_active() and game_over is True:
                     running = False
 
@@ -358,7 +367,7 @@ def main(username):
                     game_over = True
 
 
-        if time.time()-song_pause>60 and song_pause!=0:
+        if time.time()-song_pause>60 and song_pause!=0 and sound_state == 1:
             if song_loaded == 1:
                 pygame.mixer.music.load(os.path.join(os.getcwd(), "data", "sound", "background2.mp3"))
                 song_loaded = 2
@@ -421,7 +430,7 @@ def main(username):
         pygame.display.flip()
 
 
-        if (time.time()-sound_time)>30 and random.randint(0,100)>90:
+        if (time.time()-sound_time)>30 and random.randint(0,100)>90 and sound_state==1:
             print("seagull")
             pygame.mixer.Sound.play(seagull_sound)
             sound_time = time.time()

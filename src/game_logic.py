@@ -1,11 +1,10 @@
 import os
 import json
-import generator
 import random
+import generator
 import ui_helper
 import pygame
 from PIL import Image
-import io
 
 
 crew_img_list = [["beige_base.png","brown_base.png","invis_base.png","pink_base.png"],
@@ -34,7 +33,7 @@ class game():
                     os.remove(os.path.join(self.path, "savegame", file))
                 except Exception as e:
                     print(e)
-            return True, "You done fucked up!"
+            return True, "Better Luck next time!"
         else:
             return False,None
 
@@ -92,6 +91,10 @@ class game():
         self.max_ship_HP = settings["ship_max_HP"]
         self.max_supply  = settings["max_supply_amount"]
         self.max_ammunition = settings["max_ammunition_amount"]
+        f = open(os.path.join(self.path,"other","settings.json"))
+        data = json.load(f)
+        f.close()
+        self.sound_state = data["sound_state"]
 
     def read_savegame(self):
         f = open(os.path.join(self.path,"savegame","savegame.json"),"r")
@@ -141,6 +144,7 @@ class game():
             event_values = generator.island_eventgen(type,size)
         if type==1:
             shop_popup = ui_helper.shop(event_values,self.gold)
+            print(shop_popup.is_active())
             self.screen.blit(shop_popup.get_surface(),(0,0))
             return shop_popup
         elif type==2:
@@ -371,9 +375,10 @@ class game():
             print("now in action")
             member["finish_tick"] = self.current_tick + 1
             member["is_in_action"] = True
-            start_sound = pygame.mixer.Sound(os.path.join(os.getcwd(), "data", "sound", "job_start.mp3"))
-            start_sound.set_volume(0.5)
-            pygame.mixer.Sound.play(start_sound)
+            if self.sound_state == 1:
+                start_sound = pygame.mixer.Sound(os.path.join(os.getcwd(), "data", "sound", "job_start.mp3"))
+                start_sound.set_volume(0.5)
+                pygame.mixer.Sound.play(start_sound)
         elif member["role"] == "Helmsman":
             return ui_helper.popup_window(type=1,caption ="Info",text="Is boosting ship speed by "+str(member["level"])+"%",is_crewmember = True)
         elif member["role"] == "Fattie":
@@ -461,6 +466,10 @@ class game():
         return dispatch_dialog
 
     def dispatch(self,crew_member):
+        if self.sound_state == 1:
+            start_sound = pygame.mixer.Sound(os.path.join(os.getcwd(), "data", "sound", "scream.wav"))
+            start_sound.set_volume(0.1)
+            pygame.mixer.Sound.play(start_sound)
         self.crew.remove(crew_member)
         self.write_crew()
         self.screen.blit(ui_helper.draw_crew_overview(), (0, 0))
@@ -481,7 +490,8 @@ class game():
                     member["finish_tick"] = self.current_tick + (target["level"]-member["level"])
                 break
         self.write_crew()
-        start_sound = pygame.mixer.Sound(os.path.join(os.getcwd(),"data","sound","job_start.mp3"))
-        start_sound.set_volume(0.5)
-        pygame.mixer.Sound.play(start_sound)
+        if self.sound_state == 1:
+            start_sound = pygame.mixer.Sound(os.path.join(os.getcwd(),"data","sound","job_start.mp3"))
+            start_sound.set_volume(0.5)
+            pygame.mixer.Sound.play(start_sound)
         print("healing initiated")

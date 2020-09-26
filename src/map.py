@@ -1,10 +1,6 @@
 import json
 import pygame
-import math
 import os
-import ui_helper
-import game_logic
-import game_ui
 from pygame import gfxdraw
 
 asset_path = os.path.join(os.getcwd(), "data", "img")

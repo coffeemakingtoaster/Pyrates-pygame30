@@ -94,7 +94,7 @@ def crewgen():
     crew = []
     for i in range(settings["crew_count"]):
         crew_member = {
-         "name" : name_list[random.randint(0,settings["name_count"]-1)],
+         "name" : random.choice(name_list),
          "attribute" : random.randint(1,settings["attribute_types"]),
          "injured" : False,
          "level" : random.randint(1,settings["max_starting_level"]),
