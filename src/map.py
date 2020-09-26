@@ -15,7 +15,8 @@ img_grid = [
     ["small3.jpg","mid3.jpg","large3.jpg"],
     ["small4.jpg","mid4.jpg","large4.jpg"],
     ["start.jpg"],
-    ["end.jpg"]
+    ["end.jpg"],
+    ["castaway.jpg"]
 ]
 
 size_dic = {
@@ -47,6 +48,11 @@ def mapdraw(ship_pos_x,ship_pos_y,minimap,screen):
         i+=1
     pygame.draw.rect(screen, (0, 0, 0), (573, 0, 493, 450), 0)
     return None
+
+def dispatch_castaway(ship_pos_x,ship_pos_y):
+    with open('data/savegame/map.json') as json_file:
+        map = json.load(json_file)
+    map.append({"x": ship_pos_x, "y": ship_pos_y, "size": 0, "type": 6, "visited": False})
 
 
 def collisioncheck(ship_pos_x,ship_pos_y):

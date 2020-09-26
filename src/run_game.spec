@@ -3,8 +3,8 @@
 block_cipher = None
 
 
-a = Analysis(['C:\\Users\\herke\\Desktop\\code\\python\\pyweek30\\src\\run_game.py'],
-             pathex=['C:\\Users\\herke\\Desktop\\code\\python\\pyweek30\\src'],
+a = Analysis(['C:\\Users\\benha\\GitHub\\pygame30\\pygame30\\src\\run_game.py'],
+             pathex=['C:\\Users\\benha\\GitHub\\pygame30\\pygame30\\src'],
              binaries=[],
              datas=[],
              hiddenimports=[],
