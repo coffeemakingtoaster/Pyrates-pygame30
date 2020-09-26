@@ -1,0 +1,5 @@
+pygame v2.0.0.dev6 
+ => pip install pygame==2.0.0.dev6
+
+PIL/Pillow
+ => pip install pillow
