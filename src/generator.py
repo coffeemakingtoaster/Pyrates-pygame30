@@ -147,8 +147,9 @@ def island_eventgen(type,size):
         victory_chances = random.randint(settings["fortress_min_win_chance"],settings["fortress_max_win_chance"])
         for member in crew_data:
             if member["role"] == "Brute" and member["injured"] is False:
-                victory_chances+=member["level"]*5
-                if victory_chances==100:
+                victory_chances+=member["level"]*3
+                if victory_chances>=100:
+                    victory_chances = 100
                     break
         defeat_chances = 100-victory_chances
         island_loot = random.choice(possible_loot)
