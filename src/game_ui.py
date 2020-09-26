@@ -69,7 +69,7 @@ def main(username):
         saved_minimap = pygame.image.load(os.path.join(os.getcwd(),"data","savegame","minimap.png"))
         minimap.blit(saved_minimap,(0,0))
 
-    day_night_display = pygame.Surface(593,450)
+    day_night_display = pygame.Surface((593,450))
     time_display = pygame.image.load(os.path.join(os.getcwd(),"data","img","clock_sunrise.jpg"))
     day_night_display.blit(time_display,(0,0))
 
