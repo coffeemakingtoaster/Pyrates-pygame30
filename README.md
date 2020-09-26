@@ -33,3 +33,10 @@ Music used:
 Sound from:
     
     https://freesound.org
+
+
+# Pyinstaller
+The only OS this was tested on is Windows.
+    
+    pip install pyinstaller
+    python builder.py
