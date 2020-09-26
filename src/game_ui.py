@@ -69,7 +69,7 @@ def main(username):
         saved_minimap = pygame.image.load(os.path.join(os.getcwd(),"data","savegame","minimap.png"))
         minimap.blit(saved_minimap,(0,0))
 
-    day_night_display = pygame.Surface(593,450)
+    day_night_display = pygame.Surface((593,450))
     time_display = pygame.image.load(os.path.join(os.getcwd(),"data","img","clock_sunrise.jpg"))
     day_night_display.blit(time_display,(0,0))
 
@@ -404,19 +404,19 @@ def main(username):
             pause_timestamp = time.time()
 
         if (time.time()-start_time-paused_time)>=5 and not is_night:
-            day_night_display = pygame.Surface(593, 450)
+            day_night_display = pygame.Surface((593, 450))
             time_display = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "clock_day.jpg"))
             day_night_display.blit(time_display, (0, 0))
 
         if (time.time()-start_time-paused_time)>=10 and not is_night:
             print("night has come")
             is_night = True
-            day_night_display = pygame.Surface(593, 450)
+            day_night_display = pygame.Surface((593, 450))
             time_display = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "clock_dawn.jpg"))
             day_night_display.blit(time_display, (0, 0))
 
         if (time.time()-start_time-paused_time)>=15 and is_night:
-            day_night_display = pygame.Surface(593, 450)
+            day_night_display = pygame.Surface((593, 450))
             time_display = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "clock_night.jpg"))
             day_night_display.blit(time_display, (0, 0))
 
@@ -431,7 +431,7 @@ def main(username):
                     frame.blit(popup.get_surf(), popup.get_surf().get_rect(center=(800, 450)))
             is_night = False
             start_time = time.time()
-            day_night_display = pygame.Surface(593, 450)
+            day_night_display = pygame.Surface((593, 450))
             time_display = pygame.image.load(os.path.join(os.getcwd(), "data", "img", "clock_sunrise.jpg"))
             day_night_display.blit(time_display, (0, 0))
 
