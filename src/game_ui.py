@@ -142,17 +142,19 @@ def main(username):
         pygame.mixer.Sound.play(seagull_sound)
         print("playing seagull")
         if random.randint(1,2)==1:
-            pygame.mixer.music.load(os.path.join(os.getcwd(),"data","sound","background1.mp3"))
+            song = pygame.mixer.Sound(os.path.join(os.getcwd(),"data","sound","background1.wav"))
+            duration = 60 + 53
             song_loaded = 1
         else:
-            pygame.mixer.music.load(os.path.join(os.getcwd(), "data", "sound", "background2.mp3"))
+            song = pygame.mixer.Sound(os.path.join(os.getcwd(), "data", "sound", "background2.wav"))
+            duration = 139
             song_loaded = 2
         print("loaded song")
-        pygame.mixer.music.set_volume(0.1)
+        song.set_volume(0.1)
+        pygame.mixer.Sound.play(song)
         print("at_start")
-        pygame.mixer.music.play()
-        pygame.mixer.music.set_endevent(SONG_END)
 
+    song_timer = time.time()
     song_pause = 0
     print("past init")
 
@@ -272,8 +274,21 @@ def main(username):
                 elif not popup.is_active() and game_over is True:
                     running = False
 
-            if event.type == SONG_END:
-                song_pause = time.time()
+            if time.time() - song_timer > duration:
+                if song_loaded == 1:
+                    song = pygame.mixer.Sound(os.path.join(os.getcwd(), "data", "sound", "background2.mp3"))
+                    song.set_volume(0.1)
+                    pygame.mixer.Sound.play(song)
+                    song_timer = time.time()
+                    song_loaded = 2
+                    duration = 139
+                else:
+                    song = pygame.mixer.Sound(os.path.join(os.getcwd(), "data", "sound", "background1.mp3"))
+                    song.set_volume(0.1)
+                    pygame.mixer.Sound.play(song)
+                    song_timer = time.time()
+                    song_loaded = 1
+                    duration = 53 + 60
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
@@ -374,15 +389,6 @@ def main(username):
                     game_over = True
 
 
-        if time.time()-song_pause>60 and song_pause!=0 and sound_state == 1:
-            if song_loaded == 1:
-                pygame.mixer.music.load(os.path.join(os.getcwd(), "data", "sound", "background2.mp3"))
-                song_loaded = 2
-                song_pause = 0
-            else:
-                pygame.mixer.music.load(os.path.join(os.getcwd(), "data", "sound", "background1.mp3"))
-                song_loaded = 1
-                song_pause = 0
 
 
 
