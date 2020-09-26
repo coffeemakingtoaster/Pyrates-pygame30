@@ -68,7 +68,7 @@ class popup_window():
     # 4 - Abandonscreen (yes and no)
     # 5 - PauseScreen (Resume,Save,Save and Exit)
     # 6 - GameOver  (MM, Quit)
-    def __init__(self, type,caption=None,text=None,event_values = None,crew = None,has_map = False):
+    def __init__(self, type,caption=None,text=None,event_values = None,crew = None,has_map = False,is_crewmember=False):
         self.state = False
         pygame.font.init()
         self.caption_size = 70
@@ -84,7 +84,7 @@ class popup_window():
         if event_values:
             self.event_values = event_values
         if type==1:
-            self.init_status_update(caption,text)
+            self.init_status_update(caption,text,is_crewmember)
         elif type==2:
             self.init_battle_screen(event_values)
         elif type==3:
@@ -304,28 +304,43 @@ class popup_window():
          self.surf = surf
 
     #status update displays changes of stats and therefore only features okay button
-    def init_status_update(self,title,text):
+    def init_status_update(self,title,text,is_crewmember=False):
+        print("!"+title+"!")
+        print("!"+text+"!")
         self.state = True
         surf = pygame.Surface(self.window_size)
         surf.fill(self.popup_background)
         caption_render = self.Caption.render(title, False, self.caption_color)
         caption_rec = caption_render.get_rect(center=(self.window_size[0] / 2, 65))
         i = 0
+        if len(text)<=30:
+            text_render = self.message_text.render(text.strip(), False, (0, 0, 0))
+            text_rect = caption_render.get_rect(center=(self.window_size[0]/2, (self.window_size[1] / 3) + 40 + (30 * (i / 20))))
+            surf.blit(text_render, text_rect)
+            i = 40
         while i < len(text):
             print(i)
-            if (i+25)>len(text):
+            if (i+30)>len(text):
                 text_to_print = text[i:len(text)]
             else:
-                text_to_print = text[i:i+25]
-            print(text_to_print)
-            text_render = self.message_text.render(text_to_print, False, (0, 0, 0))
-            text_rect = caption_render.get_rect(center=(150, (self.window_size[1]/3)+25+(30*(i/25))))
-            surf.blit(text_render, text_rect)
-            i += 25
+                text_to_print = text[i:i+30]
+            print(text_to_print.strip())
+            text_render = self.message_text.render(text_to_print.strip(), False, (0, 0, 0))
+            print(self.window_size)
+            #This has to be here...I dont know why, but without this all the formatting is (even more) fucked
+            #this annoys me
+            if is_crewmember == True:
+                x_cord =(self.window_size[0]/2)-75
+            else:
+                x_cord = (self.window_size[0]/2)-50
+            text_rect = caption_render.get_rect(center=((x_cord, (self.window_size[1]/3)+40+(30*(i/20)))))
+            surf.blit(text_render,text_rect)
+            #surf.blit(text_render, (25, (self.window_size[1]/3)+40+(30*(i/20))))
+            i += 30
         button_render = self.message_text.render("OK", False, self.text_color)
-        button_rect = button_render.get_rect(center=(self.window_size[0] / 2, 265))
+        button_rect = button_render.get_rect(center=((self.window_size[0]/2), 265))
         surf.blit(caption_render, caption_rec)
-        surf.blit(text_render, text_rect)
+        #surf.blit(text_render, text_rect)
         pygame.draw.rect(surf,(0,0,0),button_rect)
         surf.blit(button_render, button_rect)
         self.buttons = [{"button_text":"OK","hitbox":button_rect}]
@@ -358,7 +373,7 @@ class popup_window():
                 elif button["button_text"]=="Battle":
                     outcome,details = game.battle(self.event_values)
                     self.delete_popup(screen,game)
-                    self.init_status_update(outcome,details)
+                    self.init_status_update(outcome,details,is_crewmember=False)
                 elif button["button_text"]=="Flee" or button["button_text"]=="Abandon" or button["button_text"]=="Keep" or button["button_text"]=="Resume" or button["button_text"]=="Cancel":
                     print("we out")
                     self.delete_popup(screen, game)
@@ -403,7 +418,7 @@ class popup_window():
                 elif button["button_text"] == "Search":
                     outcome, details = game.treasure_hunt(self.event_values)
                     self.delete_popup(screen, game)
-                    self.init_status_update(outcome, details)
+                    self.init_status_update(outcome, details,is_crewmember=True)
                 return True
 
         print("no matching button found")
